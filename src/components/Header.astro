@@ -18,12 +18,10 @@ import Icon from './Icon.astro';
 import { brand } from '../data/content';
 
 const nav = [
-  { label: 'Vehicles', href: '#vehicles' },
-  { label: 'Technology', href: '#technology' },
-  { label: 'Why Electric', href: '#why-electric' },
+  { label: 'Our vehicles', href: '#vehicles' },
+  { label: 'Why electric', href: '#calculator' },
   { label: 'Ownership', href: '#ownership' },
-  { label: 'Dealer Network', href: '#dealers' },
-  { label: 'About', href: '#legacy' },
+  { label: 'Find a dealer', href: '#dealers' },
 ];
 ---
 
@@ -62,7 +60,7 @@ const nav = [
         data-track="nav_test_ride_click"
       >
         <Icon name="calendar" size={16} />
-        <span class="kg-nav__cta-label">Test Ride</span>
+        <span class="kg-nav__cta-label">Book a test ride</span>
       </button>
 
       <button

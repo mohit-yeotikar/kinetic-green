@@ -356,7 +356,8 @@ function init(): void {
     const vehicle = vehicleId ? vehicleById(vehicleId) : undefined;
     const dateInput = form.querySelector<HTMLInputElement>('[data-lead-date]');
 
-    const result = await submitLead(
+    const isPreview = modal!.dataset.preview === 'true';
+    const result = isPreview ? { ok: true, message: 'Preview complete. No booking has been made or sent. Call 1800-120-4242 to arrange a test ride.', reference: 'Not submitted', offline: false } : await submitLead(
       {
         type: config.type,
         intent: config.intent,
@@ -410,6 +411,11 @@ function init(): void {
     set('[data-done-reference]', result.reference ?? '—');
 
     showStep(5);
+    if (isPreview) {
+      set('[data-lead-heading]', 'Preview complete');
+      set('.kg-done__title', 'No booking has been made.');
+      return;
+    }
 
     // If the lead was queued offline, reflect it in the status rail.
     if (result.offline) {
@@ -531,7 +537,8 @@ function init(): void {
 
       modal!.querySelectorAll('.kg-chip[data-date-offset]').forEach((c) => c.setAttribute('aria-pressed', 'false'));
       chip.setAttribute('aria-pressed', 'true');
-      if (dateInput) dateInput.value = d.toISOString().slice(0, 10);
+      const dateInput = form.querySelector<HTMLInputElement>('[data-lead-date]');
+      if (dateInput) dateInput.value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     });
   });
 
@@ -539,32 +546,12 @@ function init(): void {
   // asking the visitor to guess.
   modal!.querySelector('[data-lead-not-sure]')?.addEventListener('click', () => {
     close();
-    document.getElementById('finder')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('vehicles')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     track('ev_finder_start', { source: 'lead-modal-not-sure' });
   });
 
-  // City → nearest-dealer preview, so the visitor sees we actually found someone.
-  if (cityInput && dealerPreview) {
-    cityInput.addEventListener('input', () => {
-      const value = cityInput.value.trim().toLowerCase();
-      if (value.length < 3) {
-        dealerPreview.hidden = true;
-        return;
-      }
-      const match = citiesSample.find(
-        (d) => d.city.toLowerCase().startsWith(value) || d.pincode.startsWith(value),
-      );
-      if (match) {
-        dealerPreview.hidden = false;
-        dealerPreview.innerHTML = `<b>${match.name}</b>${match.city}, ${match.state} · ${match.distanceKm} km · ${
-          match.testRide ? 'Test rides available' : 'Test ride on request'
-        }`;
-        answers.nearest_dealer = match.id;
-      } else {
-        dealerPreview.hidden = true;
-      }
-    });
-  }
+  // No verified live dealer feed: never display sample addresses or distances.
+  if (dealerPreview) dealerPreview.hidden = true;
 
   // Clear a field's error as soon as the visitor corrects it.
   form.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
@@ -575,19 +562,6 @@ function init(): void {
     });
   });
 }
-
-/* Small sample used for the inline dealer preview (the full roster lives in the
-   Dealer Finder component). Imported shape-compatible with content.dealers. */
-const citiesSample = [
-  { id: 'd1', name: 'Kinetic Green — Central', city: 'Pune', state: 'Maharashtra', pincode: '411001', distanceKm: 2.4, testRide: true },
-  { id: 'd3', name: 'Kinetic Green — Andheri', city: 'Mumbai', state: 'Maharashtra', pincode: '400053', distanceKm: 3.1, testRide: true },
-  { id: 'd6', name: 'Kinetic Green — Bengaluru South', city: 'Bengaluru', state: 'Karnataka', pincode: '560068', distanceKm: 3.7, testRide: true },
-  { id: 'd9', name: 'Kinetic Green — Delhi North', city: 'Delhi', state: 'Delhi', pincode: '110009', distanceKm: 4.9, testRide: true },
-  { id: 'd16', name: 'Kinetic Green — Ahmedabad', city: 'Ahmedabad', state: 'Gujarat', pincode: '380015', distanceKm: 4.0, testRide: true },
-  { id: 'd21', name: 'Kinetic Green — Hyderabad Central', city: 'Hyderabad', state: 'Telangana', pincode: '500081', distanceKm: 3.3, testRide: true },
-  { id: 'd23', name: 'Kinetic Green — Kolkata South', city: 'Kolkata', state: 'West Bengal', pincode: '700091', distanceKm: 4.8, testRide: true },
-  { id: 'd19', name: 'Kinetic Green — Chennai West', city: 'Chennai', state: 'Tamil Nadu', pincode: '600040', distanceKm: 6.4, testRide: true },
-];
 
 // Formats are re-exported for other scripts that need the same currency style.
 export { formatINR, vehicles };

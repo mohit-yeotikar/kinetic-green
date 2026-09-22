@@ -149,7 +149,7 @@ export function openDrawer(): void {
     ),
   ).filter((el) => el.offsetParent !== null);
 
-  drawer.querySelector<HTMLElement>('[data-nav-drawer-close]')?.focus();
+  drawer.querySelector<HTMLElement>('button[data-nav-drawer-close]')?.focus();
   document.addEventListener('keydown', onKeydown);
 }
 
@@ -229,6 +229,9 @@ export function initNav(): void {
     });
   });
 
+  window.matchMedia('(min-width: 1200px)').addEventListener('change', (event) => {
+    if (event.matches && drawer?.dataset.open === 'true') closeDrawer();
+  });
   initActiveSection();
   initAnchors();
 }

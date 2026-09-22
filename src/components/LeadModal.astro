@@ -42,7 +42,7 @@ const vehicleOptions = vehicles.map((v) => ({
 ---
 
 <!-- ========================================================= LEAD MODAL -->
-<div class="kg-modal" id="lead-modal" data-lead-modal hidden>
+<div class="kg-modal" id="lead-modal" data-lead-modal data-preview="true" hidden>
   <div class="kg-modal__scrim" data-lead-close></div>
 
   <div
@@ -75,6 +75,7 @@ const vehicleOptions = vehicles.map((v) => ({
       <span class="kg-modal__step-dots" data-lead-dots aria-hidden="true"></span>
     </p>
 
+    <p class="booking-preview-note">Design preview: this form does not send a booking. To arrange a ride, call <a href={brand.phoneHref}>{brand.phone}</a>.</p>
     <form class="kg-modal__body" data-lead-form novalidate>
       <!-- ================================ STEP 1 · VEHICLE ==================== -->
       <fieldset class="kg-modal__step-panel" data-lead-step="1">
@@ -230,8 +231,7 @@ const vehicleOptions = vehicles.map((v) => ({
         </label>
 
         <p class="kg-modal__consent">
-          By submitting you agree to be contacted about this enquiry. We do not sell your data.
-          See our <a href="/privacy">privacy policy</a>.
+          Preview only. Please use test details. No booking request is sent to a dealer.
         </p>
       </fieldset>
 

@@ -1,717 +1,191 @@
-/*
- * KINETIC GREEN — LIGHT EDITORIAL REDESIGN
- *
- * This layer deliberately removes the "dark EV microsite" cliché. The page is
- * mostly warm white and mineral grey; charcoal is reserved for the close and
- * footer. Green signals energy, decisions and live data — never decoration.
- *
- * Component styles remain colocated with their markup. These higher-specificity
- * rules are the art-direction layer applied across those independent components.
- */
-
-:root {
-  --kg-ink: #111714;
-  --kg-charcoal: #1b211e;
-  --kg-charcoal-2: #252c28;
-  --kg-graphite: #3e4842;
-  --kg-graphite-2: #66716b;
-  --kg-steel: #68736d;
-  --kg-silver: #d5dcd7;
-  --kg-mist: #f2f4ef;
-  --kg-mist-2: #e4e9e3;
-  --kg-paper: #fbfcf8;
-  --kg-green: #00c853;
-  --kg-green-600: #00a846;
-  --kg-green-700: #087437;
-  --kg-green-400: #2fdb77;
-  --kg-green-050: #e9f9ef;
-  --shell: 1480px;
-  --shell-narrow: 1080px;
-  --gutter: clamp(1.125rem, 4vw, 4.5rem);
-  --section-y: clamp(4.75rem, 9vw, 8.5rem);
-  --section-y-lg: clamp(5.5rem, 11vw, 10rem);
-  --fs-mega: clamp(3.25rem, 9vw, 8.75rem);
-  --fs-d1: clamp(2.55rem, 6.6vw, 6.4rem);
-  --fs-d2: clamp(2.15rem, 4.8vw, 4.75rem);
-  --fs-d3: clamp(1.55rem, 3vw, 2.6rem);
-  --leading-mega: 0.9;
-  --r-4: 12px;
-  --r-5: 18px;
-}
-
-html body {
-  background: var(--kg-paper);
-  color: var(--kg-ink);
-}
-
-html body #main .kg-display {
-  max-width: 16ch;
-  text-transform: none;
-  letter-spacing: -0.047em;
-  line-height: 0.98;
-}
-
-html body #main .kg-eyebrow {
-  color: var(--kg-green-700);
-  font-weight: 600;
-}
-
-html body #main .kg-eyebrow::before {
-  width: 2.5rem;
-  height: 1px;
-}
-
-html body #main .kg-lead {
-  color: #56625b;
-  line-height: 1.68;
-}
-
-html body #main .kg-card,
-html body #main .kg-input {
-  box-shadow: none;
-}
-
-html body #main .kg-btn {
-  border-radius: 3px;
-  box-shadow: none;
-}
-
-html body #main .kg-btn:hover {
-  box-shadow: 0 10px 24px -14px rgb(0 105 47 / 0.55);
-}
-
-/* --------------------------------------------------------------------------
-   NAVIGATION — light from the first frame, quiet enough to sit over the hero
-   -------------------------------------------------------------------------- */
-html body #main .kg-nav {
-  --nav-bg: rgb(251 252 248 / 0.9);
-  --nav-fg: var(--kg-ink);
-  --nav-line: rgb(17 23 20 / 0.13);
-  color: var(--kg-ink);
-  background: var(--nav-bg);
-  border-bottom: 1px solid rgb(17 23 20 / 0.08);
-  backdrop-filter: blur(18px) saturate(120%);
-  -webkit-backdrop-filter: blur(18px) saturate(120%);
-}
-
-html body #main .kg-nav[data-state='scrolled'] {
-  --nav-bg: rgb(251 252 248 / 0.96);
-  --nav-fg: var(--kg-ink);
-  --nav-line: rgb(17 23 20 / 0.13);
-  background: var(--nav-bg);
-  box-shadow: 0 10px 32px -26px rgb(17 23 20 / 0.55);
-}
-
-html body #main .kg-nav__link,
-html body #main .kg-nav__link:hover,
-html body #main .kg-nav__link:focus-visible,
-html body #main .kg-nav__link[aria-current='true'] {
-  color: var(--kg-ink);
-}
-
-html body #main .kg-nav__link { opacity: 0.72; }
-html body #main .kg-nav__link:hover,
-html body #main .kg-nav__link[aria-current='true'] { opacity: 1; }
-
-html body #main .kg-nav__burger { color: var(--kg-ink); }
-html body #main .kg-nav__inner { --nav-h: 78px; }
-html body #main .kg-nav[data-state='scrolled'] .kg-nav__inner { --nav-h: 64px; }
-
-/* --------------------------------------------------------------------------
-   HERO — daylight, product-first and genuinely responsive
-   -------------------------------------------------------------------------- */
-html body #main .kg-hero {
-  min-height: min(940px, 100svh);
-  background: var(--kg-paper);
-  color: var(--kg-ink);
-  padding-block-start: clamp(6.5rem, 13vh, 8.5rem);
-  padding-block-end: clamp(2.5rem, 6vh, 4.5rem);
-}
-
-html body #main .kg-hero__atmos { inset: 0; }
-
-html body #main .kg-hero__grad {
-  background:
-    radial-gradient(circle at 79% 46%, rgb(0 200 83 / 0.09), transparent 31%),
-    linear-gradient(108deg, #fbfcf8 0 50%, #f0f3ed 50% 100%);
-}
-
-html body #main .kg-hero__grid {
-  background-image:
-    linear-gradient(to right, rgb(17 23 20 / 0.055) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(17 23 20 / 0.055) 1px, transparent 1px);
-  opacity: 0.9;
-  mask-image: linear-gradient(90deg, transparent 10%, #000 54%, #000 90%, transparent);
-}
-
-html body #main .kg-hero__glow {
-  inset-block-end: -30%;
-  background: radial-gradient(circle, rgb(0 200 83 / 0.13), transparent 64%);
-  filter: blur(18px);
-}
-
-html body #main .kg-hero__cut {
-  inset-inline-start: 58%;
-  background: linear-gradient(to bottom, transparent, rgb(0 200 83 / 0.32), transparent);
-  opacity: 0.48;
-}
-
-html body #main .kg-hero__vignette {
-  background:
-    linear-gradient(to right, rgb(251 252 248 / 0.94) 0 35%, transparent 58%),
-    linear-gradient(to top, rgb(251 252 248 / 0.9), transparent 26%);
-}
-
-html body #main .kg-hero__inner {
-  grid-template-areas: 'copy' 'stage';
-  align-items: center;
-}
-
-html body #main .kg-hero__eyebrow { color: #65716a; }
-html body #main .kg-hero__eyebrow-top { color: var(--kg-ink); }
-html body #main .kg-hero__eyebrow-sub { color: var(--kg-green-700); }
-
-html body #main .kg-hero__title {
-  font-size: var(--fs-mega);
-  line-height: 0.88;
-  letter-spacing: -0.055em;
-  text-transform: none;
-  max-width: 8ch;
-}
-
-html body #main .kg-hero__title-accent { color: var(--kg-ink); }
-html body #main .kg-hero__period { color: var(--kg-green); }
-html body #main .kg-hero__sub { color: #4e5a53; max-width: 31ch; }
-
-html body #main .kg-hero__ctas .kg-btn--outline {
-  --s-fg: var(--kg-ink);
-  --s-line-strong: rgb(17 23 20 / 0.22);
-  color: var(--kg-ink);
-  backdrop-filter: none;
-}
-
-html body #main .kg-hero__ctas .kg-btn--outline:hover {
-  --s-line-strong: var(--kg-ink);
-  background: transparent;
-}
-
-html body #main .kg-hero__tertiary { color: var(--kg-ink); }
-html body #main .kg-hero__tertiary-icon { color: var(--kg-green-700); background: var(--kg-green-050); }
-html body #main .kg-hero__tertiary-label { color: var(--kg-ink); }
-html body #main .kg-hero__tertiary-meta { color: #68736d; }
-html body #main .kg-hero__tertiary-arrow { color: var(--kg-green-700); }
-
-html body #main .kg-hero__stage {
-  width: min(112%, 760px);
-  margin-inline: auto;
-  filter: drop-shadow(0 28px 30px rgb(21 37 28 / 0.12));
-}
-
-html body #main .kg-hero__vehicle picture {
-  display: block;
-  width: min(100%, 650px);
-  margin-inline: auto;
-}
-
-html body #main .kg-hero__vehicle img {
-  max-height: 58svh;
-  width: 100%;
-  object-fit: contain;
-  mix-blend-mode: multiply;
-}
-
-/* VehicleVisual carries its own dark-stage range badge. The hero already has a
-   dedicated specification system, so showing both creates duplicate data and
-   collisions at narrow widths. */
-html body #main .kg-hero__vehicle .kg-vv__readout { display: none; }
-
-html body #main .kg-hero__chip {
-  background: rgb(251 252 248 / 0.88);
-  border-color: rgb(17 23 20 / 0.12);
-  box-shadow: 0 12px 34px -22px rgb(17 23 20 / 0.42);
-  backdrop-filter: blur(12px);
-}
-
-html body #main .kg-hero__chip-label { color: #68736d; }
-html body #main .kg-hero__chip-value { color: var(--kg-ink); text-shadow: none; }
-html body #main .kg-hero__chip-value em { color: var(--kg-green-700); }
-html body #main .kg-hero__chip--green .kg-hero__chip-value { color: var(--kg-green-700); }
-html body #main .kg-scroll-hint { color: #78837d; }
-html body #main .kg-hero__trust { color: #68736d; }
-
-/* --------------------------------------------------------------------------
-   QUICK CONVERSION — a service desk, not a dark promotional stripe
-   -------------------------------------------------------------------------- */
-html body #main .kg-cbar {
-  background: #fff;
-  color: var(--kg-ink);
-  border-block-color: var(--kg-mist-2);
-  box-shadow: 0 20px 50px -42px rgb(17 23 20 / 0.45);
-}
-
-html body #main .kg-cbar__title { border-color: var(--kg-mist-2); }
-html body #main .kg-cbar__title-text,
-html body #main .kg-cbar__eyebrow,
-html body #main .kg-cbar__meta { color: #6c7871; }
-html body #main .kg-cbar__item { border-color: var(--kg-mist-2); }
-html body #main .kg-cbar__label { color: var(--kg-ink); }
-html body #main .kg-cbar__icon {
-  color: var(--kg-green-700);
-  background: var(--kg-green-050);
-  border-color: #ccecd7;
-}
-html body #main .kg-cbar__arrow { color: #849088; }
-html body #main .kg-cbar__link:hover { background: #f7f9f5; }
-html body #main .kg-cbar__link--primary { background: var(--kg-green); }
-html body #main .kg-cbar__link--primary:hover { background: var(--kg-green-400); }
-
-/* --------------------------------------------------------------------------
-   VEHICLE EXPLORER — studio white, no synthetic "black stage"
-   -------------------------------------------------------------------------- */
-html body #main .kg-vex { background: var(--kg-paper); }
-html body #main .kg-vex__stage {
-  background:
-    linear-gradient(180deg, #f1f4ef 0%, #e9eee8 100%);
-  border-color: #dce3dc;
-  border-radius: 8px;
-}
-html body #main .kg-vex__stage::before {
-  background: radial-gradient(ellipse at bottom, rgb(0 200 83 / 0.12), transparent 68%);
-}
-html body #main .kg-vex__stage-blurb,
-html body #main .kg-vex__models-label { color: #68736d; }
-html body #main .kg-vex__model {
-  background: rgb(255 255 255 / 0.72);
-  border-color: #d5ddd6;
-  color: var(--kg-ink);
-}
-html body #main .kg-vex__model:hover,
-html body #main .kg-vex__model[data-active='true'] {
-  background: var(--kg-green-050);
-  border-color: var(--kg-green);
-  color: var(--kg-ink);
-}
-html body #main .kg-vex__model-price { color: var(--kg-green-700); }
-html body #main .kg-vex__models { border-color: #d8dfd8; }
-
-/* The SVG art was authored for a dark background. Invert its tonal hierarchy on
-   light surfaces without changing the verified product-data path. */
-html body #main .kg-vex__stage .kg-vv__svg,
-html body #main .kg-tech__stage .kg-vv__svg {
-  filter: drop-shadow(0 20px 22px rgb(17 23 20 / 0.11));
-}
-
-/* --------------------------------------------------------------------------
-   EV FINDER — decision tool in daylight
-   -------------------------------------------------------------------------- */
-html body #main .kg-find {
-  background: #f1f4ef;
-  color: var(--kg-ink);
-  --s-bg: #f1f4ef;
-  --s-bg-alt: #fff;
-  --s-fg: var(--kg-ink);
-  --s-fg-muted: #56625b;
-  --s-fg-subtle: #718078;
-  --s-line: #dce3dc;
-  --s-line-strong: #c8d1c9;
-  --s-accent: var(--kg-green-700);
-}
-html body #main .kg-find__bg .kg-grid-bg { opacity: 0.28; }
-html body #main .kg-find__tool {
-  background: #fff;
-  border: 1px solid #dce3dc;
-  border-radius: 10px;
-  padding: clamp(1rem, 3vw, 2rem);
-  box-shadow: 0 28px 70px -54px rgb(17 23 20 / 0.52);
-}
-html body #main .kg-find__step { border-color: #dce3dc; }
-html body #main .kg-find__step-btn { color: #7a857e; }
-html body #main .kg-find__step-btn:hover,
-html body #main .kg-find__step[data-active='true'] .kg-find__step-btn,
-html body #main .kg-find__step[data-done='true'] .kg-find__step-btn { color: var(--kg-ink); }
-html body #main .kg-find__aside-note,
-html body #main .kg-find__opt-card,
-html body #main .kg-result__cost {
-  background: #f7f9f5;
-  border-color: #dce3dc;
-}
-html body #main .kg-find__opt-card:hover { background: var(--kg-green-050); }
-html body #main .kg-find__opt-icon { background: #fff; border-color: #dce3dc; color: var(--kg-green-700); }
-html body #main .kg-find__opt-label,
-html body #main .kg-result__title,
-html body #main .kg-result__cost-rows b { color: var(--kg-ink); }
-html body #main .kg-find__legend-num,
-html body #main .kg-result__saving-value { color: var(--kg-green-700); }
-html body #main .kg-result__saving { background: var(--kg-green-050); border-color: #bce6ca; }
-
-/* --------------------------------------------------------------------------
-   CALCULATOR — financial tool, not dashboard chrome
-   -------------------------------------------------------------------------- */
-html body #main .kg-calc { background: var(--kg-paper); }
-html body #main .kg-calc__headline {
-  background: var(--kg-green-050);
-  color: var(--kg-ink);
-  border: 1px solid #bfe8cc;
-  border-left: 4px solid var(--kg-green);
-  border-radius: 4px;
-}
-html body #main .kg-calc__headline .kg-label,
-html body #main .kg-calc__currency { color: var(--kg-green-700); }
-html body #main .kg-calc__headline-note { color: #65716a; }
-html body #main .kg-calc__inputs,
-html body #main .kg-calc__step { border-radius: 6px; }
-
-/* --------------------------------------------------------------------------
-   PRODUCT STORY — editorial chapters instead of a pinned dark tunnel
-   -------------------------------------------------------------------------- */
-html body #main .kg-story {
-  background: #eef2ed;
-  color: var(--kg-ink);
-  --s-bg: #eef2ed;
-  --s-fg: var(--kg-ink);
-  --s-fg-muted: #59655e;
-  --s-fg-subtle: #748078;
-  --s-line: #d6ded7;
-  --s-line-strong: #c3cec5;
-  --s-accent: var(--kg-green-700);
-}
-html body #main .kg-story__stage,
-html body #main .kg-story[data-hscroll-ready='true'] .kg-story__stage {
-  position: relative;
-  height: auto;
-  min-height: 0;
-  padding-block: var(--section-y);
-  overflow: visible;
-}
-html body #main .kg-story__backdrop-grid {
-  background-image:
-    linear-gradient(to right, rgb(17 23 20 / 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(17 23 20 / 0.06) 1px, transparent 1px);
-}
-html body #main .kg-story__tabs-progress { background: #d6ded7; }
-html body #main .kg-story__tab { color: #7c8780; }
-html body #main .kg-story__tab:hover { color: var(--kg-ink); }
-html body #main .kg-story__tab[aria-selected='true'],
-html body #main .kg-story__chapter-index { color: var(--kg-green-700); }
-html body #main .kg-story[data-hscroll-ready='true'] .kg-story__track {
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  transform: none !important;
-}
-html body #main .kg-story__chapter {
-  background: rgb(255 255 255 / 0.76);
-  border: 1px solid #d9e1da;
-  padding: clamp(1rem, 2.5vw, 2rem);
-  border-radius: 8px;
-}
-html body #main .kg-story__chapter-visual {
-  background: radial-gradient(ellipse at 50% 92%, rgb(0 200 83 / 0.10), transparent 64%);
-}
-html body #main .kg-story__chapter-specs,
-html body #main .kg-story__spec-table,
-html body #main .kg-story__spec-table > div { border-color: #d6ded7; }
-html body #main .kg-story__spec-table dd { color: var(--kg-ink); }
-html body #main .kg-story__spec-actions .kg-btn--outline {
-  --s-fg: var(--kg-ink);
-  --s-line-strong: #bdc8bf;
-  color: var(--kg-ink);
-}
-html body #main .kg-story__spec-actions .kg-btn--outline:hover { background: var(--kg-green-050); }
-
-/* --------------------------------------------------------------------------
-   INDIA, TECHNOLOGY, OWNERSHIP — three distinct chapters, all light
-   -------------------------------------------------------------------------- */
-html body #main .kg-india { background: var(--kg-paper); }
-html body #main .kg-india__tab[aria-selected='true'] {
-  background: var(--kg-green);
-  border-color: var(--kg-green);
-  color: #00240f;
-}
-
-html body #main .kg-tech {
-  background: #f1f4ef;
-  color: var(--kg-ink);
-  --s-bg: #f1f4ef;
-  --s-bg-alt: #fff;
-  --s-fg: var(--kg-ink);
-  --s-fg-muted: #59655e;
-  --s-fg-subtle: #748078;
-  --s-line: #d8e0d9;
-  --s-line-strong: #c4cec6;
-  --s-accent: var(--kg-green-700);
-}
-html body #main .kg-tech__integrity { color: #405047; }
-html body #main .kg-tech__stage-frame {
-  background: linear-gradient(160deg, #e9eee9, #dfe6df);
-  border-color: #ccd5cd;
-  border-radius: 8px;
-}
-html body #main .kg-tech__stage-grid {
-  background-image:
-    linear-gradient(to right, rgb(17 23 20 / 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(17 23 20 / 0.08) 1px, transparent 1px);
-}
-html body #main .kg-tech__pin { color: var(--kg-ink); }
-html body #main .kg-tech__pin-label { color: #4f5c54; }
-html body #main .kg-tech__pin:hover .kg-tech__pin-label,
-html body #main .kg-tech__pin[aria-pressed='true'] .kg-tech__pin-label { color: var(--kg-green-700); }
-html body #main .kg-tech__detail-card,
-html body #main .kg-tech__detail-pending {
-  background: #fff;
-  border-color: #d5ddd6;
-}
-html body #main .kg-tech__detail-spec { background: var(--kg-green-050); }
-html body #main .kg-tech__detail-index { color: var(--kg-green-700); }
-html body #main .kg-tech__detail-source,
-html body #main .kg-tech__transcript,
-html body #main .kg-tech__transcript li { border-color: #d8e0d9; }
-html body #main .kg-tech__transcript summary,
-html body #main .kg-tech__transcript p { color: #59655e; }
-
-html body #main .kg-own { background: var(--kg-paper); }
-html body #main .kg-own__support {
-  background: var(--kg-green-050);
-  color: var(--kg-ink);
-  border: 1px solid #c7ead2;
-  border-left: 4px solid var(--kg-green);
-  border-radius: 5px;
-}
-html body #main .kg-own__support-copy .kg-label { color: var(--kg-green-700); }
-html body #main .kg-own__support-body { color: #58645d; }
-html body #main .kg-own__support-actions .kg-btn--outline {
-  --s-fg: var(--kg-ink);
-  --s-line-strong: #afc5b5;
-  color: var(--kg-ink);
-}
-
-/* --------------------------------------------------------------------------
-   PRICE + STORIES — calm high-intent surfaces, not more dark blocks
-   -------------------------------------------------------------------------- */
-html body #main .kg-price {
-  background: #e8eee8;
-  color: var(--kg-ink);
-  --s-bg: #fff;
-  --s-bg-alt: #f4f7f2;
-  --s-fg: var(--kg-ink);
-  --s-fg-muted: #59655e;
-  --s-fg-subtle: #748078;
-  --s-line: #d2dbd3;
-  --s-line-strong: #bdc9bf;
-  --s-accent: var(--kg-green-700);
-}
-html body #main .kg-price select.kg-input { background-color: #fff; color: var(--kg-ink); }
-html body #main .kg-price .kg-input { background: #fff; color: var(--kg-ink); }
-
-html body #main .kg-stories {
-  background: var(--kg-paper);
-  color: var(--kg-ink);
-  --s-bg: var(--kg-paper);
-  --s-bg-alt: #fff;
-  --s-fg: var(--kg-ink);
-  --s-fg-muted: #59655e;
-  --s-fg-subtle: #748078;
-  --s-line: #dde4dd;
-  --s-line-strong: #c9d2ca;
-  --s-accent: var(--kg-green-700);
-}
-html body #main .kg-stories__filter-btn {
-  background: #fff;
-  border-color: #d8e0d9;
-  color: #5c6961;
-  border-radius: 3px;
-}
-html body #main .kg-stories__filter-btn:hover { color: var(--kg-ink); }
-html body #main .kg-stories__feature,
-html body #main .kg-stories__faq,
-html body #main .kg-stories__faq-list,
-html body #main .kg-faq { border-color: #dde4dd; }
-html body #main .kg-stories__feature-visual,
-html body #main .kg-stories__card-visual {
-  background: #e7ece7;
-  border-color: #d5ddd6;
-}
-html body #main .kg-stories__placeholder {
-  background:
-    linear-gradient(118deg, transparent 40%, rgb(0 200 83 / 0.09) 66%, transparent 90%),
-    repeating-linear-gradient(-45deg, rgb(17 23 20 / 0.025) 0 2px, transparent 2px 14px);
-}
-html body #main .kg-stories__placeholder-rule { background: rgb(17 23 20 / 0.15); }
-html body #main .kg-stories__placeholder-word { color: rgb(17 23 20 / 0.35); }
-html body #main .kg-stories__card {
-  background: #fff;
-  border-color: #dce3dc;
-  border-radius: 7px;
-}
-html body #main .kg-stories__date,
-html body #main .kg-stories__source,
-html body #main .kg-stories__card-excerpt,
-html body #main .kg-stories__feature-excerpt,
-html body #main .kg-stories__faq-intro,
-html body #main .kg-faq__a p { color: #647068; }
-html body #main .kg-stories__feature-title a:hover,
-html body #main .kg-stories__card-title a:hover,
-html body #main .kg-faq__q:hover,
-html body #main .kg-stories__card-more { color: var(--kg-green-700); }
-html body #main .kg-faq__q { color: var(--kg-ink); }
-html body #main .kg-faq__icon { border-color: #ccd5cd; color: var(--kg-green-700); }
-
-/* Final CTA and footer remain charcoal by design: one deliberate night-time close
-   after a predominantly daylight journey. */
-html body #main .kg-final { background: #17201b; }
-html body #main .kg-foot { background: #0f1512; }
-
-/* --------------------------------------------------------------------------
-   RESPONSIVE RECOMPOSITION
-   -------------------------------------------------------------------------- */
-@media (max-width: 767px) {
-  :root {
-    --gutter: 1.125rem;
-    --section-y: 4.5rem;
-    --section-y-lg: 5.25rem;
-    --fs-mega: clamp(3.2rem, 17vw, 4.6rem);
-    --fs-d2: clamp(2.15rem, 11vw, 3.2rem);
-  }
-
-  html body #main .kg-display { max-width: 13ch; }
-  html body #main .kg-btn--lg { min-height: 54px; padding: 0.95rem 1.2rem; }
-
-  html body #main .kg-nav__inner { --nav-h: 68px; }
-  html body #main .kg-nav__cta { padding-inline: 0.8rem; }
-
-  html body #main .kg-hero {
-    min-height: auto;
-    padding-block-start: 6rem;
-    padding-block-end: 2.25rem;
-  }
-  html body #main .kg-hero__inner { gap: 0.5rem; }
-  html body #main .kg-hero__copy { display: block; }
-  html body #main .kg-hero__eyebrow { margin-block-end: 0.75rem; }
-  html body #main .kg-hero__title { max-width: 7ch; }
-  html body #main .kg-hero__sub { font-size: 1rem; margin-block-start: 0.85rem; }
-  html body #main .kg-hero__ctas { display: grid; grid-template-columns: 1fr; margin-block-start: 1.1rem; width: 100%; }
-  html body #main .kg-hero__ctas .kg-btn { width: 100%; }
-  html body #main .kg-hero__ctas .kg-btn--outline { display: none; }
-  html body #main .kg-hero__tertiary { margin-block-start: 0.35rem; }
-  html body #main .kg-hero__tertiary-meta { display: none; }
-  html body #main .kg-hero__stage { width: 105%; margin-inline: -2.5%; margin-block: 0.5rem -1rem; }
-  html body #main .kg-hero__vehicle img { max-height: 38svh; }
-  html body #main .kg-hero__chips,
-  html body #main .kg-scroll-hint { display: none; }
-  html body #main .kg-hero__foot { margin-block-start: 1.25rem; }
-  html body #main .kg-hero__trust { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem; width: 100%; }
-  html body #main .kg-hero__trust li:last-child { display: none; }
-  html body #main .kg-hero__vignette { background: linear-gradient(to bottom, transparent 58%, rgb(251 252 248 / 0.92)); }
-
-  html body #main .kg-cbar__inner { padding-inline: 0; }
-  html body #main .kg-cbar__list { grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
-  html body #main .kg-cbar__item { border-block-end: 0; border-inline-end: 1px solid var(--kg-mist-2); }
-  html body #main .kg-cbar__item:last-child { border-inline-end: 0; }
-  html body #main .kg-cbar__link { display: grid; justify-items: center; gap: 0.45rem; min-height: 92px; padding: 0.8rem 0.35rem; text-align: center; }
-  html body #main .kg-cbar__body { align-items: center; }
-  html body #main .kg-cbar__eyebrow,
-  html body #main .kg-cbar__meta,
-  html body #main .kg-cbar__arrow { display: none; }
-  html body #main .kg-cbar__label { font-size: 0.67rem; white-space: normal; line-height: 1.25; }
-  html body #main .kg-cbar__icon { width: 36px; height: 36px; }
-
-  html body #main .kg-vex__rail { position: sticky; top: 64px; z-index: 10; background: rgb(251 252 248 / 0.95); backdrop-filter: blur(12px); }
-  html body #main .kg-vex__stage { padding-inline: 0.25rem; }
-  html body #main .kg-vex__stage-meta { padding-inline: 0.75rem; }
-  html body #main .kg-vex__actions { display: grid; }
-
-  html body #main .kg-find__tool { padding: 1rem; }
-  html body #main .kg-find__aside-note { display: none; }
-  html body #main .kg-find__steps { grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 1px solid #dce3dc; margin-bottom: 1.25rem; }
-  html body #main .kg-find__step { border: 0; }
-  html body #main .kg-find__step-btn { justify-content: center; padding: 0.75rem 0.25rem; }
-  html body #main .kg-find__step-text { display: none; }
-  html body #main .kg-find__step-state { width: 10px; }
-  html body #main .kg-find__step[data-active='true'] .kg-find__step-state { width: 22px; }
-  html body #main .kg-find__options { grid-template-columns: 1fr; }
-  html body #main .kg-find__panels { min-height: 0; }
-  html body #main .kg-find__nav { display: grid; grid-template-columns: 1fr 1fr; }
-  html body #main .kg-find__nav .kg-btn:only-child { grid-column: 1 / -1; }
-
-  html body #main .kg-calc__headline { order: -1; }
-  html body #main .kg-seg { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  html body #main .kg-seg__item:nth-child(2) .kg-seg__label { border-inline-end: 0; }
-  html body #main .kg-seg__item:nth-child(-n + 2) .kg-seg__label { border-block-end: 1px solid var(--s-line-strong); }
-  html body #main .kg-calc__totals { grid-template-columns: 1fr 1fr; }
-
-  html body #main .kg-story__track { gap: 0.85rem; padding-inline: var(--gutter); }
-  html body #main .kg-story__chapter { width: 88vw; padding: 1rem; }
-  html body #main .kg-story__chapter--spec { width: 88vw; }
-
-  html body #main .kg-tech__stage-frame { aspect-ratio: 1 / 1; }
-  html body #main .kg-tech__pin { width: 38px; height: 38px; }
-  html body #main .kg-tech__pin-label { display: none; }
-
-  html body #main .kg-stories__filter { flex-wrap: nowrap; overflow-x: auto; padding-block-end: 0.5rem; }
-  html body #main .kg-stories__filter-btn { white-space: nowrap; }
-
-  html body #main .kg-final__actions { gap: 0.5rem; }
-  html body #main .kg-final__action { border-radius: 5px; }
-}
-
-@media (min-width: 768px) and (max-width: 1099px) {
-  html body #main .kg-hero { min-height: auto; padding-block-start: 8rem; }
-  html body #main .kg-hero__inner { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); grid-template-areas: 'copy stage'; }
-  html body #main .kg-hero__stage { width: 125%; margin-inline-start: -18%; }
-  html body #main .kg-hero__title { font-size: clamp(4.2rem, 9.8vw, 6.7rem); }
-  html body #main .kg-hero__chips { display: none; }
-  html body #main .kg-find__tool { grid-template-columns: 220px 1fr; }
-}
-
-@media (min-width: 1100px) {
-  html body #main .kg-hero__inner {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    grid-template-areas: 'copy stage';
-  }
-  html body #main .kg-hero__copy { align-self: center; padding-block-end: 1rem; }
-  html body #main .kg-hero__stage { width: min(116%, 880px); margin-inline-start: -7%; }
-  html body #main .kg-hero__chips { display: block; }
-  html body #main .kg-hero__foot { position: absolute; inset-inline: 0; inset-block-end: 2rem; }
-  html body #main .kg-find__tool { grid-template-columns: minmax(210px, 0.34fr) minmax(0, 1fr); }
-}
-
-@media (min-width: 900px) {
-  html body #main .kg-story__chapter { width: min(72vw, 1040px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html body #main .kg-story[data-hscroll-ready='true'] .kg-story__track { transform: none !important; }
-}
-
-/* Header sits outside #main, so it gets its own high-specificity cascade anchor. */
-html body .kg-nav.kg-nav {
-  --nav-bg: rgb(251 252 248 / 0.9);
-  --nav-fg: var(--kg-ink);
-  --nav-line: rgb(17 23 20 / 0.13);
-  color: var(--kg-ink);
-  background: var(--nav-bg);
-  border-bottom: 1px solid rgb(17 23 20 / 0.08);
-  backdrop-filter: blur(18px) saturate(120%);
-  -webkit-backdrop-filter: blur(18px) saturate(120%);
-}
-html body .kg-nav.kg-nav[data-state='scrolled'] {
-  --nav-bg: rgb(251 252 248 / 0.96);
-  --nav-fg: var(--kg-ink);
-  --nav-line: rgb(17 23 20 / 0.13);
-  background: var(--nav-bg);
-  box-shadow: 0 10px 32px -26px rgb(17 23 20 / 0.55);
-}
-html body .kg-nav.kg-nav .kg-nav__link,
-html body .kg-nav.kg-nav .kg-nav__link:hover,
-html body .kg-nav.kg-nav .kg-nav__link:focus-visible,
-html body .kg-nav.kg-nav .kg-nav__link[aria-current='true'],
-html body .kg-nav.kg-nav .kg-nav__burger { color: var(--kg-ink); }
-html body .kg-nav.kg-nav .kg-nav__link { opacity: 0.72; }
-html body .kg-nav.kg-nav .kg-nav__link:hover,
-html body .kg-nav.kg-nav .kg-nav__link[aria-current='true'] { opacity: 1; }
-html body .kg-nav.kg-nav .kg-nav__inner { --nav-h: 78px; }
-html body .kg-nav.kg-nav[data-state='scrolled'] .kg-nav__inner { --nav-h: 64px; }
-
-@media (max-width: 767px) {
-  html body .kg-nav.kg-nav .kg-nav__inner { --nav-h: 68px; }
-  html body .kg-nav.kg-nav .kg-nav__cta { padding-inline: 0.8rem; }
-}
+/* Product-led campaign system. Six sections; one clear primary action. */
+:root{--kg-ink:#14251b;--kg-paper:#fafbf7;--kg-green:#05c85a;--kg-green-700:#08743b;--shell:1440px;--gutter:clamp(22px,4.5vw,72px);--campaign-lime:#d8ed9b;--campaign-muted:#647166;--campaign-line:#dce1d8}
+html{scroll-padding-top:90px}
+body.kg-premium{background:var(--kg-paper);color:var(--kg-ink)}
+.kg-premium [hidden]{display:none!important}
+.kg-premium button,.kg-premium a{-webkit-tap-highlight-color:transparent}
+.kg-premium :focus-visible{outline:2px solid #08743b;outline-offset:5px}
+.section-space{padding:104px 0}
+.editorial-label{font-family:var(--font-body);font-size:10px;font-weight:600;letter-spacing:.17em;line-height:1.5;text-transform:uppercase}
+.kg-premium h2{font-size:clamp(36px,4.15vw,60px);font-weight:600;letter-spacing:-.055em;line-height:1.06}
+.action-button{display:inline-flex;align-items:center;justify-content:center;gap:30px;min-height:54px;padding:15px 24px;background:#183b28;color:white;font-size:13px;font-weight:500;border:1px solid transparent;border-radius:3px;transition:background .2s,transform .2s;white-space:nowrap}
+.action-button:hover{background:#28593b;transform:translateY(-2px)}
+.action-button--light{background:var(--campaign-lime);color:#183b28}
+.action-button--light:hover{background:#e5f6b8}
+.text-link{display:inline-flex;align-items:center;gap:14px;font-size:13px;font-weight:500;padding:12px 0;border-bottom:1px solid transparent}
+.text-link:hover{border-color:currentColor}
+.fine-print{font-size:11px;line-height:1.65;color:var(--campaign-muted)}
+/* Navigation */
+.kg-premium .kg-nav{--nav-fg:#14251b;--nav-line:#dce1d8;color:#14251b;background:rgb(250 251 247 / .96);border-bottom:1px solid #e5e8df;backdrop-filter:blur(14px)}
+.kg-premium .kg-nav[data-state='scrolled']{--nav-bg:rgb(250 251 247 / .96);--nav-fg:#14251b;--nav-line:#dce1d8;background:var(--nav-bg);box-shadow:none}
+.kg-premium .kg-nav__inner,.kg-premium .kg-nav[data-state='scrolled'] .kg-nav__inner{--nav-h:82px}
+.kg-premium .kg-nav__brand{transform:none!important}
+.kg-premium .kg-nav__primary{margin-left:auto;flex:none}
+.kg-premium .kg-nav__list{gap:28px}
+.kg-premium .kg-nav__link,.kg-premium .kg-nav__link:hover,.kg-premium .kg-nav__link[aria-current='true']{font-family:var(--font-body);font-size:12px;letter-spacing:0;font-weight:500;text-transform:none;color:#283b2e}
+.kg-premium .kg-nav__actions{margin-left:8px}
+.kg-premium .kg-nav__cta{background:#183b28;color:#fff;border-radius:3px;box-shadow:none;font-family:var(--font-body);font-size:12px;font-weight:500;text-transform:none;letter-spacing:0;min-height:43px;padding:10px 20px}
+.kg-premium .kg-nav__cta::before{display:none}
+.kg-premium .kg-nav__progress{display:none}
+.kg-premium .kg-nav__burger{color:#14251b;border:0}
+/* Hero: a quiet studio stage, expressive scale, no floating UI. */
+.campaign-hero{position:relative;padding-top:82px;overflow:hidden;background:#f0f2ea}
+.campaign-hero__inner{display:grid;grid-template-columns:1fr 1fr;min-height:650px;align-items:center;position:relative}
+.campaign-hero__copy{position:relative;z-index:2;padding:48px 0 70px}
+.campaign-hero .editorial-label{display:flex;align-items:center;gap:10px;margin-bottom:30px;font-size:10px}
+.status-dot{width:6px;height:6px;background:#0a8e42;border-radius:50%}
+.campaign-hero h1{font-size:clamp(64px,7.65vw,112px);font-weight:600;line-height:.99;letter-spacing:-.068em;text-wrap:nowrap}
+.green-stop{color:#06ad4e}
+.campaign-hero__description{font-size:14px;line-height:1.8;color:#566451;margin:27px 0 28px}
+.campaign-hero__actions{display:flex;align-items:center;gap:27px;flex-wrap:wrap}
+.campaign-hero__art{position:relative;align-self:stretch;min-width:0;display:flex;align-items:center;justify-content:center}
+.campaign-hero__word{position:absolute;left:-5%;top:10%;font-family:var(--font-display);font-size:clamp(105px,12.4vw,188px);line-height:1;font-weight:700;letter-spacing:-.065em;color:#dce3d1;white-space:nowrap;z-index:0}
+.campaign-hero__orbit{position:absolute;width:520px;height:520px;border-radius:50%;background:#e5eadb;top:14%;left:8%}
+.campaign-hero__vehicle{position:relative;z-index:1;height:548px;max-height:90%;width:100%;object-fit:contain;filter:drop-shadow(6px 22px 15px rgb(32 48 29 / .15));transform:rotate(-5deg);margin-top:12px}
+.campaign-hero__caption{position:absolute;bottom:29px;left:10%;right:0;display:flex;align-items:center;justify-content:space-between;font-size:9px;letter-spacing:.1em;color:#60705b;z-index:2}
+.campaign-hero__caption span:first-child{color:#243d2d;font-weight:600;letter-spacing:.18em}
+.campaign-hero__foot{position:relative;display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid #dce1d2;min-height:68px;color:#53664f}
+.campaign-hero__foot>span{font-size:9px;letter-spacing:.14em;font-weight:600}
+.campaign-hero__foot p{font-size:11px}
+.campaign-hero__foot>a{height:32px;width:32px;border:1px solid #bdc9b6;border-radius:50%;display:grid;place-items:center}
+/* Curated range */
+.section-heading{display:flex;align-items:end;justify-content:space-between;gap:40px;margin-bottom:40px}
+.section-heading .editorial-label{margin-bottom:20px;color:#537548}
+.section-heading>p{font-size:14px;line-height:1.8;color:var(--campaign-muted);padding-bottom:4px}
+.range-filters{display:flex;gap:25px;border-bottom:1px solid var(--campaign-line);margin-bottom:32px}
+.range-filters button{position:relative;font-size:12px;padding:0 0 15px;color:#66715f;font-weight:500;white-space:nowrap}
+.range-filters button[aria-pressed='true']{color:#14251b}
+.range-filters button[aria-pressed='true']::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#183b28}
+.range-filters button span{margin-left:7px;font-size:9px;opacity:.6}
+.range-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:23px}
+.range-card__visual{position:relative;height:290px;background:#f0f2ec;overflow:hidden}
+.range-card--zing .range-card__visual{background:#f3ede4}
+.range-card--safar .range-card__visual{background:#eaf0f0}
+.range-card__visual img{width:100%;height:100%;object-fit:contain;position:relative;transition:transform .55s cubic-bezier(.2,.65,.3,1);padding:25px}
+.range-card--luna .range-card__visual img{padding:22px 48px}
+.range-card:hover .range-card__visual img{transform:scale(1.04)}
+.range-card__number{position:absolute;top:18px;left:20px;font-family:var(--font-mono);font-size:9px;color:#6f796d}
+.range-card__body{padding:23px 1px 0}
+.range-card__body .editorial-label{color:#687762;font-size:8px;letter-spacing:.13em;margin-bottom:7px}
+.range-card__title{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.range-card__title h3{font-size:29px;font-weight:600;letter-spacing:-.04em}
+.circle-link{width:36px;height:36px;border-radius:50%;border:1px solid #cbd5c5;display:grid;place-items:center;transition:background .2s,color .2s}
+.circle-link:hover{background:#183b28;color:white}
+.range-card__body>p:last-of-type{font-size:12px;color:var(--campaign-muted);line-height:1.7}
+.range-footnote{margin-top:30px;font-size:10px;color:#697664}
+.js .range-card__fallback{display:none}
+html:not(.js) .circle-link,html:not(.js) .range-filters{display:none}
+.range-card__fallback{font-size:12px;margin-top:15px}
+/* Vehicle detail overlays */
+.product-dialog{position:fixed;inset:0;margin:auto;width:min(860px,calc(100% - 32px));max-height:90svh;border:0;padding:35px;background:#fafbf7;color:#14251b;border-radius:8px;overflow:auto}
+.product-dialog[open]{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:20px}
+.product-dialog::backdrop{background:rgb(11 27 17 / .7);backdrop-filter:blur(6px)}
+.product-dialog>img{width:100%;height:320px;object-fit:contain}
+.dialog-close{position:absolute;top:14px;right:14px;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#e9eddf}
+.product-dialog__copy h2{font-size:40px;margin:15px 0}
+.product-dialog__copy>p:not(.editorial-label){font-size:13px;line-height:1.8;color:#61705e}
+.product-dialog__copy ul{margin:22px 0;font-size:12px;line-height:1.5}
+.product-dialog__copy li{display:flex;align-items:center;gap:9px;margin:10px 0}
+.product-dialog__copy .fine-print{margin-top:15px;font-size:10px!important}
+/* Savings: a useful interaction, not a dashboard */
+.savings-section{background:#e9efdf}
+.savings-layout{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:center}
+.savings-copy>.editorial-label{color:#58724c;margin-bottom:22px}
+.savings-copy>p:not(.editorial-label){max-width:360px;font-size:13px;line-height:1.85;color:#5b6b53;margin:22px 0 30px}
+.savings-form>label{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px}
+.savings-form output{font-size:25px;font-weight:600;letter-spacing:-.04em;white-space:nowrap}
+.savings-form output>span:last-child{font-size:12px;font-weight:400}
+.savings-form .kg-range{margin-top:16px;accent-color:#244d2e;--range-fill:#244d2e;cursor:pointer}
+.range-scale{display:flex;justify-content:space-between;font-size:10px;color:#65785c;margin-top:8px}
+.savings-settings{border-top:1px solid #cfd9c5;margin-top:28px;padding-top:16px}
+.savings-settings summary{display:flex;justify-content:space-between;align-items:center;font-size:11px;cursor:pointer;list-style:none}
+.savings-settings summary::-webkit-details-marker{display:none}
+.savings-settings__grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:20px 0}
+.savings-settings__grid label{font-size:10px;line-height:1.6}
+.savings-settings input{display:block;width:100%;border:1px solid #b7c7ac;background:#f6f9ee;border-radius:3px;padding:8px;margin-top:5px;font-size:14px}
+.savings-settings>p{font-size:10px;line-height:1.7;color:#53674a}
+.savings-result{padding:46px;background:#f9fbf4;border:1px solid #d6dfcb;border-radius:4px}
+.savings-result>.editorial-label{font-size:9px;letter-spacing:.13em;color:#637957}
+.savings-result__total{font-family:var(--font-display);font-size:clamp(50px,5.5vw,80px);letter-spacing:-.065em;line-height:1.2;margin-top:16px;white-space:nowrap}
+.savings-result__asterisk{font-size:30px;vertical-align:top;line-height:1.8;color:#5f8247}
+.savings-result__caption{font-size:12px;color:#617555;margin-top:7px}
+.cost-comparison{margin:35px 0 23px}
+.cost-comparison__row{display:flex;align-items:center;justify-content:space-between;font-size:11px;margin:20px 0 9px}
+.cost-comparison__row b{font-weight:500}
+.comparison-track{height:7px;border-radius:2px;background:#e8eddc;overflow:hidden}
+.comparison-track>span{display:block;height:100%;background:#79a245;transition:width .3s}
+.comparison-track .comparison-track__petrol{width:100%;background:#b9c2ad}
+.savings-result>.fine-print{font-size:9px;max-width:330px;line-height:1.7;color:#6b7861}
+/* Ownership: real people, with answers on demand */
+.ownership-layout{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:90px}
+.ownership-photo{position:relative;align-self:stretch;min-height:530px;overflow:hidden;background:#d6dfbf}
+.ownership-photo>img{height:100%;width:100%;object-fit:cover;position:absolute;object-position:48% center}
+.ownership-photo::after{content:'';position:absolute;inset:60% 0 0;background:linear-gradient(transparent,rgba(14,35,16,.55))}
+.ownership-photo figcaption{position:absolute;bottom:30px;left:30px;color:white;z-index:1;font-size:9px;letter-spacing:.16em}
+.ownership-copy>.editorial-label{color:#557445;font-size:9px;margin-bottom:23px}
+.ownership-copy>p:not(.editorial-label){font-size:13px;line-height:1.9;color:#65705f;margin-top:24px;max-width:370px}
+.ownership-answers{margin:25px 0 12px}
+.ownership-answers details{border-bottom:1px solid var(--campaign-line);padding:18px 0}
+.ownership-answers summary{display:flex;align-items:center;justify-content:space-between;gap:20px;list-style:none;cursor:pointer;font-size:12px;font-weight:500}
+.ownership-answers summary::-webkit-details-marker{display:none}
+.ownership-answers details[open] summary svg{transform:rotate(45deg)}
+.ownership-answers details p{font-size:11px;line-height:1.8;color:#6c7863;padding-top:13px;padding-right:20px}
+.ownership-copy>.text-link{font-size:12px;margin-top:10px}
+/* Dealer access */
+.dealer-section{padding:77px 0;background:#eef1e8;border-top:1px solid #e0e6d7}
+.dealer-layout{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:center}
+.dealer-heading .editorial-label{margin-bottom:21px;color:#5d7550}
+.kg-premium .dealer-heading h2{font-size:40px}
+.dealer-heading>p:last-child{font-size:12px;color:#65765b;margin-top:20px;line-height:1.9}
+.dealer-search form>label{font-size:12px;font-weight:500;display:block;margin-bottom:15px}
+.dealer-search__input{display:flex;align-items:center;gap:12px;background:white;border:1px solid #cfd9c5;padding-left:16px;border-radius:3px}
+.dealer-search__input input{background:none;border:0;min-width:0;width:100%;font-size:12px;padding:18px 0;outline-offset:0}
+.dealer-search__input button{flex:none;background:#183b28;align-self:stretch;width:55px;color:white;display:grid;place-items:center}
+.dealer-search .fine-print{font-size:9px;margin-top:10px}
+.dealer-popular{display:flex;align-items:center;gap:17px;font-size:10px;margin-top:20px}
+.dealer-popular>span{color:#7c8673}
+.dealer-popular button{text-decoration:underline;text-underline-offset:4px}
+.dealer-phone{display:flex;align-items:center;gap:8px;font-size:10px;margin-top:29px;color:#68775e;flex-wrap:wrap}
+.dealer-phone b{color:#2b442e;font-weight:500}
+/* One last invitation */
+.final-invitation{position:relative;overflow:hidden;background:#193c29;color:#f7f9ee;padding:87px 0 81px}
+.final-invitation .kg-shell{position:relative;z-index:1}
+.final-invitation .editorial-label{color:#b8d29a;margin-bottom:25px;font-size:9px}
+.kg-premium .final-invitation h2{font-size:clamp(43px,5.1vw,74px);line-height:1.08;font-weight:600;letter-spacing:-.055em}
+.final-invitation h2 span{color:var(--campaign-lime)}
+.final-invitation .action-button{margin-top:32px;gap:35px}
+.final-invitation__note{font-size:11px;color:#b6c7ad;margin-top:19px}
+.final-invitation__symbol{position:absolute;right:7%;top:-15%;font-size:530px;line-height:1;color:#416448;opacity:.55;font-family:Arial,sans-serif;font-weight:400;pointer-events:none}
+/* Footer: no second sitemap */
+.site-footer{background:#fafbf7;padding:37px 0 0}
+.site-footer__main{display:flex;align-items:center;gap:27px;flex-wrap:wrap;padding-bottom:34px}
+.site-footer__main>a{flex:none}
+.site-footer__main>p{font-size:10px;color:#74816b}
+.site-footer__main nav{margin-left:auto;display:flex;gap:24px;font-size:10px}
+.site-footer__social{display:flex;gap:16px;margin-left:13px}
+.site-footer__social a{padding:6px}
+.site-footer__bottom{border-top:1px solid #dce2d5;min-height:69px;display:flex;justify-content:space-between;gap:20px;align-items:center;font-size:9px;color:#7a8571}
+.site-footer__bottom>a{display:flex;align-items:center;gap:7px;color:#3d553b}
+/* Keep the established booking interaction, visually quieter and honest. */
+.kg-premium .kg-modal__dialog{border-radius:8px}
+.kg-premium .kg-modal__eyebrow{color:#18793c}
+.kg-premium .kg-modal__title{font-size:30px;letter-spacing:-.04em;text-transform:none}
+.kg-premium .kg-modal .kg-btn{border-radius:3px;box-shadow:none}
+.booking-preview-note{font-size:11px;line-height:1.65;background:#edf3e6;border:1px solid #dae3d0;color:#526947;padding:12px 17px;margin:0 24px 15px;border-radius:3px}
+/* Responsive composition */
+@media(min-width:1600px){.campaign-hero__inner{min-height:700px}.campaign-hero__vehicle{height:600px}}
+@media(max-width:1199px){.kg-premium .kg-nav__actions{margin-left:auto}.kg-premium .kg-nav__cta{width:auto;padding:10px 18px}.kg-premium .kg-nav__cta-label{display:inline}.kg-premium .kg-nav__cta>svg{display:none}.campaign-hero__inner{min-height:560px}.campaign-hero__vehicle{height:470px}.campaign-hero__orbit{width:420px;height:420px}.campaign-hero__actions{gap:18px}.campaign-hero__actions .action-button{padding:14px 18px;gap:18px}.savings-layout,.ownership-layout,.dealer-layout{gap:55px}.range-card__visual{height:240px}.savings-result{padding:32px}.site-footer__main>p{display:none}.ownership-photo{min-height:470px}}
+@media(max-width:899px){.section-space{padding:72px 0}.campaign-hero h1{font-size:70px}.campaign-hero__inner{min-height:535px;grid-template-columns:1.1fr 1fr}.campaign-hero__vehicle{height:420px;width:115%;max-width:115%}.campaign-hero__orbit{width:330px;height:330px;top:18%}.campaign-hero__caption{left:0;flex-direction:column;align-items:start;gap:6px}.campaign-hero__word{font-size:110px;top:14%;left:0}.campaign-hero__actions{gap:8px;flex-direction:column;align-items:start}.campaign-hero__copy{padding-bottom:40px}.campaign-hero__description{font-size:12px}.section-heading>p{font-size:12px}.range-grid{gap:16px}.range-card__visual{height:210px}.range-card__visual img{padding:14px}.range-card--luna .range-card__visual img{padding:17px 25px}.range-card__title h3{font-size:25px}.range-card__body>p:last-of-type{font-size:11px}.savings-layout,.ownership-layout,.dealer-layout{gap:35px}.savings-result{padding:28px}.savings-result__total{font-size:51px}.ownership-copy>.editorial-label{font-size:8px}.ownership-photo{min-height:500px}.kg-premium .dealer-heading h2{font-size:32px}.site-footer__main{gap:20px}.site-footer__social{margin-left:0}}
+@media(max-width:639px){
+ .kg-premium .kg-nav__inner,.kg-premium .kg-nav[data-state='scrolled'] .kg-nav__inner{--nav-h:70px;gap:8px}.kg-premium .kg-nav__cta{font-size:10px;padding:10px 12px;min-height:38px}.kg-premium .kg-nav__burger{width:35px;height:38px}.kg-premium .kg-nav__actions{gap:6px}.kg-premium .kg-nav__brand .kg-nav__logo{width:146px}
+ .campaign-hero{padding-top:70px}.campaign-hero__inner{display:flex;flex-direction:column;min-height:0;align-items:stretch}.campaign-hero__copy{padding:43px 0 0}.campaign-hero .editorial-label{font-size:8px;margin-bottom:20px}.campaign-hero h1{font-size:clamp(61px,14.5vw,90px);line-height:.97}.campaign-hero__description{margin:21px 0;font-size:12px;line-height:1.75}.campaign-hero__actions{flex-direction:row;gap:19px;align-items:center;flex-wrap:wrap}.campaign-hero__actions .action-button{min-height:47px;font-size:11px;padding:12px 16px;gap:16px}.campaign-hero__actions .text-link{font-size:11px;gap:8px}.campaign-hero__art{height:375px;margin:6px -10px 0;align-self:auto}.campaign-hero__vehicle{width:100%;max-width:100%;height:330px;margin:0;max-height:none}.campaign-hero__orbit{width:300px;height:300px;left:50%;top:20px;transform:translateX(-50%)}.campaign-hero__word{font-size:110px;top:10px;left:50%;transform:translateX(-50%)}.campaign-hero__caption{left:12px;right:12px;bottom:13px;flex-direction:row;font-size:8px}.campaign-hero__foot{min-height:55px;gap:10px}.campaign-hero__foot>span{font-size:8px;letter-spacing:.1em}.campaign-hero__foot p{display:none}.campaign-hero__foot>a{height:27px;width:27px}
+ .section-space{padding:60px 0}.section-heading{display:block;margin-bottom:28px}.section-heading .editorial-label{font-size:9px;margin-bottom:16px}.kg-premium h2{font-size:39px}.section-heading>p{margin-top:20px;line-height:1.65}.section-heading>p br{display:none}.range-filters{gap:21px;margin-bottom:23px}.range-filters button{font-size:10px}.range-grid{grid-template-columns:1fr;gap:31px}.range-card__visual{height:300px}.range-card__visual img{padding:22px}.range-card--luna .range-card__visual img{padding:18px 55px}.range-card__body{padding-top:18px}.range-card__title h3{font-size:28px}.range-card__body>p:last-of-type{font-size:12px}.range-footnote{font-size:9px;line-height:1.8;margin-top:26px}
+ .savings-layout,.ownership-layout,.dealer-layout{grid-template-columns:1fr;gap:35px}.savings-copy>p:not(.editorial-label){font-size:12px;margin:20px 0 25px;max-width:none}.savings-result{padding:28px}.savings-result__total{font-size:65px}.savings-result__caption{font-size:11px}.savings-result>.editorial-label{font-size:8px}.savings-settings{margin-top:22px}.cost-comparison{margin:26px 0 22px}
+ .ownership-photo{min-height:350px}.ownership-photo>img{object-position:center center}.ownership-photo figcaption{bottom:22px;left:22px;font-size:8px}.ownership-copy>.editorial-label{font-size:8px;margin-bottom:16px}.ownership-copy>p:not(.editorial-label){font-size:12px}.ownership-answers{margin-top:18px}.ownership-answers details p{font-size:11px}.ownership-layout{gap:34px}
+ .dealer-section{padding:54px 0}.kg-premium .dealer-heading h2{font-size:36px}.dealer-heading .editorial-label{font-size:9px;margin-bottom:17px}.dealer-heading>p:last-child{font-size:12px}.dealer-layout{gap:30px}.dealer-search__input input{font-size:11px}.dealer-phone{gap:7px;font-size:10px}
+ .final-invitation{padding:58px 0}.kg-premium .final-invitation h2{font-size:40px}.final-invitation .editorial-label{font-size:8px;margin-bottom:20px}.final-invitation .action-button{min-height:49px;font-size:12px;margin-top:28px}.final-invitation__symbol{font-size:320px;right:-100px;top:24%;opacity:.25}.final-invitation__note{font-size:10px}
+ .site-footer{padding-top:30px}.site-footer__main{gap:22px;padding-bottom:24px}.site-footer__main>a .kg-logo{width:175px}.site-footer__main nav{order:3;flex-basis:100%;margin:0;gap:26px;font-size:11px}.site-footer__social{margin-left:auto;gap:6px}.site-footer__bottom{flex-wrap:wrap;padding:23px 0;gap:12px;font-size:8px}.site-footer__bottom>p:nth-child(2){order:3;flex-basis:100%}.site-footer__bottom>a{margin-left:auto}
+ .product-dialog[open]{grid-template-columns:1fr;padding:25px;gap:5px}.product-dialog>img{height:210px}.product-dialog__copy h2{font-size:32px}.product-dialog__copy>p:not(.editorial-label){font-size:12px}.product-dialog__copy ul{margin:16px 0}.product-dialog__copy .action-button{width:100%}
+}
+@media(max-width:359px){.kg-premium .kg-nav__brand .kg-nav__logo{width:127px}.kg-premium .kg-nav__cta{padding-inline:9px;font-size:9px}.campaign-hero__actions{gap:12px}.campaign-hero__actions .action-button{font-size:10px;padding-inline:12px}.campaign-hero__actions .text-link{font-size:10px}.campaign-hero__art{height:330px}.campaign-hero__vehicle{height:290px}.campaign-hero__orbit{width:260px;height:260px}.range-card__visual{height:265px}.kg-premium h2{font-size:34px}.savings-result{padding:22px}.savings-result__total{font-size:55px}.site-footer__main>a .kg-logo{width:145px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.kg-premium *, .kg-premium *::before,.kg-premium *::after{animation:none!important;transition:none!important}}

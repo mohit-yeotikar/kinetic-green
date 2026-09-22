@@ -95,6 +95,19 @@ export const SAVINGS_DISCLAIMER =
    --------------------------------------------------------------------------- */
 export const vehicles: Vehicle[] = [
   {
+    id: 'zing', name: 'Zing', shortName: 'Zing',
+    tagline: 'Your city. Your pace.',
+    story: 'An electric scooter for everyday city journeys. Confirm the current variant, charging setup and specifications with your dealer.',
+    segment: 'Electric Scooter', categories: ['personal', 'commute'],
+    priceFrom: null, priceNote: 'Confirm current price with your dealer',
+    specs: { rangeKm: null, rangeNote: 'Confirm for your variant', batteryKwh: null, batteryType: 'Confirm for your variant', motorKw: null, topSpeedKmph: null, chargeTimeHours: null, chargeNote: 'Confirm charging requirements with your dealer', payloadKg: null, seats: null },
+    useCases: ['City riding', 'Everyday journeys'],
+    highlights: ['Electric scooter for everyday city journeys.'],
+    verification: 'pending', source: 'Kinetic Green product image listing; current specifications require OEM confirmation',
+    media: { hero: '/media/scooter.webp', card: '/media/scooter.webp', poster: null, alt: 'Copper Kinetic Green Zing electric scooter' },
+    accent: '#00C853',
+  },
+  {
     id: 'eluna-go',
     name: 'E-Luna Go',
     shortName: 'E-Luna Go',
