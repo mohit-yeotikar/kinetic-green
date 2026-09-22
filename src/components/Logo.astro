@@ -61,9 +61,9 @@ const uid = Math.random().toString(36).slice(2, 8);
   ) : (
     <svg
       class={`kg-logo kg-logo--${variant} ${className}`}
-      width={height * (variant === 'full' ? 7.6 : 4.4)}
+      width={height * (variant === 'full' ? 358 / 62 : 348 / 48)}
       height={height}
-      viewBox={variant === 'full' ? '0 0 304 62' : '0 0 176 48'}
+      viewBox={variant === 'full' ? '0 0 358 62' : '0 0 348 48'}
       role="img"
       aria-label={`${title}${tagline && variant === 'full' ? ' — Planet @ Our Heart' : ''}`}
       style={`--logo-ink:${charcoal};--logo-green:${green}`}
@@ -100,9 +100,10 @@ const uid = Math.random().toString(36).slice(2, 8);
         <path d="M131 0 H150 V6 H138 V25 H150 V31 H131 Z" />
       </g>
 
-      {/* GREEN — set apart in the accent so the two-word name reads as one mark */}
+      {/* KINETIC ends at x=206 (full) / x=200 (compact).
+          Leave 12 SVG units before GREEN and contain both words in the viewBox. */}
       {variant !== 'mark' && (
-        <g fill="var(--logo-green)" transform={variant === 'full' ? 'translate(166 4)' : 'translate(136 6)'}>
+        <g fill="var(--logo-green)" transform={variant === 'full' ? 'translate(218 4)' : 'translate(212 6)'}>
           {/* G */}
           <path d="M0 0 H19 V6 H7 V25 H14 V16 H10 V11 H21 V31 H0 Z" />
           {/* R */}

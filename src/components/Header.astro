@@ -32,7 +32,6 @@ const nav = [
     <!-- ------------------------------------------------------------- brand -->
     <a href="#top" class="kg-nav__brand" aria-label={`${brand.name} — home`}>
       <Logo variant="compact" height={30} class="kg-nav__logo" />
-      <Logo variant="mark" height={26} class="kg-nav__mark" />
     </a>
 
     <!-- ---------------------------------------------------------- desktop nav -->
@@ -55,6 +54,7 @@ const nav = [
       <button
         type="button"
         class="kg-btn kg-nav__cta"
+        aria-label="Book a test ride"
         data-lead-open
         data-lead-type="test-ride"
         data-lead-intent="high"
@@ -209,7 +209,11 @@ const nav = [
     transform-origin: left center;
   }
   .kg-nav[data-state='scrolled'] .kg-nav__brand { transform: scale(0.9); }
-  .kg-nav__mark { display: none; }
+  .kg-nav__brand :global(.kg-nav__logo) {
+    width: 217.5px;
+    height: 30px;
+    flex: none;
+  }
 
   /* --------------------------------------------------------- desktop links */
   .kg-nav__primary { flex: 1; display: none; }
@@ -476,21 +480,23 @@ const nav = [
   }
 
   /* ============================================================ RESPONSIVE */
-  @media (min-width: 1024px) {
+  @media (min-width: 1200px) {
     .kg-nav__primary { display: block; }
     .kg-nav__burger { display: none; }
     .kg-drawer { display: none !important; }
   }
 
-  @media (max-width: 1023px) {
+  @media (max-width: 1199px) {
     .kg-nav__cta-label { display: none; }
     .kg-nav__cta {
       width: 46px;
       padding: 0;
       min-height: 46px;
     }
-    .kg-nav__mark { display: block; }
-    .kg-nav__logo { display: none; }
+    .kg-nav__brand :global(.kg-nav__logo) {
+      width: 160px;
+      height: auto;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

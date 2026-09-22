@@ -22,6 +22,16 @@ mobility manufacturer), built as a static Astro site.
   SVG/CSS. **No React/Next.js, no client framework runtime.**
 - **Deploy target:** Cloudflare Pages (static).
 
+### Header repair — September 2026
+
+- Corrected overlapping KINETIC / GREEN SVG groups and matching viewBox/aspect ratios.
+- Removed the duplicate header symbol and kept the full name visible on mobile.
+- Navigation switches to the drawer below 1200px to prevent clipped controls.
+- Browser regression checks cover 320, 390, 768, 1024, 1200, and 1440px widths,
+  wordmark containment, menu open/Escape close, and existing core interactions.
+- The broader six-section, product-led redesign is proposed, not yet implemented;
+  waiting for direction confirmation. The existing homepage content is unchanged.
+
 ### Status
 
 | Area | State |
