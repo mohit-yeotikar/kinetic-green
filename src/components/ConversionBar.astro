@@ -1,0 +1,315 @@
+---
+/**
+ * ConversionBar — the persistent "quick conversion" rail (IA slot 03).
+ *
+ * Sits directly under the hero as a high-contrast band with three intents in
+ * ascending commitment order: Find Dealer (locate) → Calculate Savings (justify)
+ * → Book Test Ride (convert). It is the first place a visitor sees all three
+ * routes on one line, and it reappears as a sticky mobile bar near the end of
+ * the page (see StickyCTA) so the primary action is never more than a thumb away.
+ *
+ * Also carries the live lead-capture status (offline queue counter), which gives
+ * the band a genuine functional reason to exist beyond being a CTA row.
+ */
+import Icon from './Icon.astro';
+
+const actions = [
+  {
+    id: 'dealer',
+    eyebrow: 'Locate',
+    label: 'Find a Dealer',
+    meta: '550+ touchpoints pan India',
+    icon: 'map-pin',
+    href: '#dealers',
+    event: 'conversion_bar_click',
+  },
+  {
+    id: 'savings',
+    eyebrow: 'Justify',
+    label: 'Calculate Savings',
+    meta: 'Monthly, annual and 5-year',
+    icon: 'calculator',
+    href: '#calculator',
+    event: 'conversion_bar_click',
+  },
+] as const;
+
+const leadVehicle = 'eluna-plus';
+---
+
+<section class="kg-cbar" aria-label="Quick actions" data-section="conversion-bar">
+  <div class="kg-shell kg-cbar__inner">
+    <p class="kg-cbar__title">
+      <span class="kg-cbar__title-mark" aria-hidden="true"></span>
+      <span class="kg-cbar__title-text">Start your move</span>
+    </p>
+
+    <ul class="kg-cbar__list">
+      {
+        actions.map((a, i) => (
+          <li class="kg-cbar__item" style={`--i:${i}`}>
+            <a
+              href={a.href}
+              class="kg-cbar__link"
+              data-track={a.event}
+              data-track-source={`conversion-bar-${a.id}`}
+            >
+              <span class="kg-cbar__icon">
+                <Icon name={a.icon} size={20} />
+              </span>
+              <span class="kg-cbar__body">
+                <span class="kg-cbar__eyebrow">{a.eyebrow}</span>
+                <span class="kg-cbar__label">{a.label}</span>
+                <span class="kg-cbar__meta">{a.meta}</span>
+              </span>
+              <Icon name="arrow-right" size={18} class="kg-cbar__arrow" />
+            </a>
+          </li>
+        ))
+      }
+
+      <li class="kg-cbar__item kg-cbar__item--primary" style="--i:2">
+        <button
+          type="button"
+          class="kg-cbar__link kg-cbar__link--primary"
+          data-lead-open
+          data-lead-type="test-ride"
+          data-lead-intent="high"
+          data-lead-source="conversion-bar"
+          data-lead-vehicle={leadVehicle}
+          data-track="conversion_bar_click"
+          data-track-source="conversion-bar-test-ride"
+        >
+          <span class="kg-cbar__icon">
+            <Icon name="calendar" size={20} />
+          </span>
+          <span class="kg-cbar__body">
+            <span class="kg-cbar__eyebrow">Convert</span>
+            <span class="kg-cbar__label">Book a Test Ride</span>
+            <span class="kg-cbar__meta">Dealer confirms your slot</span>
+          </span>
+          <Icon name="arrow-right" size={18} class="kg-cbar__arrow" />
+        </button>
+      </li>
+    </ul>
+
+    <!-- Live status: shows queued leads when the endpoint is unreachable -->
+    <p class="kg-cbar__status" data-lead-status hidden aria-live="polite"></p>
+  </div>
+</section>
+
+<style>
+  .kg-cbar {
+    position: relative;
+    z-index: 3;
+    background: var(--kg-charcoal-2);
+    border-block: 1px solid rgb(255 255 255 / 0.08);
+    color: #fff;
+    /* Optical overlap with the hero — the bar cuts across the seam */
+    margin-block-start: -1px;
+  }
+
+  /* A single diagonal green seam ties the bar to the brand geometry */
+  .kg-cbar::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--kg-green-a40) 22%, var(--kg-green) 50%, var(--kg-green-a40) 78%, transparent);
+    opacity: 0.55;
+  }
+
+  .kg-cbar__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 2rem);
+    padding-block: 0;
+    position: relative;
+  }
+
+  /* ------------------------------------------------------------- title rail */
+  .kg-cbar__title {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    flex: none;
+    padding-block: 1.25rem;
+    padding-inline-end: clamp(1rem, 3vw, 2rem);
+    border-inline-end: 1px solid rgb(255 255 255 / 0.08);
+  }
+  .kg-cbar__title-mark {
+    width: 10px;
+    height: 10px;
+    background: var(--kg-green);
+    transform: rotate(45deg);
+    flex: none;
+  }
+  .kg-cbar__title-text {
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.55);
+    white-space: nowrap;
+  }
+
+  /* ------------------------------------------------------------------ list */
+  .kg-cbar__list {
+    display: grid;
+    gap: 0;
+    flex: 1;
+    grid-template-columns: 1fr;
+    margin: 0;
+  }
+
+  .kg-cbar__item { border-block-end: 1px solid rgb(255 255 255 / 0.08); }
+  .kg-cbar__item:last-child { border-block-end: 0; }
+
+  .kg-cbar__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    width: 100%;
+    padding: 1rem clamp(0.75rem, 2vw, 1.25rem);
+    text-align: start;
+    transition: background-color var(--dur-2) var(--ease-kinetic);
+    overflow: hidden;
+  }
+
+  /* Left edge indicator grows in on hover — directional, not bouncy */
+  .kg-cbar__link::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 2px;
+    background: var(--kg-green);
+    transform: scaleY(0);
+    transform-origin: center;
+    transition: transform var(--dur-3) var(--ease-expo);
+  }
+  .kg-cbar__link:hover::before,
+  .kg-cbar__link:focus-visible::before { transform: scaleY(1); }
+
+  .kg-cbar__link:hover { background: rgb(255 255 255 / 0.035); }
+
+  .kg-cbar__icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex: none;
+    border-radius: var(--r-2);
+    background: rgb(255 255 255 / 0.05);
+    border: 1px solid rgb(255 255 255 / 0.1);
+    color: var(--kg-green-400);
+    transition: background-color var(--dur-2) var(--ease-kinetic), border-color var(--dur-2);
+  }
+  .kg-cbar__link:hover .kg-cbar__icon {
+    background: var(--kg-green-a12);
+    border-color: var(--kg-green-a40);
+  }
+
+  .kg-cbar__body { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; flex: 1; }
+
+  .kg-cbar__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--kg-steel);
+  }
+
+  .kg-cbar__label {
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .kg-cbar__meta {
+    font-size: 0.75rem;
+    color: rgb(255 255 255 / 0.45);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .kg-cbar__arrow {
+    flex: none;
+    color: rgb(255 255 255 / 0.3);
+    transition: color var(--dur-2), transform var(--dur-3) var(--ease-expo);
+  }
+  .kg-cbar__link:hover .kg-cbar__arrow {
+    color: var(--kg-green-400);
+    transform: translateX(5px);
+  }
+
+  /* -------------------------------------------------------- primary variant */
+  .kg-cbar__item--primary { background: rgb(0 200 83 / 0.06); }
+
+  .kg-cbar__link--primary {
+    background: var(--kg-green);
+    color: #00240F;
+  }
+  .kg-cbar__link--primary::before { display: none; }
+  .kg-cbar__link--primary:hover { background: var(--kg-green-400); }
+  .kg-cbar__link--primary .kg-cbar__eyebrow { color: rgb(0 36 15 / 0.6); }
+  .kg-cbar__link--primary .kg-cbar__label { color: #00240F; }
+  .kg-cbar__link--primary .kg-cbar__meta { color: rgb(0 36 15 / 0.62); }
+  .kg-cbar__link--primary .kg-cbar__icon {
+    background: rgb(0 36 15 / 0.1);
+    border-color: rgb(0 36 15 / 0.16);
+    color: #00240F;
+  }
+  .kg-cbar__link--primary .kg-cbar__arrow { color: rgb(0 36 15 / 0.45); }
+  .kg-cbar__link--primary:hover .kg-cbar__arrow { color: #00240F; transform: translateX(5px); }
+
+  /* ---------------------------------------------------------------- status */
+  .kg-cbar__status {
+    flex-basis: 100%;
+    margin: 0;
+    padding: 0.75rem clamp(0.75rem, 2vw, 1.25rem) 1rem;
+    font-size: 0.8125rem;
+    color: var(--kg-green-400);
+    border-block-start: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  /* ============================================================ RESPONSIVE */
+  @media (min-width: 768px) {
+    .kg-cbar__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+    }
+    .kg-cbar__item {
+      border-block-end: 0;
+      border-inline-end: 1px solid rgb(255 255 255 / 0.08);
+    }
+    .kg-cbar__item:last-child { border-inline-end: 0; }
+    .kg-cbar__link { height: 100%; padding-block: 1.15rem; }
+    .kg-cbar__meta { white-space: normal; }
+  }
+
+  @media (min-width: 1024px) {
+    .kg-cbar__title { display: flex; }
+  }
+
+  @media (min-width: 1280px) {
+    .kg-cbar__link { padding-inline: 1.75rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kg-cbar__link::before { transition: none; }
+  }
+</style>

@@ -1,0 +1,41 @@
+{
+  "name": "Kinetic Green — Electric Mobility",
+  "short_name": "Kinetic Green",
+  "description": "Electric two-wheelers and three-wheelers engineered for the way India moves. Explore the E-Luna range, calculate savings and book a test ride.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#12161A",
+  "theme_color": "#12161A",
+  "lang": "en-IN",
+  "categories": ["automotive", "shopping", "business"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Book a Test Ride",
+      "short_name": "Test Ride",
+      "url": "/#enquire",
+      "description": "Book a test ride at your nearest Kinetic Green dealer"
+    },
+    {
+      "name": "Find a Dealer",
+      "short_name": "Dealer",
+      "url": "/#dealers",
+      "description": "Find your nearest Kinetic Green dealer"
+    },
+    {
+      "name": "Calculate Savings",
+      "short_name": "Savings",
+      "url": "/#calculator",
+      "description": "See what electric could save you"
+    }
+  ]
+}

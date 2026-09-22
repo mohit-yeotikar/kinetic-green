@@ -1,0 +1,547 @@
+---
+/**
+ * VehicleVisual — the product art layer.
+ * ---------------------------------------------------------------------------
+ * ART DIRECTION
+ * This is a deliberately *engineered* product visual, not a photograph: layered
+ * planes, thin technical lines, machined surfaces and a green energy trail. It
+ * reads as automotive-technology brand language rather than generic EV stock.
+ *
+ * WHY NOT PHOTOGRAPHY
+ * Kinetic Green's official campaign imagery is the correct long-term asset. Until
+ * it is supplied, this component renders an original vector stand-in so the
+ * layout, compositing and motion can be judged for real at full scale.
+ *
+ * REPLACEMENT CONTRACT
+ * Pass `hero` / `card` / `poster` from the vehicle's `media` object. When a src
+ * exists, <picture> serves AVIF → WebP → source format with explicit width and
+ * height (zero CLS) and `fetchpriority="high"` + preload for the hero instance.
+ * No other change is required anywhere in the page.
+ * ---------------------------------------------------------------------------
+ */
+import type { Vehicle } from '../data/vehicles';
+
+interface Props {
+  vehicle: Vehicle;
+  /** Which body style to draw when no photography is present */
+  kind?: 'moped' | 'motorcycle' | 'three-wheeler-passenger' | 'three-wheeler-cargo' | 'cart';
+  variant?: 'hero' | 'card' | 'story' | 'hotspot';
+  class?: string;
+  /** Load eagerly + high priority (hero only) */
+  priority?: boolean;
+  /** Show the animated energy trail */
+  trail?: boolean;
+  /** Show the technical measurement overlay */
+  technical?: boolean;
+  /** Sizes attribute for the picture element */
+  sizes?: string;
+}
+
+const {
+  vehicle,
+  kind = 'moped',
+  variant = 'hero',
+  class: className = '',
+  priority = false,
+  trail = true,
+  technical = false,
+  sizes = '(max-width: 768px) 100vw, 60vw',
+} = Astro.props;
+
+const media = vehicle.media;
+const hasPhoto = Boolean(media.poster || media.hero);
+const uid = `v-${vehicle.id}-${variant}`;
+
+/* Palette per body style — charcoal chassis, green drive, steel detailing */
+const ink = '#12161A';
+const ink2 = '#1E2529';
+const graphite = '#2C353B';
+const steel = '#79858E';
+const silver = '#C3CCD1';
+const metal = '#8D979D';
+const green = '#00C853';
+const greenLt = '#4CE88A';
+
+/**
+ * Body geometry — one drawing routine per vehicle class.
+ * All coordinates are in a 1200×520 viewBox with the ground plane at y=430,
+ * so the ground shadow and the energy trail can be composed consistently
+ * regardless of which body is drawn.
+ */
+const bodies: Record<string, string> = {
+  moped: `
+    <!-- rear wheel -->
+    <circle cx="268" cy="352" r="78" fill="none" stroke="${graphite}" stroke-width="16"/>
+    <circle cx="268" cy="352" r="42" fill="none" stroke="${steel}" stroke-width="4"/>
+    <circle cx="268" cy="352" r="10" fill="${steel}"/>
+    <!-- front wheel -->
+    <circle cx="928" cy="352" r="78" fill="none" stroke="${graphite}" stroke-width="16"/>
+    <circle cx="928" cy="352" r="42" fill="none" stroke="${steel}" stroke-width="4"/>
+    <circle cx="928" cy="352" r="10" fill="${steel}"/>
+    <!-- forks -->
+    <path d="M872 348 L906 236" stroke="${metal}" stroke-width="10" stroke-linecap="round"/>
+    <path d="M900 240 L950 232" stroke="${metal}" stroke-width="9" stroke-linecap="round"/>
+    <!-- floorboard / step-through frame -->
+    <path d="M470 300 L760 300 L838 306 L838 352 L470 352 Z" fill="${ink}"/>
+    <path d="M470 300 L760 300" stroke="${steel}" stroke-width="3"/>
+    <!-- body shell / apron -->
+    <path d="M690 186 L806 196 L836 306 L646 306 L620 236 Z" fill="${ink2}"/>
+    <path d="M690 186 L806 196 L812 224 L686 214 Z" fill="${graphite}"/>
+    <!-- headlamp -->
+    <ellipse cx="852" cy="252" rx="34" ry="40" fill="${graphite}"/>
+    <ellipse cx="856" cy="252" rx="21" ry="26" fill="${greenLt}" opacity="0.85"/>
+    <ellipse cx="858" cy="252" rx="13" ry="17" fill="#EAFBF0"/>
+    <!-- seat -->
+    <path d="M470 300 L604 292 L640 268 L492 274 Z" fill="${ink2}"/>
+    <path d="M470 300 L492 274" stroke="${steel}" stroke-width="2"/>
+    <!-- rear rack / grab -->
+    <path d="M300 296 L470 300" stroke="${ink2}" stroke-width="12" stroke-linecap="round"/>
+    <path d="M318 344 L446 348" stroke="${ink2}" stroke-width="10" stroke-linecap="round"/>
+    <!-- swingarm -->
+    <path d="M420 360 L300 352" stroke="${graphite}" stroke-width="12" stroke-linecap="round"/>
+    <!-- mudguards -->
+    <path d="M196 320 A78 78 0 0 1 250 282" fill="none" stroke="${ink2}" stroke-width="12" stroke-linecap="round"/>
+    <path d="M860 290 A78 78 0 0 1 924 282" fill="none" stroke="${ink2}" stroke-width="12" stroke-linecap="round"/>
+    <!-- rider contact zone (kept as a technical line, not a person) -->
+    <path d="M492 268 L640 264" stroke="${steel}" stroke-width="2" stroke-dasharray="6 6" opacity="0.5"/>
+    <!-- hub motor — the green drive unit -->
+    <circle cx="928" cy="352" r="26" fill="none" stroke="${green}" stroke-width="7"/>
+    <circle cx="928" cy="352" r="12" fill="${green}" opacity="0.28"/>
+    <!-- battery pack -->
+    <rect x="486" y="308" width="150" height="34" rx="6" fill="${graphite}"/>
+    <rect x="494" y="315" width="92" height="20" rx="4" fill="${green}" opacity="0.85"/>
+  `,
+  motorcycle: `
+    <circle cx="258" cy="348" r="84" fill="none" stroke="${graphite}" stroke-width="18"/>
+    <circle cx="258" cy="348" r="44" fill="none" stroke="${steel}" stroke-width="4"/>
+    <circle cx="946" cy="348" r="84" fill="none" stroke="${graphite}" stroke-width="18"/>
+    <circle cx="946" cy="348" r="44" fill="none" stroke="${steel}" stroke-width="4"/>
+    <path d="M884 344 L912 218" stroke="${metal}" stroke-width="11" stroke-linecap="round"/>
+    <path d="M900 222 L958 210" stroke="${metal}" stroke-width="10" stroke-linecap="round"/>
+    <ellipse cx="866" cy="238" rx="30" ry="36" fill="${graphite}"/>
+    <ellipse cx="872" cy="238" rx="17" ry="21" fill="${greenLt}" opacity="0.85"/>
+    <!-- torsion/tank body -->
+    <path d="M604 200 L810 208 L848 300 L640 306 L580 254 Z" fill="${ink}"/>
+    <path d="M604 200 L810 208 L816 232 L600 224 Z" fill="${graphite}"/>
+    <!-- battery enclosure -->
+    <path d="M560 250 L646 256 L650 320 L556 316 Z" fill="${ink2}"/>
+    <rect x="570" y="266" width="66" height="40" rx="5" fill="${green}" opacity="0.8"/>
+    <!-- seat + tail -->
+    <path d="M420 292 L582 296 L610 262 L444 258 Z" fill="${ink2}"/>
+    <path d="M300 280 L424 290 L432 322 L302 314 Z" fill="${ink}"/>
+    <path d="M330 262 L420 268" stroke="${ink2}" stroke-width="12" stroke-linecap="round"/>
+    <path d="M404 356 L292 348" stroke="${graphite}" stroke-width="14" stroke-linecap="round"/>
+    <!-- motor -->
+    <circle cx="258" cy="348" r="30" fill="none" stroke="${green}" stroke-width="8"/>
+    <circle cx="258" cy="348" r="13" fill="${green}" opacity="0.28"/>
+    <!-- footpeg -->
+    <path d="M596 326 L646 326" stroke="${steel}" stroke-width="7" stroke-linecap="round"/>
+  `,
+  'three-wheeler-passenger': `
+    <!-- rear wheel -->
+    <circle cx="300" cy="344" r="72" fill="none" stroke="${graphite}" stroke-width="16"/>
+    <circle cx="300" cy="344" r="36" fill="none" stroke="${steel}" stroke-width="4"/>
+    <!-- front wheel -->
+    <circle cx="876" cy="344" r="58" fill="none" stroke="${graphite}" stroke-width="14"/>
+    <circle cx="876" cy="344" r="28" fill="none" stroke="${steel}" stroke-width="4"/>
+    <path d="M846 340 L882 232" stroke="${metal}" stroke-width="10" stroke-linecap="round"/>
+    <path d="M872 236 L922 228" stroke="${metal}" stroke-width="9" stroke-linecap="round"/>
+    <!-- canopy body -->
+    <path d="M262 190 L742 190 L826 236 L834 318 L262 318 Z" fill="${ink}"/>
+    <path d="M262 190 L742 190 L756 150 L286 150 Z" fill="${ink2}"/>
+    <!-- roof -->
+    <path d="M286 150 L756 150 L772 122 L300 122 Z" fill="${graphite}"/>
+    <!-- windscreen -->
+    <path d="M764 200 L818 240 L822 300 L766 296 Z" fill="${steel}" opacity="0.22"/>
+    <path d="M764 200 L818 240 L822 300 L766 296 Z" fill="none" stroke="${silver}" stroke-width="2.5" opacity="0.6"/>
+    <!-- passenger cabin opening -->
+    <rect x="330" y="206" width="330" height="104" rx="6" fill="${ink2}"/>
+    <rect x="346" y="222" width="298" height="72" rx="4" fill="#050706" opacity="0.55"/>
+    <!-- seats, abstract -->
+    <path d="M370 292 L370 246 L470 246 L470 292" fill="none" stroke="${steel}" stroke-width="4"/>
+    <path d="M500 292 L500 246 L600 246 L600 292" fill="none" stroke="${steel}" stroke-width="4"/>
+    <!-- headlamp -->
+    <ellipse cx="842" cy="262" rx="24" ry="30" fill="${graphite}"/>
+    <ellipse cx="848" cy="262" rx="13" ry="17" fill="${greenLt}" opacity="0.85"/>
+    <!-- hub motor -->
+    <circle cx="876" cy="344" r="24" fill="none" stroke="${green}" stroke-width="7"/>
+    <circle cx="876" cy="344" r="10" fill="${green}" opacity="0.3"/>
+    <!-- battery bay -->
+    <rect x="288" y="326" width="180" height="30" rx="6" fill="${graphite}"/>
+    <rect x="296" y="332" width="112" height="18" rx="4" fill="${green}" opacity="0.8"/>
+    <!-- a-pillar line -->
+    <path d="M742 190 L764 200" stroke="${steel}" stroke-width="3"/>
+  `,
+  'three-wheeler-cargo': `
+    <circle cx="300" cy="344" r="72" fill="none" stroke="${graphite}" stroke-width="16"/>
+    <circle cx="300" cy="344" r="36" fill="none" stroke="${steel}" stroke-width="4"/>
+    <circle cx="884" cy="344" r="58" fill="none" stroke="${graphite}" stroke-width="14"/>
+    <circle cx="884" cy="344" r="28" fill="none" stroke="${steel}" stroke-width="4"/>
+    <path d="M854 340 L890 232" stroke="${metal}" stroke-width="10" stroke-linecap="round"/>
+    <path d="M880 236 L930 228" stroke="${metal}" stroke-width="9" stroke-linecap="round"/>
+    <!-- flat cargo deck -->
+    <path d="M244 258 L706 258 L706 322 L244 322 Z" fill="${ink}"/>
+    <path d="M244 258 L706 258 L706 272 L244 272 Z" fill="${graphite}"/>
+    <!-- deck rails -->
+    <path d="M244 258 L244 214" stroke="${ink2}" stroke-width="9" stroke-linecap="round"/>
+    <path d="M706 258 L706 206" stroke="${ink2}" stroke-width="9" stroke-linecap="round"/>
+    <path d="M250 220 L700 214" stroke="${ink2}" stroke-width="8" stroke-linecap="round"/>
+    <path d="M446 218 L446 258" stroke="${ink2}" stroke-width="7"/>
+    <!-- load volume indicator (technical, not a literal cargo illustration) -->
+    <rect x="292" y="124" width="366" height="76" rx="4" fill="none" stroke="${steel}" stroke-width="2" stroke-dasharray="9 7" opacity="0.55"/>
+    <text x="304" y="152" fill="${steel}" font-family="'JetBrains Mono', monospace" font-size="15" letter-spacing="2">CARGO DECK</text>
+    <!-- cabin -->
+    <path d="M718 178 L826 200 L846 300 L722 300 Z" fill="${ink}"/>
+    <path d="M718 178 L800 194 L806 224 L716 214 Z" fill="${graphite}"/>
+    <path d="M760 210 L830 226 L836 292 L764 288 Z" fill="${steel}" opacity="0.2"/>
+    <ellipse cx="852" cy="252" rx="22" ry="28" fill="${graphite}"/>
+    <ellipse cx="858" cy="252" rx="12" ry="15" fill="${greenLt}" opacity="0.85"/>
+    <path d="M742 300 L742 250 L800 250 L800 300" fill="none" stroke="${steel}" stroke-width="4" opacity="0.7"/>
+    <circle cx="884" cy="344" r="24" fill="none" stroke="${green}" stroke-width="7"/>
+    <circle cx="884" cy="344" r="10" fill="${green}" opacity="0.3"/>
+    <rect x="300" y="328" width="180" height="28" rx="6" fill="${graphite}"/>
+    <rect x="308" y="334" width="112" height="16" rx="4" fill="${green}" opacity="0.8"/>
+  `,
+  cart: `
+    <circle cx="300" cy="348" r="60" fill="none" stroke="${graphite}" stroke-width="14"/>
+    <circle cx="300" cy="348" r="26" fill="none" stroke="${steel}" stroke-width="4"/>
+    <circle cx="896" cy="348" r="60" fill="none" stroke="${graphite}" stroke-width="14"/>
+    <circle cx="896" cy="348" r="26" fill="none" stroke="${steel}" stroke-width="4"/>
+    <!-- low deck -->
+    <path d="M232 304 L950 304 L950 336 L232 336 Z" fill="${ink}"/>
+    <path d="M232 304 L950 304 L950 314 L232 314 Z" fill="${graphite}"/>
+    <!-- canopy roof -->
+    <path d="M330 150 L872 150 L896 172 L306 172 Z" fill="${ink2}"/>
+    <path d="M306 172 L896 172 L896 186 L306 186 Z" fill="${graphite}"/>
+    <!-- roof posts -->
+    <path d="M336 186 L336 300" stroke="${metal}" stroke-width="9" stroke-linecap="round"/>
+    <path d="M866 186 L866 300" stroke="${metal}" stroke-width="9" stroke-linecap="round"/>
+    <path d="M420 186 L420 300" stroke="${metal}" stroke-width="7" stroke-linecap="round"/>
+    <!-- bench seat -->
+    <path d="M420 258 L780 258 L780 282 L420 282 Z" fill="${ink}"/>
+    <path d="M432 282 L432 320" stroke="${graphite}" stroke-width="8"/>
+    <path d="M768 282 L768 320" stroke="${graphite}" stroke-width="8"/>
+    <!-- windscreen -->
+    <path d="M846 176 L906 196 L906 296 L846 288 Z" fill="${steel}" opacity="0.2"/>
+    <path d="M846 176 L906 196 L906 296 L846 288 Z" fill="none" stroke="${silver}" stroke-width="2.5" opacity="0.6"/>
+    <!-- steering column -->
+    <path d="M874 206 L836 244" stroke="${metal}" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="834" cy="248" r="14" fill="none" stroke="${metal}" stroke-width="6"/>
+    <circle cx="896" cy="348" r="20" fill="none" stroke="${green}" stroke-width="6"/>
+    <circle cx="896" cy="348" r="9" fill="${green}" opacity="0.3"/>
+    <rect x="352" y="312" width="150" height="24" rx="5" fill="${graphite}"/>
+    <rect x="360" y="317" width="90" height="14" rx="4" fill="${green}" opacity="0.8"/>
+  `,
+};
+
+const body = bodies[kind] ?? bodies.moped;
+
+/* Viewbox + ground plane are constant so compositing is predictable */
+const VB = '0 0 1200 520';
+const GROUND_Y = 430;
+
+/* Scale/position the body differently per surface so the vehicle reads as a
+   product shot in the explorer rail and as a hero at full bleed. */
+const framing: Record<string, { x: number; y: number; s: number }> = {
+  hero: { x: -40, y: 6, s: 1.0 },
+  story: { x: 0, y: 14, s: 0.96 },
+  card: { x: 60, y: 96, s: 0.68 },
+  hotspot: { x: 40, y: 40, s: 0.8 },
+};
+const f = framing[variant];
+---
+
+<div class={`kg-vv kg-vv--${variant} ${className}`} data-vehicle-visual={vehicle.id}>
+  {
+    hasPhoto ? (
+      <picture>
+        {media.hero && <source srcset={media.hero} type="image/avif" />}
+        <img
+          src={media.poster ?? media.hero ?? ''}
+          alt={media.alt}
+          width="1200"
+          height="520"
+          sizes={sizes}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding={priority ? 'sync' : 'async'}
+          fetchpriority={priority ? 'high' : 'auto'}
+          class="kg-vv__photo"
+        />
+      </picture>
+    ) : (
+      <svg
+        class="kg-vv__svg"
+        viewBox={VB}
+        role="img"
+        aria-label={media.alt}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          {/* Ground gradient — atmosphere, not decoration */}
+          <linearGradient id={`${uid}-ground`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color={green} stop-opacity="0.30" />
+            <stop offset="55%" stop-color={green} stop-opacity="0.06" />
+            <stop offset="100%" stop-color={green} stop-opacity="0" />
+          </linearGradient>
+          {/* Chassis shading — brushed metal, subtle */}
+          <linearGradient id={`${uid}-sheen`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.10" />
+            <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.02" />
+            <stop offset="100%" stop-color="#000000" stop-opacity="0.22" />
+          </linearGradient>
+          {/* Energy trail */}
+          <linearGradient id={`${uid}-trail`} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color={green} stop-opacity="0" />
+            <stop offset="70%" stop-color={green} stop-opacity="0.55" />
+            <stop offset="100%" stop-color={greenLt} stop-opacity="0.95" />
+          </linearGradient>
+          {/* Headlamp bloom */}
+          <radialGradient id={`${uid}-bloom`} cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0%" stop-color="#EAFBF0" stop-opacity="0.9" />
+            <stop offset="60%" stop-color={green} stop-opacity="0.28" />
+            <stop offset="100%" stop-color={green} stop-opacity="0" />
+          </radialGradient>
+          <filter id={`${uid}-soft`} x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="12" />
+          </filter>
+        </defs>
+
+        <!-- ===================== ATMOSPHERE (behind the vehicle) ============ -->
+        <g class="kg-vv__atmos">
+          {/* technical horizon rule */}
+          <path
+            d={`M0 ${GROUND_Y} L1200 ${GROUND_Y}`}
+            stroke={graphite}
+            stroke-width="1.5"
+            opacity="0.7"
+          />
+          {/* Energy trail — drawn under the chassis, animates forward on load */}
+          {trail && (
+            <g class="kg-vv__trail" opacity="0.9">
+              <path
+                d={`M-260 ${GROUND_Y - 46} L700 ${GROUND_Y - 46}`}
+                stroke={`url(#${uid}-trail)`}
+                stroke-width="10"
+                stroke-linecap="round"
+                filter={`url(#${uid}-soft)`}
+              />
+              <path
+                d={`M-180 ${GROUND_Y - 20} L620 ${GROUND_Y - 20}`}
+                stroke={green}
+                stroke-width="2"
+                stroke-linecap="round"
+                opacity="0.5"
+                stroke-dasharray="26 18"
+              />
+            </g>
+          )}
+        </g>
+
+        <!-- ===================== VEHICLE (layered framing) =================== -->
+        <g class="kg-vv__vehicle" transform={`translate(${f.x} ${f.y}) scale(${f.s})`}>
+          {/* ground shadow */}
+          <ellipse
+            cx="600"
+            cy="382"
+            rx="430"
+            ry="26"
+            fill="#050706"
+            opacity="0.55"
+            filter={`url(#${uid}-soft)`}
+          />
+          {/* body */}
+          <g>{body}</g>
+          {/* sheen overlay clipped to the body silhouette region */}
+          <rect
+            x="180"
+            y="110"
+            width="850"
+            height="240"
+            fill={`url(#${uid}-sheen)`}
+            opacity="0.5"
+            rx="8"
+            class="kg-vv__sheen"
+          />
+        </g>
+
+        <!-- ===================== FOREGROUND LIGHT =========================== -->
+        <g class="kg-vv__light">
+          <ellipse cx="866" cy="252" rx="150" ry="120" fill={`url(#${uid}-bloom)`} opacity="0.75" />
+        </g>
+
+        <!-- ===================== TECHNICAL OVERLAY ========================== -->
+        {
+          technical && (
+            <g class="kg-vv__tech" opacity="0.75">
+              {/* measurement datum line */}
+              <path d="M180 470 L1020 470" stroke={steel} stroke-width="1" stroke-dasharray="4 6" />
+              <path d="M180 462 L180 478" stroke={steel} stroke-width="1.5" />
+              <path d="M1020 462 L1020 478" stroke={steel} stroke-width="1.5" />
+              <text
+                x="600"
+                y="498"
+                text-anchor="middle"
+                fill={steel}
+                font-family="'JetBrains Mono', monospace"
+                font-size="16"
+                letter-spacing="3"
+              >
+                {vehicle.segment.toUpperCase()}
+              </text>
+              {/* wheelbase datum */}
+              <path d="M268 352 L928 352" stroke={green} stroke-width="1" stroke-dasharray="3 5" opacity="0.6" />
+            </g>
+          )
+        }
+      </svg>
+    )
+  }
+
+  {/* Live spec readout — real data, rendered in HTML for SEO, not baked into SVG */}
+  <div class="kg-vv__readout" aria-hidden="true">
+    {vehicle.specs.rangeKm && (
+      <span class="kg-vv__stat">
+        <b class="kg-num">{vehicle.specs.rangeKm}</b>
+        <em>km</em>
+      </span>
+    )}
+    <span class="kg-vv__badge">
+      <span class="kg-vv__pulse"></span>
+      {vehicle.segment}
+    </span>
+  </div>
+</div>
+
+<style>
+  .kg-vv {
+    position: relative;
+    width: 100%;
+    isolation: isolate;
+  }
+
+  .kg-vv__svg,
+  .kg-vv__photo {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* --- entrance choreography ---------------------------------------------
+     The vehicle "enters the frame" rather than sitting in a banner: it travels
+     in from the lower-left with the trail drawing in behind it. Opacity + the
+     transform are compositor-only properties, so this cannot cause reflow.
+     Runs once, on load, only where JS is present.                           */
+  :global(.js) .kg-vv__vehicle {
+    animation: kg-vehicle-enter 1.15s var(--ease-expo) 0.15s both;
+  }
+  :global(.js) .kg-vv__trail {
+    animation: kg-trail-enter 1.5s var(--ease-expo) 0.05s both;
+    transform-origin: right center;
+  }
+  :global(.js) .kg-vv__light {
+    animation: kg-light-enter 1s var(--ease-expo) 0.75s both;
+  }
+
+  @keyframes kg-vehicle-enter {
+    from {
+      opacity: 0;
+      transform: translate3d(-72px, 22px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  @keyframes kg-trail-enter {
+    from {
+      opacity: 0;
+      transform: scaleX(0.05) translate3d(-140px, 0, 0);
+    }
+    to {
+      opacity: 0.9;
+      transform: scaleX(1) translate3d(0, 0, 0);
+    }
+  }
+  @keyframes kg-light-enter {
+    from { opacity: 0; }
+    to { opacity: 0.75; }
+  }
+
+  /* --- readout ------------------------------------------------------------ */
+  .kg-vv__readout {
+    position: absolute;
+    inset-block-end: clamp(0.75rem, 2vw, 1.75rem);
+    inset-inline-start: clamp(0.75rem, 2vw, 1.75rem);
+    display: flex;
+    align-items: center;
+    gap: clamp(0.6rem, 1.4vw, 1rem);
+    pointer-events: none;
+  }
+
+  .kg-vv__stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.2em;
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    letter-spacing: -0.03em;
+    text-shadow: 0 2px 24px rgb(5 7 6 / 0.7);
+  }
+  .kg-vv__stat em {
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 0.34em;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--kg-green-400);
+  }
+
+  .kg-vv__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.72);
+    background: rgb(5 7 6 / 0.55);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: var(--r-1);
+    padding: 0.35rem 0.6rem;
+    white-space: nowrap;
+  }
+  .kg-vv__pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--kg-green);
+    box-shadow: 0 0 0 0 var(--kg-green-a40);
+    animation: kg-pulse 2.4s var(--ease-snap) infinite;
+    flex: none;
+  }
+  @keyframes kg-pulse {
+    0% { box-shadow: 0 0 0 0 var(--kg-green-a40); }
+    70% { box-shadow: 0 0 0 9px rgb(0 200 83 / 0); }
+    100% { box-shadow: 0 0 0 0 rgb(0 200 83 / 0); }
+  }
+
+  /* Card framing gets a tighter readout so the rail stays calm */
+  .kg-vv--card .kg-vv__readout { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .kg-vv__vehicle,
+    :global(.js) .kg-vv__trail,
+    :global(.js) .kg-vv__light {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .kg-vv__pulse { animation: none; }
+  }
+</style>

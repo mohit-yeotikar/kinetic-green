@@ -1,0 +1,390 @@
+---
+/**
+ * FinalCTA — the closing conversion section (IA slot 14).
+ *
+ * Dark, huge type, three parallel routes in descending commitment: Explore →
+ * Calculate → Book. The three-choice structure matters: a visitor who is not ready
+ * to book is not lost, they are routed to the calculator or the explorer, which is
+ * how a homepage keeps a cold visitor in the funnel instead of bouncing them.
+ *
+ * The "find your nearest dealer" line beneath is the fourth escape hatch — for the
+ * buyer who wants to see it in person before anything else.
+ */
+import Icon from './Icon.astro';
+import { brand } from '../data/content';
+---
+
+<section class="kg-final" id="enquire" data-section="final-cta" data-section-transition>
+  <!-- ============================= ART DIRECTION LAYERS ================== -->
+  <div class="kg-final__atmos" aria-hidden="true">
+    <div class="kg-final__grid"></div>
+    <div class="kg-final__glow"></div>
+    <!-- the signature diagonal, at full statement scale -->
+    <div class="kg-final__cut kg-final__cut--a" data-parallax="0.05"></div>
+    <div class="kg-final__cut kg-final__cut--b" data-parallax="0.09"></div>
+    <div class="kg-final__vignette"></div>
+  </div>
+
+  <div class="kg-shell kg-final__inner">
+    <p class="kg-eyebrow kg-final__eyebrow" data-reveal>Next step</p>
+
+    <h2 class="kg-final__title" data-reveal="clip">
+      <span class="kg-line-mask"><span>Ready to</span></span>
+      <span class="kg-line-mask kg-final__title-accent"><span>move electric?</span></span>
+    </h2>
+
+    <p class="kg-final__sub" data-reveal style="--reveal-delay:120ms">
+      Find your vehicle. Calculate your savings. Book a test ride.
+    </p>
+
+    <!-- ============================================================= CTAs -->
+    <ul class="kg-final__actions" data-reveal style="--reveal-delay:200ms">
+      <li>
+        <a href="#vehicles" class="kg-final__action" data-track="hero_explore_click" data-track-source="final-cta">
+          <span class="kg-final__action-icon"><Icon name="grid" size={22} /></span>
+          <span class="kg-final__action-body">
+            <span class="kg-final__action-label">Explore vehicles</span>
+            <span class="kg-final__action-meta">Two-wheelers and three-wheelers</span>
+          </span>
+          <Icon name="arrow-right" size={18} class="kg-final__action-arrow" />
+        </a>
+      </li>
+      <li>
+        <a href="#calculator" class="kg-final__action" data-track="hero_calculator_click" data-track-source="final-cta">
+          <span class="kg-final__action-icon"><Icon name="calculator" size={22} /></span>
+          <span class="kg-final__action-body">
+            <span class="kg-final__action-label">Calculate savings</span>
+            <span class="kg-final__action-meta">Monthly, annual and 5-year</span>
+          </span>
+          <Icon name="arrow-right" size={18} class="kg-final__action-arrow" />
+        </a>
+      </li>
+      <li>
+        <button
+          type="button"
+          class="kg-final__action kg-final__action--primary"
+          data-lead-open
+          data-lead-type="test-ride"
+          data-lead-intent="high"
+          data-lead-source="final-cta"
+          data-track="test_ride_start"
+          data-track-source="final-cta"
+        >
+          <span class="kg-final__action-icon"><Icon name="calendar" size={22} /></span>
+          <span class="kg-final__action-body">
+            <span class="kg-final__action-label">Book a test ride</span>
+            <span class="kg-final__action-meta">Dealer confirms your slot</span>
+          </span>
+          <Icon name="arrow-right" size={18} class="kg-final__action-arrow" />
+        </button>
+      </li>
+    </ul>
+
+    <!-- ========================================================= DEALER LINE -->
+    <p class="kg-final__dealer" data-reveal style="--reveal-delay:280ms">
+      <a href="#dealers" class="kg-final__dealer-link" data-track="dealer_search" data-track-source="final-cta">
+        <Icon name="map-pin" size={16} />
+        <span>Or find your nearest dealer</span>
+        <Icon name="arrow-right" size={16} class="kg-final__dealer-arrow" />
+      </a>
+    </p>
+
+    <!-- ============================================================= TRUST -->
+    <ul class="kg-final__trust" data-reveal style="--reveal-delay:340ms">
+      <li>
+        <Icon name="phone" size={14} />
+        <a href={brand.phoneHref}>{brand.phone}</a>
+      </li>
+      <li>
+        <Icon name="mail" size={14} />
+        <a href={`mailto:${brand.email}`}>{brand.email}</a>
+      </li>
+      <li>
+        <Icon name="clock" size={14} />
+        <span>Mon – Sat, 9am – 7pm IST</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .kg-final {
+    position: relative;
+    background: var(--kg-ink);
+    color: #fff;
+    padding-block: var(--section-y-lg);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* ------------------------------------------------------------- atmosphere */
+  .kg-final__atmos { position: absolute; inset: -8%; pointer-events: none; z-index: 0; }
+
+  .kg-final__grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, rgb(94 108 118 / 0.18) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(94 108 118 / 0.18) 1px, transparent 1px);
+    background-size: clamp(52px, 6vw, 96px) clamp(52px, 6vw, 96px);
+    mask-image: radial-gradient(ellipse 78% 78% at 50% 50%, #000 8%, transparent 76%);
+    opacity: 0.6;
+    will-change: transform;
+  }
+
+  .kg-final__glow {
+    position: absolute;
+    inset-block-end: -30%;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    width: 90vw;
+    height: 90vw;
+    max-width: 1200px;
+    max-height: 1200px;
+    background: radial-gradient(circle, rgb(0 200 83 / 0.16) 0%, transparent 62%);
+  }
+
+  /* The two signature diagonals — the logo's forward cut, stated at scale */
+  .kg-final__cut {
+    position: absolute;
+    inset-block: -25%;
+    width: 1.5px;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgb(0 200 83 / 0.08) 22%,
+      rgb(0 200 83 / 0.5) 50%,
+      rgb(0 200 83 / 0.08) 78%,
+      transparent 100%
+    );
+    transform: rotate(var(--diag-soft));
+    will-change: transform;
+  }
+  .kg-final__cut--a { inset-inline-start: 28%; }
+  .kg-final__cut--b {
+    inset-inline-start: 72%;
+    transform: rotate(var(--diag-hard));
+    opacity: 0.55;
+  }
+
+  .kg-final__vignette {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, rgb(8 10 9 / 0.85) 0%, transparent 26%, transparent 74%, rgb(8 10 9 / 0.9) 100%),
+      linear-gradient(to right, rgb(8 10 9 / 0.5) 0%, transparent 30%, transparent 70%, rgb(8 10 9 / 0.5) 100%);
+  }
+
+  /* ------------------------------------------------------------------ inner */
+  .kg-final__inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    display: grid;
+    gap: 0;
+    justify-items: center;
+  }
+
+  .kg-final__eyebrow {
+    justify-content: center;
+    margin-block-end: clamp(1rem, 2.5vh, 1.5rem);
+  }
+
+  .kg-final__title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 9vw, 7.5rem);
+    font-weight: 800;
+    line-height: 0.94;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    margin: 0 0 clamp(1rem, 2.5vh, 1.75rem);
+  }
+  .kg-final__title-accent { color: var(--kg-green); }
+  /* Line masks rise out of the mask when the section is revealed */
+  .kg-final__title .kg-line-mask > span {
+    display: block;
+    transform: translateY(105%);
+    transition: transform var(--dur-5) var(--ease-expo);
+  }
+  .kg-final__title .kg-line-mask:nth-child(2) > span { transition-delay: 110ms; }
+  :global([data-revealed='true']) .kg-final__title .kg-line-mask > span { transform: translateY(0); }
+
+  .kg-final__sub {
+    font-size: var(--fs-lead);
+    color: var(--kg-silver);
+    margin: 0 0 clamp(2rem, 5vh, 3.25rem);
+    max-width: 46ch;
+  }
+
+  /* ------------------------------------------------------------------ CTAs */
+  .kg-final__actions {
+    display: grid;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 1080px;
+    margin-block-end: clamp(1.75rem, 4vh, 2.5rem);
+  }
+
+  .kg-final__action {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    padding: clamp(1rem, 2.4vw, 1.5rem) clamp(1.125rem, 2.6vw, 1.75rem);
+    text-align: start;
+    background: rgb(255 255 255 / 0.035);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: var(--r-4);
+    color: #fff;
+    overflow: hidden;
+    transition:
+      border-color var(--dur-3) var(--ease-kinetic),
+      background-color var(--dur-3) var(--ease-kinetic),
+      transform var(--dur-3) var(--ease-expo);
+  }
+  .kg-final__action:hover {
+    border-color: var(--kg-green-a40);
+    background: rgb(0 200 83 / 0.08);
+    transform: translateY(-3px);
+  }
+
+  .kg-final__action-icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    flex: none;
+    background: rgb(255 255 255 / 0.05);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: var(--r-3);
+    color: var(--kg-green-400);
+    transition: all var(--dur-3) var(--ease-kinetic);
+  }
+  .kg-final__action:hover .kg-final__action-icon {
+    background: var(--kg-green-a12);
+    border-color: var(--kg-green-a40);
+  }
+
+  .kg-final__action-body { display: flex; flex-direction: column; gap: 0.15rem; flex: 1; min-width: 0; }
+  .kg-final__action-label {
+    font-family: var(--font-display);
+    font-size: clamp(0.9375rem, 1.7vw, 1.125rem);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .kg-final__action-meta { font-size: 0.75rem; color: var(--kg-steel); }
+
+  .kg-final__action-arrow {
+    flex: none;
+    color: rgb(255 255 255 / 0.3);
+    transition: color var(--dur-2), transform var(--dur-3) var(--ease-expo);
+  }
+  .kg-final__action:hover .kg-final__action-arrow { color: var(--kg-green-400); transform: translateX(5px); }
+
+  /* primary — the green one, visually first even though it is last in DOM order
+     (order is by commitment, not by weight; the visual hierarchy does the rest) */
+  .kg-final__action--primary {
+    background: var(--kg-green);
+    border-color: var(--kg-green);
+    color: #00240f;
+  }
+  .kg-final__action--primary:hover {
+    background: var(--kg-green-400);
+    border-color: var(--kg-green-400);
+    transform: translateY(-3px);
+  }
+  .kg-final__action--primary .kg-final__action-icon {
+    background: rgb(0 36 15 / 0.12);
+    border-color: rgb(0 36 15 / 0.18);
+    color: #00240f;
+  }
+  .kg-final__action--primary:hover .kg-final__action-icon {
+    background: rgb(0 36 15 / 0.16);
+    border-color: rgb(0 36 15 / 0.22);
+  }
+  .kg-final__action--primary .kg-final__action-meta { color: rgb(0 36 15 / 0.62); }
+  .kg-final__action--primary .kg-final__action-arrow { color: rgb(0 36 15 / 0.5); }
+  .kg-final__action--primary:hover .kg-final__action-arrow { color: #00240f; }
+
+  /* ---------------------------------------------------------------- dealer */
+  .kg-final__dealer { margin: 0 0 clamp(1.75rem, 4vh, 2.5rem); }
+
+  .kg-final__dealer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid rgb(255 255 255 / 0.16);
+    border-radius: var(--r-full);
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--kg-silver);
+    transition: all var(--dur-2) var(--ease-kinetic);
+  }
+  .kg-final__dealer-link svg { color: var(--kg-green-400); flex: none; }
+  .kg-final__dealer-link:hover {
+    border-color: var(--kg-green);
+    color: #fff;
+    background: var(--kg-green-a12);
+  }
+  .kg-final__dealer-arrow { transition: transform var(--dur-2) var(--ease-kinetic); }
+  .kg-final__dealer-link:hover .kg-final__dealer-arrow { transform: translateX(4px); }
+
+  /* ----------------------------------------------------------------- trust */
+  .kg-final__trust {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(0.75rem, 2.5vw, 2rem);
+    margin: 0;
+    padding-block-start: clamp(1.25rem, 3vh, 1.75rem);
+    border-block-start: 1px solid rgb(255 255 255 / 0.08);
+    width: 100%;
+    max-width: 860px;
+  }
+  .kg-final__trust li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--kg-steel);
+  }
+  .kg-final__trust svg { color: var(--kg-green-400); flex: none; }
+  .kg-final__trust a {
+    color: var(--kg-silver);
+    transition: color var(--dur-2);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgb(255 255 255 / 0.2);
+  }
+  .kg-final__trust a:hover { color: #fff; text-decoration-color: var(--kg-green); }
+
+  /* ============================================================ RESPONSIVE */
+  @media (min-width: 900px) {
+    .kg-final__actions { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+    .kg-final__action {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.25rem;
+      min-height: 220px;
+      padding: 1.5rem;
+    }
+    .kg-final__action-arrow { margin-block-start: auto; align-self: flex-end; }
+    .kg-final__action-body { gap: 0.35rem; }
+    .kg-final__cut--a { inset-inline-start: 20%; }
+    .kg-final__cut--b { inset-inline-start: 80%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kg-final__title .kg-line-mask > span { transform: none; transition: none; }
+    .kg-final__action:hover { transform: none; }
+  }
+</style>

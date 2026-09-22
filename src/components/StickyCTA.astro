@@ -1,0 +1,197 @@
+---
+/**
+ * StickyCTA — the mobile conversion floor (§28).
+ *
+ * On a phone the single most valuable thing this page can do is keep the primary
+ * action within thumb reach at all times. This component is that: a bottom bar
+ * that appears only on coarse pointers, only after the visitor has shown intent
+ * by scrolling past the hero, and only while a conversion action is still
+ * relevant.
+ *
+ * THREE RULES IT FOLLOWS
+ *
+ * 1. It never competes with the page. It reveals on scroll intent and retracts
+ *    while the visitor is travelling *down*, so it never covers content they are
+ *    actively reading.
+ *
+ * 2. It respects the real mobile constraint. iOS/Android home indicators occupy
+ *    the bottom ~34px, so the bar is padded with env(safe-area-inset-bottom)
+ *    rather than sitting under a system gesture area where it cannot be tapped.
+ *
+ * 3. It disappears at the end of the funnel. Once the visitor reaches the final
+ *    CTA and the footer, the bar would be duplicating a button already on screen,
+ *    so it hides itself. A sticky CTA that is still there in the footer is not
+ *    persistent, it is noise.
+ *
+ * The bar is a real DOM element from first paint, styled with a transform — it
+ * animates on the compositor and never triggers layout. With JS disabled it is
+ * simply never revealed, which is correct: it is a convenience layer, not
+ * content.
+ */
+import Icon from './Icon.astro';
+
+/* The primary vehicle is the sensible default for a one-tap action, since the
+   visitor has not told us anything yet. The modal lets them change it. */
+const defaultVehicle = 'eluna-plus';
+---
+
+<div class="kg-sticky" data-sticky-cta hidden>
+  <div class="kg-sticky__inner">
+    <!-- Secondary: locate. Cheapest commitment, so it sits left. -->
+    <a
+      href="#dealers"
+      class="kg-sticky__secondary"
+      data-track="dealer_search"
+      data-track-source="sticky-cta"
+      aria-label="Find a dealer near you"
+    >
+      <Icon name="map-pin" size={19} />
+      <span class="kg-sticky__secondary-label">Dealer</span>
+    </a>
+
+    <!-- Secondary: justify. The middle step of the funnel. -->
+    <a
+      href="#calculator"
+      class="kg-sticky__secondary"
+      data-track="savings_calculator_start"
+      data-track-source="sticky-cta"
+      aria-label="Calculate how much you could save"
+    >
+      <Icon name="calculator" size={19} />
+      <span class="kg-sticky__secondary-label">Savings</span>
+    </a>
+
+    <!-- Primary: convert. Takes the remaining width, because it is the point. -->
+    <button
+      type="button"
+      class="kg-sticky__primary"
+      data-lead-open
+      data-lead-type="test-ride"
+      data-lead-intent="high"
+      data-lead-source="sticky-cta"
+      data-lead-vehicle={defaultVehicle}
+      data-track="sticky_cta_click"
+      data-track-source="sticky-cta"
+    >
+      <Icon name="calendar" size={19} />
+      <span class="kg-sticky__primary-label">Book Test Ride</span>
+    </button>
+  </div>
+</div>
+
+<style>
+  /* ==========================================================================
+     MOBILE STICKY CTA FLOOR
+     Only rendered on coarse pointers — desktop has the header CTA permanently
+     in view, so a second persistent button would be redundant chrome.
+     ========================================================================== */
+  .kg-sticky {
+    position: fixed;
+    inset-block-end: 0;
+    inset-inline: 0;
+    /* Above section content, below the drawer (400) and the lead modal (500) —
+       so the modal always wins when both are on screen. */
+    z-index: var(--z-conversion);
+    padding: 0.5rem 0.75rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+    background: rgb(8 10 9 / 0.94);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-block-start: 1px solid rgb(255 255 255 / 0.10);
+    /* Hidden state: parked below the viewport, revealed by JS via data-visible. */
+    transform: translate3d(0, 130%, 0);
+    transition: transform var(--dur-4, 420ms) var(--ease-expo, cubic-bezier(0.16, 1, 0.3, 1));
+    will-change: transform;
+  }
+
+  /* The single knob the controller flips. */
+  .kg-sticky[data-visible='true'] { transform: translate3d(0, 0, 0); }
+
+  .kg-sticky__inner {
+    display: flex;
+    align-items: stretch;
+    gap: 0.4rem;
+    max-width: 40rem;
+    margin-inline: auto;
+  }
+
+  .kg-sticky__secondary,
+  .kg-sticky__primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    /* 48px minimum — comfortably past the 44px touch-target floor, because this
+       is the control a visitor taps while walking. */
+    min-height: 3rem;
+    padding-inline: 0.85rem;
+    border: 0;
+    font-family: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--dur-2, 180ms) var(--ease-snap, ease);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .kg-sticky__secondary {
+    flex: none;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding-inline: 0.7rem;
+    background: rgb(255 255 255 / 0.06);
+    border: 1px solid rgb(255 255 255 / 0.10);
+    color: var(--kg-silver);
+  }
+  .kg-sticky__secondary-label {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .kg-sticky__secondary:active { background: rgb(255 255 255 / 0.12); }
+
+  .kg-sticky__primary {
+    /* Takes the remaining width — this is the one we want tapped. */
+    flex: 1 1 auto;
+    background: var(--kg-green);
+    color: #00240F;
+    font-weight: 700;
+  }
+  .kg-sticky__primary:active { background: var(--kg-green-600); }
+
+  .kg-sticky__primary-label { white-space: nowrap; }
+
+  /* Focus visibility must survive the dark glass background. */
+  .kg-sticky__secondary:focus-visible,
+  .kg-sticky__primary:focus-visible {
+    outline: var(--focus-ring, 2px solid var(--kg-green));
+    outline-offset: 2px;
+  }
+
+  /* ==========================================================================
+     VISIBILITY CONTRACT
+     The bar is mobile-only. Hidden by default on devices that can hover, since
+     those have the header CTA in view. The controller also checks this before
+     flipping data-visible, so the media query and the script agree.
+     ========================================================================== */
+  @media (hover: hover) and (pointer: fine) {
+    .kg-sticky { display: none; }
+  }
+
+  /* Landscape phones have almost no vertical room — the bar would eat the
+     content. Drop it rather than shrink it to an unusable height. */
+  @media (max-height: 26rem) {
+    .kg-sticky { display: none; }
+  }
+
+  /* Larger phones / small tablets: let the labels breathe. */
+  @media (min-width: 26rem) {
+    .kg-sticky__inner { gap: 0.5rem; }
+    .kg-sticky__primary { font-size: 0.875rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kg-sticky { transition: none; }
+  }
+</style>

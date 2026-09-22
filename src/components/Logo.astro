@@ -1,0 +1,149 @@
+---
+/**
+ * Logo — Kinetic Green wordmark + symbol.
+ *
+ * The symbol is built from the brand's own geometry: sharp diagonal forms
+ * travelling forward and right. Two stacked chevron planes (charcoal = the
+ * engineering, green = the energy) plus a leading edge that reads as motion.
+ *
+ * Rendered as inline SVG so it inherits currentColor and can flip to reverse
+ * on dark chrome without shipping a second asset. Uses `textLength`-free
+ * geometry — the wordmark is real vector paths, not live text, so it renders
+ * identically before webfonts resolve (no FOUT shift in the nav).
+ */
+interface Props {
+  /** 'full' = symbol + wordmark + tagline · 'mark' = symbol only · 'compact' = symbol + wordmark */
+  variant?: 'full' | 'mark' | 'compact';
+  /** Reverse for dark backgrounds */
+  reverse?: boolean;
+  /** Show the "PLANET @ OUR HEART" tagline (full variant only) */
+  tagline?: boolean;
+  class?: string;
+  /** Rendered height in px */
+  height?: number;
+  title?: string;
+}
+
+const {
+  variant = 'full',
+  reverse = false,
+  tagline = true,
+  class: className = '',
+  height = 34,
+  title = 'Kinetic Green',
+} = Astro.props;
+
+const charcoal = reverse ? '#FFFFFF' : '#12161A';
+const green = '#00C853';
+const uid = Math.random().toString(36).slice(2, 8);
+---
+
+{
+  variant === 'mark' ? (
+    <svg
+      class={`kg-logo kg-logo--mark ${className}`}
+      width={height}
+      height={height}
+      viewBox="0 0 48 48"
+      role="img"
+      aria-label={title}
+      style={`--logo-ink:${charcoal};--logo-green:${green}`}
+    >
+      {/* Forward-travelling diagonal planes — the kinetic cut */}
+      <path d="M4 8 L22 8 L30 20 L12 20 Z" fill={`var(--logo-ink)`} />
+      <path d="M16 20 L34 20 L42 32 L24 32 Z" fill={`var(--logo-ink)`} opacity="0.55" />
+      <path d="M28 32 L44 32 L44 40 L34 40 Z" fill={`var(--logo-green)`} />
+      {/* Leading energy edge */}
+      <path d="M36 4 L44 4 L44 14 L38 14 Z" fill={`var(--logo-green)`} />
+      {/* Machined slot — the engineering detail */}
+      <path d="M8 12 L18 12 L20 16 L10 16 Z" fill={`var(--logo-green)`} opacity="0.9" />
+    </svg>
+  ) : (
+    <svg
+      class={`kg-logo kg-logo--${variant} ${className}`}
+      width={height * (variant === 'full' ? 7.6 : 4.4)}
+      height={height}
+      viewBox={variant === 'full' ? '0 0 304 62' : '0 0 176 48'}
+      role="img"
+      aria-label={`${title}${tagline && variant === 'full' ? ' — Planet @ Our Heart' : ''}`}
+      style={`--logo-ink:${charcoal};--logo-green:${green}`}
+    >
+      <title>{title}</title>
+
+      {/* ---------------------------------------------------------- symbol */}
+      <g id={`${uid}-mark`}>
+        <path d="M2 6 L20 6 L28 18 L10 18 Z" fill="var(--logo-ink)" />
+        <path d="M14 18 L32 18 L40 30 L22 30 Z" fill="var(--logo-ink)" opacity="0.55" />
+        <path d="M26 30 L42 30 L42 40 L32 40 Z" fill="var(--logo-green)" />
+        <path d="M34 2 L42 2 L42 12 L36 12 Z" fill="var(--logo-green)" />
+        <path d="M6 10 L16 10 L18 14 L8 14 Z" fill="var(--logo-green)" opacity="0.9" />
+      </g>
+
+      {/* ------------------------------------------------------- wordmark
+           Geometric grotesque drawn as paths so it paints before the
+           webfont loads. Letterforms are cut with the same diagonal as the
+           symbol's forward edge.                                          */}
+      <g fill="var(--logo-ink)" transform={variant === 'full' ? 'translate(56 4)' : 'translate(50 6)'}>
+        {/* K */}
+        <path d="M0 0 H7 V13 L19 0 H28 L14 15 L29 31 H19.5 L7 18 V31 H0 Z" />
+        {/* I */}
+        <path d="M34 0 H41 V31 H34 Z" />
+        {/* N */}
+        <path d="M46 0 H53 L63 17 V0 H69.5 V31 H63 L53 14 V31 H46 Z" />
+        {/* E */}
+        <path d="M74 0 H94 V6 H81 V13 H92 V19 H81 V25 H94.5 V31 H74 Z" />
+        {/* T */}
+        <path d="M98 0 H116 V6 H110.5 V31 H103.5 V6 H98 Z" />
+        {/* I */}
+        <path d="M119 0 H126 V31 H119 Z" />
+        {/* C */}
+        <path d="M131 0 H150 V6 H138 V25 H150 V31 H131 Z" />
+      </g>
+
+      {/* GREEN — set apart in the accent so the two-word name reads as one mark */}
+      {variant !== 'mark' && (
+        <g fill="var(--logo-green)" transform={variant === 'full' ? 'translate(166 4)' : 'translate(136 6)'}>
+          {/* G */}
+          <path d="M0 0 H19 V6 H7 V25 H14 V16 H10 V11 H21 V31 H0 Z" />
+          {/* R */}
+          <path d="M25 0 H41 C46 0 49 4 49 9 C49 13 47 16 44 17 L50 31 H43 L38 18 H32 V31 H25 Z M32 6 V13 H39 C41 13 42 11 42 9.5 C42 7.5 41 6 39 6 Z" />
+          {/* E */}
+          <path d="M54 0 H74 V6 H61 V13 H72 V19 H61 V25 H74.5 V31 H54 Z" />
+          {/* E */}
+          <path d="M79 0 H99 V6 H86 V13 H97 V19 H86 V25 H99.5 V31 H79 Z" />
+          {/* N */}
+          <path d="M104 0 H111 L121 17 V0 H127.5 V31 H121 L111 14 V31 H104 Z" />
+        </g>
+      )}
+
+      {/* --------------------------------------------------------- tagline */}
+      {variant === 'full' && tagline && (
+        <g transform="translate(56 46)">
+          <path d="M0 0 H104 V1.5 H0 Z" fill="var(--logo-green)" opacity="0.5" />
+          <text
+            x="0"
+            y="9"
+            fill="var(--logo-ink)"
+            opacity="0.62"
+            font-family="'JetBrains Mono', ui-monospace, monospace"
+            font-size="6.2"
+            letter-spacing="1.45"
+          >
+            PLANET @ OUR HEART
+          </text>
+        </g>
+      )}
+    </svg>
+  )
+}
+
+<style>
+  .kg-logo {
+    display: block;
+    height: auto;
+    overflow: visible;
+  }
+  .kg-logo--full {
+    width: auto;
+  }
+</style>

@@ -1,0 +1,673 @@
+---
+/**
+ * VehicleExplorer — "ONE BRAND. MANY WAYS TO MOVE." (IA slot 04)
+ *
+ * Deliberately NOT a card grid. One large product presentation at a time, with
+ * the category rail as the control. Switching a category re-composes the stage:
+ * visual, positioning line, hero metric, price and CTAs all change together.
+ *
+ * PROGRESSIVE ENHANCEMENT
+ * Every vehicle is rendered in the HTML as a full <article>. Without JS the
+ * rail still works: each tab is a real in-page anchor (`#veh-<id>`) and every
+ * panel is visible, so the whole lineup is readable and indexable. JS upgrades
+ * it to a single-stage switcher and marks the non-active panels hidden.
+ *
+ * That means the SEO surface is the *complete* product catalogue, not just the
+ * default tab — which is the whole point of doing this instead of a JS-only tab
+ * widget.
+ */
+import Icon from './Icon.astro';
+import VehicleVisual from './VehicleVisual.astro';
+import {
+  categories,
+  vehicles,
+  vehiclesByCategory,
+  formatINR,
+  PRICE_DISCLAIMER,
+  type Vehicle,
+} from '../data/vehicles';
+
+/* Ids of all vehicles referenced by any category — the union becomes the rail */
+const allIds = vehicles.map((v) => v.id);
+
+/** Map a vehicle to the body style used by the art layer */
+function kindFor(v: Vehicle): 'moped' | 'motorcycle' | 'three-wheeler-passenger' | 'three-wheeler-cargo' | 'cart' {
+  if (v.segment.includes('Cargo')) return 'three-wheeler-cargo';
+  if (v.segment.includes('3W')) return 'three-wheeler-passenger';
+  if (v.segment.includes('Motorcycle')) return 'motorcycle';
+  if (v.segment.includes('Cart')) return 'cart';
+  return 'moped';
+}
+
+const defaultCategory = categories[1]; // 'commute' — the broadest intent
+
+/**
+ * Data island for the switcher.
+ *
+ * The spec values shown when a visitor switches model must be the *same* values
+ * that were server-rendered for the default model. Rather than have the client
+ * controller guess at formatting rules, the component pre-formats each value
+ * here and the script only writes strings into the DOM. One source of truth,
+ * no chance of a client-rendered "₹79,990" disagreeing with a server-rendered
+ * "₹79,990/-".
+ */
+const explorerData = categories.map((cat) => ({
+  id: cat.id,
+  models: vehiclesByCategory(cat.id).map((v) => ({
+    id: v.id,
+    name: v.name,
+    tagline: v.tagline,
+    range: v.specs.rangeKm ? String(v.specs.rangeKm) : '—',
+    battery: v.specs.batteryKwh ? String(v.specs.batteryKwh) : '—',
+    price: v.priceFrom ? formatINR(v.priceFrom) : 'On enquiry',
+    uses: v.useCases,
+  })),
+}));
+---
+
+<script type="application/json" data-explorer-data set:html={JSON.stringify(explorerData).replace(/</g, '\\u003c')} />
+
+<section class="kg-vex kg-section kg-section--lg" id="vehicles" data-section="vehicles" data-explorer data-default-category={defaultCategory.id}>
+  <div class="kg-vex__bg" aria-hidden="true"><div class="kg-grid-bg"></div></div>
+
+  <div class="kg-shell">
+    <!-- ============================================================== HEAD -->
+    <header class="kg-vex__head">
+      <p class="kg-eyebrow" data-reveal>Choose your move</p>
+      <h2 class="kg-display kg-vex__title" data-reveal="clip">
+        One brand.<br /><span class="kg-accent">Many ways to move.</span>
+      </h2>
+      <p class="kg-lead kg-vex__intro" data-reveal style="--reveal-delay:120ms">
+        Six ways to use an electric vehicle, one family of vehicles engineered for each. Pick the
+        shape of your day and we will show you the Kinetic Green built for it.
+      </p>
+    </header>
+
+    <!-- ============================================================== RAIL -->
+    <div class="kg-vex__rail" role="tablist" aria-label="Choose how you move" data-explorer-rail>
+      {
+        categories.map((cat) => (
+          <button
+            type="button"
+            role="tab"
+            id={`tab-${cat.id}`}
+            class="kg-vex__tab"
+            aria-selected={cat.id === defaultCategory.id ? 'true' : 'false'}
+            aria-controls={`panel-${cat.id}`}
+            tabindex={cat.id === defaultCategory.id ? 0 : -1}
+            data-category={cat.id}
+            data-track="vehicle_category_select"
+            data-track-category={cat.id}
+          >
+            <span class="kg-vex__tab-index">{String(categories.indexOf(cat) + 1).padStart(2, '0')}</span>
+            <span class="kg-vex__tab-label">{cat.label}</span>
+            <span class="kg-vex__tab-metric">{cat.metric}</span>
+            <span class="kg-vex__tab-bar" aria-hidden="true"></span>
+          </button>
+        ))
+      }
+    </div>
+
+    <!-- ============================================================ PANELS -->
+    <div class="kg-vex__panels" data-explorer-panels>
+      {
+        categories.map((cat) => {
+          const list = vehiclesByCategory(cat.id);
+          const isDefault = cat.id === defaultCategory.id;
+          return (
+            <div
+              class="kg-vex__panel"
+              id={`panel-${cat.id}`}
+              role="tabpanel"
+              aria-labelledby={`tab-${cat.id}`}
+              data-panel={cat.id}
+              data-active={isDefault ? 'true' : 'false'}
+            >
+              <div class="kg-vex__panel-inner">
+                {/* ---------------- product stage ------------------------ */}
+                <div class="kg-vex__stage">
+                  <div class="kg-vex__stage-meta">
+                    <span class="kg-tag kg-tag--green">{cat.label}</span>
+                    <span class="kg-vex__stage-blurb">{cat.blurb}</span>
+                  </div>
+
+                  <div class="kg-vex__stage-visual">
+                    <VehicleVisual
+                      vehicle={list[0]}
+                      kind={kindFor(list[0])}
+                      variant="story"
+                      trail
+                      technical
+                      sizes="(max-width: 767px) 110vw, (max-width: 1279px) 66vw, 58vw"
+                    />
+                  </div>
+
+                  {/* ---------------- vehicle switcher within category ---- */}
+                  {list.length > 1 && (
+                    <div class="kg-vex__models" role="group" aria-label={`Models in ${cat.label}`}>
+                      <span class="kg-label kg-vex__models-label">Models</span>
+                      <ul class="kg-vex__models-list">
+                        {list.map((v, i) => (
+                          <li>
+                            <button
+                              type="button"
+                              class="kg-vex__model"
+                              data-model={v.id}
+                              data-active={i === 0 ? 'true' : 'false'}
+                              data-track="vehicle_view"
+                              data-track-vehicle={v.id}
+                              data-track-source="explorer-model-switch"
+                              aria-pressed={i === 0 ? 'true' : 'false'}
+                            >
+                              <span class="kg-vex__model-name">{v.shortName}</span>
+                              <span class="kg-vex__model-price">
+                                {v.priceFrom ? formatINR(v.priceFrom) : 'On enquiry'}
+                              </span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                {/* ---------------- spec / CTA column -------------------- */}
+                <div class="kg-vex__info">
+                  <h3 class="kg-vex__model-title" data-model-name>{list[0].name}</h3>
+                  <p class="kg-vex__tagline" data-model-tagline>{list[0].tagline}</p>
+
+                  <dl class="kg-vex__specs">
+                    <div class="kg-vex__spec">
+                      <dt>Range</dt>
+                      <dd>
+                        <span class="kg-num" data-model-range>
+                          {list[0].specs.rangeKm ?? '—'}
+                        </span>
+                        <em>km claimed</em>
+                      </dd>
+                    </div>
+                    <div class="kg-vex__spec">
+                      <dt>Battery</dt>
+                      <dd>
+                        <span class="kg-num" data-model-battery>
+                          {list[0].specs.batteryKwh ?? '—'}
+                        </span>
+                        <em>kWh</em>
+                      </dd>
+                    </div>
+                    <div class="kg-vex__spec">
+                      <dt>Starting from</dt>
+                      <dd>
+                        <span class="kg-num" data-model-price>
+                          {list[0].priceFrom ? formatINR(list[0].priceFrom) : 'On enquiry'}
+                        </span>
+                        <em>ex-showroom</em>
+                      </dd>
+                    </div>
+                  </dl>
+
+                  {/* Use cases — editorial, indexable prose */}
+                  <div class="kg-vex__uses">
+                    <p class="kg-label">Built for</p>
+                    <ul data-model-uses>
+                      {list[0].useCases.map((u) => (
+                        <li><Icon name="check" size={14} /> {u}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div class="kg-vex__actions">
+                    <a
+                      href="#story"
+                      class="kg-btn"
+                      data-model-cta
+                      data-track="vehicle_cta_click"
+                      data-track-vehicle={list[0].id}
+                      data-track-source="explorer-explore"
+                    >
+                      Explore {list[0].shortName}
+                      <Icon name="arrow-right" size={16} />
+                    </a>
+                    <button
+                      type="button"
+                      class="kg-btn kg-btn--outline"
+                      data-lead-open
+                      data-lead-type="test-ride"
+                      data-lead-intent="high"
+                      data-lead-source="explorer"
+                      data-lead-vehicle={list[0].id}
+                      data-track="test_ride_start"
+                      data-track-source="explorer"
+                    >
+                      <Icon name="calendar" size={16} />
+                      Book Test Ride
+                    </button>
+                  </div>
+
+                  <p class="kg-vex__note">
+                    <Icon name="info" size={13} />
+                    <span>Ex-showroom, indicative. Varies by city, variant and state subsidy.</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* ---------- SEO block: ALL vehicles in this category ---------- */}
+              <div class="kg-vex__catalogue">
+                {list.map((v) => (
+                  <article class="kg-vex__cat-card" id={`veh-${v.id}`} data-catalogue-item={v.id}>
+                    <h4 class="kg-vex__cat-title">
+                      <a href={`#veh-${v.id}`} data-track="vehicle_view" data-track-vehicle={v.id}>
+                        Kinetic Green {v.name}
+                      </a>
+                    </h4>
+                    <p class="kg-vex__cat-body">{v.story}</p>
+                    <ul class="kg-vex__cat-specs">
+                      <li>
+                        <span>Claimed range</span>
+                        <b>{v.specs.rangeKm ? `${v.specs.rangeKm} km` : 'Confirm with dealer'}</b>
+                      </li>
+                      <li>
+                        <span>Battery</span>
+                        <b>{v.specs.batteryKwh ? `${v.specs.batteryKwh} kWh ${v.specs.batteryType}` : v.specs.batteryType}</b>
+                      </li>
+                      <li>
+                        <span>Motor</span>
+                        <b>{v.specs.motorKw ? `${v.specs.motorKw} kW` : 'Confirm with dealer'}</b>
+                      </li>
+                      <li>
+                        <span>Starting price</span>
+                        <b>{v.priceFrom ? formatINR(v.priceFrom) : 'On enquiry'}</b>
+                      </li>
+                    </ul>
+                    <p class="kg-vex__cat-hint">{v.highlights[0]}</p>
+                  </article>
+                ))}
+                <p class="kg-vex__disclaimer">{PRICE_DISCLAIMER}</p>
+              </div>
+            </div>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .kg-vex {
+    position: relative;
+    overflow: hidden;
+    background: var(--kg-mist);
+    color: var(--kg-ink);
+    --s-bg: var(--kg-mist);
+    --s-bg-alt: #fff;
+    --s-fg: var(--kg-ink);
+    --s-fg-muted: #55606a;
+    --s-fg-subtle: #7e898f;
+    --s-line: #e2e8e5;
+    --s-line-strong: #cfd8d4;
+    --s-accent: var(--kg-green-700);
+    --s-accent-bg: var(--kg-green);
+  }
+  .kg-vex__bg { position: absolute; inset: 0; pointer-events: none; }
+  .kg-vex__bg .kg-grid-bg {
+    background-image:
+      linear-gradient(to right, rgb(18 22 26 / 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(18 22 26 / 0.07) 1px, transparent 1px);
+    opacity: 1;
+    mask-image: linear-gradient(to bottom, transparent, #000 24%, #000 72%, transparent);
+  }
+
+  /* ================================================================ HEAD */
+  .kg-vex__head {
+    display: grid;
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+    margin-block-end: clamp(2rem, 5vw, 3.5rem);
+  }
+  .kg-vex__title {
+    font-size: var(--fs-d2);
+    max-width: 20ch;
+  }
+  .kg-vex__intro { max-width: 58ch; }
+
+  /* ================================================================ RAIL */
+  .kg-vex__rail {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    border-block-end: 1px solid var(--s-line);
+    margin-block-end: clamp(1.75rem, 4vw, 3rem);
+  }
+  .kg-vex__rail::-webkit-scrollbar { display: none; }
+
+  .kg-vex__tab {
+    position: relative;
+    flex: none;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 1rem 1.25rem 1.15rem;
+    min-width: max-content;
+    text-align: start;
+    color: var(--kg-steel);
+    border-block-end: 2px solid transparent;
+    transition: color var(--dur-2) var(--ease-kinetic), border-color var(--dur-3) var(--ease-expo);
+  }
+  .kg-vex__tab-index {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.16em;
+    color: var(--kg-green-700);
+    opacity: 0.7;
+  }
+  .kg-vex__tab-label {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.7vw, 1.3125rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .kg-vex__tab-metric {
+    font-size: 0.6875rem;
+    color: var(--kg-steel);
+    white-space: nowrap;
+  }
+  .kg-vex__tab-bar {
+    position: absolute;
+    inset-block-end: -1px;
+    inset-inline: 0;
+    height: 2px;
+    background: var(--kg-green);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-4) var(--ease-expo);
+  }
+  .kg-vex__tab:hover { color: var(--kg-ink); }
+  .kg-vex__tab:hover .kg-vex__tab-bar { transform: scaleX(1); }
+  .kg-vex__tab[aria-selected='true'] { color: var(--kg-ink); border-block-end-color: transparent; }
+  .kg-vex__tab[aria-selected='true'] .kg-vex__tab-bar { transform: scaleX(1); }
+  .kg-vex__tab[aria-selected='true'] .kg-vex__tab-index { opacity: 1; }
+
+  /* ============================================================== PANELS */
+  .kg-vex__panel { display: block; }
+  /* JS collapses inactive panels; without JS they all stay readable */
+  .js .kg-vex__panel[data-active='false'] { display: none; }
+
+  .kg-vex__panel-inner {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: start;
+    animation: kg-panel-in 0.62s var(--ease-expo) both;
+  }
+  @keyframes kg-panel-in {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ------------------------------------------------------------- stage */
+  .kg-vex__stage {
+    position: relative;
+    background: linear-gradient(160deg, #12161a 0%, #1c2227 58%, #0d1013 100%);
+    border: 1px solid var(--kg-graphite);
+    border-radius: var(--r-4);
+    padding: clamp(1rem, 3vw, 2rem) clamp(0.5rem, 2vw, 1.5rem) clamp(0.75rem, 2vw, 1.25rem);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  /* Green energy floor inside the stage */
+  .kg-vex__stage::before {
+    content: '';
+    position: absolute;
+    inset-block-end: -40%;
+    inset-inline-start: -10%;
+    width: 70%;
+    height: 100%;
+    background: radial-gradient(ellipse at bottom, rgb(0 200 83 / 0.22), transparent 68%);
+    pointer-events: none;
+  }
+
+  .kg-vex__stage-meta {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-block-end: 0.5rem;
+  }
+  .kg-vex__stage-meta .kg-tag { color: var(--kg-green-400); }
+  .kg-vex__stage-blurb {
+    font-size: 0.8125rem;
+    color: rgb(255 255 255 / 0.55);
+  }
+
+  .kg-vex__stage-visual { position: relative; z-index: 1; }
+
+  /* ------------------------------------------------- models (sub-switch) */
+  .kg-vex__models {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-block-start: 0.75rem;
+    padding-block-start: 0.875rem;
+    border-block-start: 1px solid rgb(255 255 255 / 0.08);
+  }
+  .kg-vex__models-label { color: rgb(255 255 255 / 0.4); flex: none; }
+  .kg-vex__models-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+  .kg-vex__model {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.5rem 0.75rem;
+    min-height: 44px;
+    text-align: start;
+    background: rgb(255 255 255 / 0.04);
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: var(--r-2);
+    color: rgb(255 255 255 / 0.66);
+    transition: all var(--dur-2) var(--ease-kinetic);
+  }
+  .kg-vex__model:hover { border-color: var(--kg-green-a40); background: rgb(0 200 83 / 0.08); color: #fff; }
+  .kg-vex__model[data-active='true'] {
+    border-color: var(--kg-green);
+    background: rgb(0 200 83 / 0.14);
+    color: #fff;
+  }
+  .kg-vex__model-name {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .kg-vex__model-price {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    color: var(--kg-green-400);
+  }
+
+  /* -------------------------------------------------------------- info */
+  .kg-vex__info { display: flex; flex-direction: column; gap: 1rem; }
+
+  .kg-vex__model-title {
+    font-size: clamp(1.9rem, 4.4vw, 3.25rem);
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .kg-vex__tagline {
+    font-size: var(--fs-lead);
+    color: var(--s-fg-muted);
+    margin: 0;
+    max-width: 32ch;
+  }
+
+  .kg-vex__specs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    margin: 0.5rem 0 0;
+    border-block: 1px solid var(--s-line);
+  }
+  .kg-vex__spec {
+    padding: 0.875rem 0.5rem 0.875rem 0;
+    border-inline-end: 1px solid var(--s-line);
+  }
+  .kg-vex__spec:last-child { border-inline-end: 0; }
+  .kg-vex__spec dt {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--s-fg-subtle);
+    margin-block-end: 0.35rem;
+  }
+  .kg-vex__spec dd {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+  .kg-vex__spec dd .kg-num {
+    font-family: var(--font-display);
+    font-size: clamp(1.05rem, 2vw, 1.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .kg-vex__spec dd em {
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--s-fg-subtle);
+  }
+
+  .kg-vex__uses { margin-block-start: 0.25rem; }
+  .kg-vex__uses ul { display: grid; gap: 0.4rem; margin-block-start: 0.6rem; }
+  .kg-vex__uses li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    color: var(--s-fg-muted);
+  }
+  .kg-vex__uses svg { color: var(--kg-green-700); flex: none; }
+
+  .kg-vex__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    margin-block-start: 0.75rem;
+  }
+  .kg-vex__actions .kg-btn { flex: 1 1 auto; }
+
+  .kg-vex__note {
+    display: flex;
+    gap: 0.45rem;
+    align-items: flex-start;
+    font-size: 0.75rem;
+    color: var(--s-fg-subtle);
+    margin: 0.5rem 0 0;
+  }
+  .kg-vex__note svg { margin-block-start: 0.15rem; flex: none; }
+
+  /* ========================================================= CATALOGUE
+     The SEO substrate. Visually quiet, semantically complete: every vehicle in
+     the active category is described in real prose with its specs and price. */
+  .kg-vex__catalogue {
+    display: grid;
+    gap: 1rem;
+    margin-block-start: clamp(2rem, 5vw, 3rem);
+    padding-block-start: clamp(1.5rem, 3vw, 2rem);
+    border-block-start: 1px solid var(--s-line);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  }
+  .kg-vex__cat-card {
+    padding: 1.25rem;
+    background: #fff;
+    border: 1px solid var(--s-line);
+    border-radius: var(--r-3);
+    transition: border-color var(--dur-2) var(--ease-kinetic), transform var(--dur-3) var(--ease-expo), box-shadow var(--dur-3);
+  }
+  .kg-vex__cat-card:hover {
+    border-color: var(--kg-green);
+    transform: translateY(-3px);
+    box-shadow: var(--sh-2);
+  }
+  .kg-vex__cat-title {
+    font-size: 1.0625rem;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.5rem;
+  }
+  .kg-vex__cat-title a { transition: color var(--dur-2); }
+  .kg-vex__cat-title a:hover { color: var(--kg-green-700); }
+  .kg-vex__cat-body {
+    font-size: 0.875rem;
+    color: var(--s-fg-muted);
+    margin: 0 0 1rem;
+  }
+  .kg-vex__cat-specs {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0 0 0.875rem;
+    padding-block: 0.75rem;
+    border-block: 1px solid var(--s-line);
+  }
+  .kg-vex__cat-specs li {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+  }
+  .kg-vex__cat-specs span { color: var(--s-fg-subtle); }
+  .kg-vex__cat-specs b {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    text-align: end;
+    color: var(--kg-ink);
+  }
+  .kg-vex__cat-hint {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--s-fg-subtle);
+    margin: 0;
+  }
+  .kg-vex__disclaimer {
+    grid-column: 1 / -1;
+    font-size: 0.6875rem;
+    line-height: 1.6;
+    color: var(--s-fg-subtle);
+    margin: 0.5rem 0 0;
+    max-width: 90ch;
+  }
+
+  /* ============================================================ RESPONSIVE */
+  @media (min-width: 900px) {
+    .kg-vex__panel-inner {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: clamp(1.5rem, 3.5vw, 3rem);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .kg-vex__panel-inner { grid-template-columns: minmax(0, 8fr) minmax(0, 5fr); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kg-vex__panel-inner { animation: none; }
+    .kg-vex__cat-card:hover { transform: none; }
+  }
+</style>

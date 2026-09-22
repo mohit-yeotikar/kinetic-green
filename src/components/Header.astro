@@ -1,0 +1,500 @@
+---
+/**
+ * Header — sticky smart navigation.
+ *
+ * State machine (driven by a single scroll listener in /scripts/nav.js):
+ *   top      → transparent, logo at full scale, sits over the hero
+ *   scrolled → compact, solid chrome, logo scales down
+ *   hidden   → translates away while scrolling down past the fold, returns on
+ *              scroll up. This is the standard "give the screen back to content"
+ *              behaviour on mobile, where vertical space is the scarcest asset.
+ *
+ * Mobile pattern: Logo · Test Ride · Hamburger. The hamburger opens a full-height
+ * drawer; the drawer is a <dialog>-behaviour panel built from real DOM so it
+ * works with keyboard, ESC and focus trapping without a library.
+ */
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { brand } from '../data/content';
+
+const nav = [
+  { label: 'Vehicles', href: '#vehicles' },
+  { label: 'Technology', href: '#technology' },
+  { label: 'Why Electric', href: '#why-electric' },
+  { label: 'Ownership', href: '#ownership' },
+  { label: 'Dealer Network', href: '#dealers' },
+  { label: 'About', href: '#legacy' },
+];
+---
+
+<header class="kg-nav" id="site-header" data-nav>
+  <div class="kg-nav__inner kg-shell">
+    <!-- ------------------------------------------------------------- brand -->
+    <a href="#top" class="kg-nav__brand" aria-label={`${brand.name} — home`}>
+      <Logo variant="compact" height={30} class="kg-nav__logo" />
+      <Logo variant="mark" height={26} class="kg-nav__mark" />
+    </a>
+
+    <!-- ---------------------------------------------------------- desktop nav -->
+    <nav class="kg-nav__primary" aria-label="Primary">
+      <ul class="kg-nav__list">
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} class="kg-nav__link" data-nav-link>
+                <span>{item.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <!-- ---------------------------------------------------------------- actions -->
+    <div class="kg-nav__actions">
+      <button
+        type="button"
+        class="kg-btn kg-nav__cta"
+        data-lead-open
+        data-lead-type="test-ride"
+        data-lead-intent="high"
+        data-lead-source="nav"
+        data-track="nav_test_ride_click"
+      >
+        <Icon name="calendar" size={16} />
+        <span class="kg-nav__cta-label">Test Ride</span>
+      </button>
+
+      <button
+        type="button"
+        class="kg-nav__burger"
+        id="nav-burger"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="nav-drawer"
+        data-nav-burger
+      >
+        <span class="kg-nav__burger-lines" aria-hidden="true">
+          <i></i><i></i>
+        </span>
+      </button>
+    </div>
+
+    <!-- -------------------------------------------------------- scroll progress -->
+    <div class="kg-nav__progress" aria-hidden="true" data-nav-progress></div>
+  </div>
+</header>
+
+<!-- =============================== MOBILE DRAWER =============================== -->
+<div class="kg-drawer" id="nav-drawer" data-nav-drawer hidden>
+  <div class="kg-drawer__scrim" data-nav-drawer-close></div>
+
+  <div class="kg-drawer__panel" role="dialog" aria-modal="true" aria-label="Site menu">
+    <div class="kg-drawer__head">
+      <Logo variant="compact" height={26} reverse />
+      <button type="button" class="kg-drawer__close" aria-label="Close menu" data-nav-drawer-close>
+        <Icon name="close" size={22} />
+      </button>
+    </div>
+
+    <nav class="kg-drawer__nav" aria-label="Mobile">
+      <ul>
+        {
+          nav.map((item, i) => (
+            <li style={`--i:${i}`}>
+              <a href={item.href} class="kg-drawer__link" data-nav-drawer-close data-nav-link>
+                <span class="kg-drawer__index">{String(i + 1).padStart(2, '0')}</span>
+                <span class="kg-drawer__text">{item.label}</span>
+                <Icon name="diagonal-arrow" size={18} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="kg-drawer__quick">
+      <p class="kg-label">Start here</p>
+      <ul>
+        <li>
+          <button
+            type="button"
+            class="kg-drawer__quick-btn"
+            data-lead-open
+            data-lead-type="test-ride"
+            data-lead-intent="high"
+            data-lead-source="mobile-drawer"
+            data-nav-drawer-close
+            data-track="nav_test_ride_click"
+          >
+            <Icon name="calendar" size={18} />
+            Book a Test Ride
+          </button>
+        </li>
+        <li>
+          <a href="#dealers" class="kg-drawer__quick-btn" data-nav-drawer-close data-track="conversion_bar_click" data-track-source="drawer-dealer">
+            <Icon name="map-pin" size={18} />
+            Find a Dealer
+          </a>
+        </li>
+        <li>
+          <a href="#calculator" class="kg-drawer__quick-btn" data-nav-drawer-close data-track="conversion_bar_click" data-track-source="drawer-calculator">
+            <Icon name="calculator" size={18} />
+            Calculate Savings
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="kg-drawer__foot">
+      <a href={brand.phoneHref} class="kg-drawer__phone">
+        <Icon name="phone" size={16} />
+        {brand.phone}
+      </a>
+      <p class="kg-drawer__tag">{brand.tagline}</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* =========================================================== HEADER SHELL */
+  .kg-nav {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    z-index: var(--z-sticky);
+    --nav-bg: transparent;
+    --nav-fg: #ffffff;
+    --nav-line: rgb(255 255 255 / 0.14);
+    color: var(--nav-fg);
+    transition:
+      transform var(--dur-3) var(--ease-expo),
+      background-color var(--dur-3) var(--ease-kinetic),
+      box-shadow var(--dur-3) var(--ease-kinetic),
+      color var(--dur-3) var(--ease-kinetic);
+  }
+
+  /* Compact / solid state — set by JS once the hero has been left */
+  .kg-nav[data-state='scrolled'] {
+    --nav-bg: rgb(18 22 26 / 0.92);
+    --nav-fg: #ffffff;
+    --nav-line: rgb(255 255 255 / 0.10);
+    background: var(--nav-bg);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.06), 0 12px 40px -24px rgb(5 7 6 / 0.9);
+  }
+
+  /* Retract on scroll-down — mobile priority */
+  .kg-nav[data-hidden='true'] {
+    transform: translateY(-104%);
+    box-shadow: none;
+  }
+
+  .kg-nav__inner {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 3rem);
+    height: var(--nav-h, 88px);
+    transition: height var(--dur-3) var(--ease-kinetic);
+  }
+  .kg-nav[data-state='scrolled'] .kg-nav__inner { --nav-h: 68px; }
+
+  /* --------------------------------------------------------------- brand */
+  .kg-nav__brand {
+    display: flex;
+    align-items: center;
+    flex: none;
+    transition: transform var(--dur-3) var(--ease-expo);
+    transform-origin: left center;
+  }
+  .kg-nav[data-state='scrolled'] .kg-nav__brand { transform: scale(0.9); }
+  .kg-nav__mark { display: none; }
+
+  /* --------------------------------------------------------- desktop links */
+  .kg-nav__primary { flex: 1; display: none; }
+
+  .kg-nav__list {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 1.6vw, 1.6rem);
+  }
+
+  .kg-nav__link {
+    position: relative;
+    display: block;
+    padding: 0.6rem 0.25rem;
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.78);
+    transition: color var(--dur-2) var(--ease-kinetic);
+    overflow: hidden;
+  }
+  /* Directional wipe — the label lifts out and returns, signalling forward motion */
+  .kg-nav__link span {
+    display: block;
+    transition: transform var(--dur-3) var(--ease-expo);
+  }
+  .kg-nav__link::after {
+    content: '';
+    position: absolute;
+    inset-block-end: 0.35rem;
+    inset-inline-start: 0;
+    width: 100%;
+    height: 1.5px;
+    background: var(--kg-green);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-3) var(--ease-expo);
+  }
+  .kg-nav__link:hover,
+  .kg-nav__link:focus-visible { color: #fff; }
+  .kg-nav__link:hover::after,
+  .kg-nav__link:focus-visible::after { transform: scaleX(1); }
+
+  /* Active section indicator */
+  .kg-nav__link[aria-current='true'] { color: #fff; }
+  .kg-nav__link[aria-current='true']::after { transform: scaleX(1); }
+
+  /* --------------------------------------------------------------- actions */
+  .kg-nav__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-inline-start: auto;
+    flex: none;
+  }
+
+  .kg-nav__cta {
+    padding: 0.7rem 1.1rem;
+    min-height: 44px;
+    font-size: 0.75rem;
+  }
+
+  .kg-nav__burger {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid var(--nav-line);
+    border-radius: var(--r-2);
+    color: inherit;
+    transition: border-color var(--dur-2) var(--ease-kinetic), background-color var(--dur-2) var(--ease-kinetic);
+  }
+  .kg-nav__burger:hover { border-color: var(--kg-green); background: var(--kg-green-a12); }
+
+  .kg-nav__burger-lines {
+    position: relative;
+    display: block;
+    width: 20px;
+    height: 12px;
+  }
+  .kg-nav__burger-lines i {
+    position: absolute;
+    inset-inline-start: 0;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    border-radius: 1px;
+    transition: transform var(--dur-2) var(--ease-kinetic), width var(--dur-2) var(--ease-kinetic);
+  }
+  .kg-nav__burger-lines i:first-child { inset-block-start: 0; }
+  .kg-nav__burger-lines i:last-child { inset-block-end: 0; width: 70%; }
+  .kg-nav__burger:hover .kg-nav__burger-lines i:last-child { width: 100%; }
+
+  /* ------------------------------------------------------------- progress bar */
+  .kg-nav__progress {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    height: 2px;
+    width: 0;
+    background: var(--kg-green);
+    transform-origin: left;
+    transition: opacity var(--dur-2) linear;
+    opacity: 0;
+  }
+  .kg-nav[data-state='scrolled'] .kg-nav__progress { opacity: 1; }
+
+  /* ============================================================= DRAWER */
+  .kg-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-drawer);
+  }
+  .kg-drawer[hidden] { display: none; }
+
+  .kg-drawer__scrim {
+    position: absolute;
+    inset: 0;
+    background: rgb(5 7 6 / 0.6);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity var(--dur-3) var(--ease-kinetic);
+  }
+  .kg-drawer[data-open='true'] .kg-drawer__scrim { opacity: 1; }
+
+  .kg-drawer__panel {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: min(420px, 100vw);
+    background: var(--kg-charcoal);
+    border-inline-start: 1px solid rgb(255 255 255 / 0.08);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transform: translateX(100%);
+    transition: transform var(--dur-4) var(--ease-expo);
+  }
+  .kg-drawer[data-open='true'] .kg-drawer__panel { transform: translateX(0); }
+
+  .kg-drawer__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-block-end: 1px solid rgb(255 255 255 / 0.08);
+    flex: none;
+  }
+  .kg-drawer__close {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    color: #fff;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    border-radius: var(--r-2);
+    transition: border-color var(--dur-2) var(--ease-kinetic), background-color var(--dur-2);
+  }
+  .kg-drawer__close:hover { border-color: var(--kg-green); background: var(--kg-green-a12); }
+
+  .kg-drawer__nav { padding: 1rem 0; flex: 1; }
+  .kg-drawer__nav ul { display: block; }
+  .kg-drawer__nav li { border-block-end: 1px solid rgb(255 255 255 / 0.06); }
+
+  .kg-drawer__link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.15rem 1.5rem;
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    transition: background-color var(--dur-2) var(--ease-kinetic), padding-inline-start var(--dur-3) var(--ease-expo);
+  }
+  .kg-drawer__link svg { margin-inline-start: auto; opacity: 0; transform: translateX(-8px); transition: all var(--dur-3) var(--ease-expo); color: var(--kg-green); }
+  .kg-drawer__link:hover,
+  .kg-drawer__link:focus-visible {
+    background: rgb(255 255 255 / 0.04);
+    padding-inline-start: 2rem;
+  }
+  .kg-drawer__link:hover svg,
+  .kg-drawer__link:focus-visible svg { opacity: 1; transform: translateX(0); }
+
+  .kg-drawer__index {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    color: var(--kg-steel);
+    align-self: flex-start;
+    margin-block-start: 0.4rem;
+  }
+
+  /* Staggered entrance for the drawer list */
+  .kg-drawer[data-open='true'] .kg-drawer__nav li {
+    animation: kg-drawer-in var(--dur-4) var(--ease-expo) both;
+    animation-delay: calc(90ms + var(--i) * 45ms);
+  }
+  @keyframes kg-drawer-in {
+    from { opacity: 0; transform: translateX(26px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .kg-drawer__quick {
+    padding: 1.5rem;
+    border-block-start: 1px solid rgb(255 255 255 / 0.08);
+    background: rgb(0 0 0 / 0.2);
+  }
+  .kg-drawer__quick ul { display: grid; gap: 0.5rem; margin-block-start: 0.75rem; }
+  .kg-drawer__quick-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 1rem 1.15rem;
+    min-height: 56px;
+    background: rgb(255 255 255 / 0.04);
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: var(--r-3);
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-align: start;
+    transition: border-color var(--dur-2) var(--ease-kinetic), background-color var(--dur-2), transform var(--dur-1);
+  }
+  .kg-drawer__quick-btn:hover {
+    border-color: var(--kg-green);
+    background: var(--kg-green-a12);
+    transform: translateX(3px);
+  }
+  .kg-drawer__quick-btn svg { color: var(--kg-green); }
+
+  .kg-drawer__foot {
+    margin-block-start: auto;
+    padding: 1.5rem;
+    border-block-start: 1px solid rgb(255 255 255 / 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .kg-drawer__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--kg-green-400);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+  .kg-drawer__tag {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--kg-steel);
+  }
+
+  /* ============================================================ RESPONSIVE */
+  @media (min-width: 1024px) {
+    .kg-nav__primary { display: block; }
+    .kg-nav__burger { display: none; }
+    .kg-drawer { display: none !important; }
+  }
+
+  @media (max-width: 1023px) {
+    .kg-nav__cta-label { display: none; }
+    .kg-nav__cta {
+      width: 46px;
+      padding: 0;
+      min-height: 46px;
+    }
+    .kg-nav__mark { display: block; }
+    .kg-nav__logo { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kg-nav[data-open='true'] .kg-drawer__nav li { animation: none; }
+    .kg-drawer__panel { transition: none; }
+  }
+</style>

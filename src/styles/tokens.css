@@ -1,0 +1,185 @@
+/* ==========================================================================
+   KINETIC GREEN — DESIGN TOKENS
+   Visual system: CHARCOAL (engineering) + KINETIC GREEN (energy) + MIST (space)
+   Everything here is brand-level. Components consume these only.
+   ========================================================================== */
+
+:root {
+  /* ----------------------------------------------------------------
+     BRAND — CHARCOAL / ENGINEERING
+     ---------------------------------------------------------------- */
+  --kg-ink: #080A09;          /* deepest — section wells, overlays      */
+  --kg-charcoal: #12161A;     /* primary dark surface                   */
+  --kg-charcoal-2: #191E23;   /* raised dark surface                    */
+  --kg-graphite: #262D33;     /* borders on dark, technical lines       */
+  --kg-graphite-2: #38424A;   /* hairlines, grid strokes                */
+  --kg-steel: #79858E;        /* muted text on dark                     */
+  --kg-silver: #C3CCD1;       /* secondary text on dark                 */
+  --kg-mist: #EEF2F0;         /* light section surface                  */
+  --kg-mist-2: #E2E8E5;       /* light borders                          */
+  --kg-paper: #FFFFFF;
+
+  /* ----------------------------------------------------------------
+     BRAND — KINETIC GREEN (single accent. never introduce a 2nd green)
+     ---------------------------------------------------------------- */
+  --kg-green: #00C853;        /* primary accent                         */
+  --kg-green-600: #00A846;    /* pressed / deep                          */
+  --kg-green-700: #067A36;    /* on-light text-safe green  (AA on white) */
+  --kg-green-400: #4CE88A;    /* hover / glow                            */
+  --kg-green-200: #A8F5C4;    /* energy trail, faint fills               */
+  --kg-green-050: #EAFBF0;    /* tinted surface on light                 */
+  --kg-green-a12: rgb(0 200 83 / 0.12);
+  --kg-green-a24: rgb(0 200 83 / 0.24);
+  --kg-green-a40: rgb(0 200 83 / 0.40);
+
+  /* Metallic / neutral automotive surfaces (used sparingly, not gradient soup) */
+  --kg-metal-1: #4B555C;
+  --kg-metal-2: #8D979D;
+  --kg-metal-3: #D9DFE2;
+
+  /* ----------------------------------------------------------------
+     SEMANTIC SURFACE TOKENS  (sections flip these via [data-surface])
+     ---------------------------------------------------------------- */
+  --s-bg: var(--kg-paper);
+  --s-bg-alt: var(--kg-mist);
+  --s-fg: var(--kg-ink);
+  --s-fg-muted: #5A6570;
+  --s-fg-subtle: #8B959C;
+  --s-line: var(--kg-mist-2);
+  --s-line-strong: #CFD8D4;
+  --s-accent: var(--kg-green-700);   /* text-safe accent on light       */
+  --s-accent-bg: var(--kg-green);
+  --s-on-accent: #00240F;
+
+  /* ----------------------------------------------------------------
+     TYPE
+     ---------------------------------------------------------------- */
+  --font-display: 'Archivo', 'Archivo Expanded', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Fluid display scale — mobile-first, clamps at desktop */
+  --fs-mega: clamp(3.6rem, 15.5vw, 15rem);       /* hero statement        */
+  --fs-d1: clamp(2.6rem, 8.6vw, 7.5rem);         /* section headlines     */
+  --fs-d2: clamp(2rem, 5.6vw, 4.25rem);
+  --fs-d3: clamp(1.5rem, 3.4vw, 2.5rem);
+  --fs-h4: clamp(1.15rem, 1.8vw, 1.5rem);
+  --fs-lead: clamp(1.02rem, 1.5vw, 1.32rem);
+  --fs-body: clamp(0.95rem, 1.05vw, 1.06rem);
+  --fs-small: 0.875rem;
+  --fs-micro: 0.6875rem;      /* eyebrow / technical labels             */
+
+  --tracking-mega: -0.045em;
+  --tracking-tight: -0.025em;
+  --tracking-label: 0.16em;   /* uppercase eyebrow                     */
+
+  --leading-mega: 0.86;
+  --leading-tight: 1.02;
+  --leading-body: 1.62;
+
+  /* ----------------------------------------------------------------
+     SPACE / LAYOUT
+     ---------------------------------------------------------------- */
+  --shell: 1440px;
+  --shell-narrow: 1120px;
+  --gutter: clamp(1.25rem, 5vw, 4.5rem);
+  --section-y: clamp(4.5rem, 11vh, 9.5rem);
+  --section-y-lg: clamp(6rem, 16vh, 13rem);
+
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4.5rem;
+  --sp-9: 6rem;
+  --sp-10: 9rem;
+
+  /* Moderate radii — automotive, tactile. Not pill-shaped. */
+  --r-1: 3px;
+  --r-2: 6px;
+  --r-3: 10px;
+  --r-4: 16px;
+  --r-5: 24px;
+  --r-full: 999px;
+
+  /* Elevation — restrained, mostly for floating conversion surfaces */
+  --sh-1: 0 1px 2px rgb(8 10 9 / 0.06), 0 1px 1px rgb(8 10 9 / 0.04);
+  --sh-2: 0 8px 24px -8px rgb(8 10 9 / 0.16), 0 2px 6px rgb(8 10 9 / 0.06);
+  --sh-3: 0 24px 60px -18px rgb(8 10 9 / 0.28), 0 6px 16px rgb(8 10 9 / 0.10);
+  --sh-green: 0 12px 40px -12px rgb(0 200 83 / 0.45);
+
+  /* Diagonal geometry — derived from the Kinetic Green symbol's forward cut */
+  --diag: -12deg;
+  --diag-soft: -7deg;
+  --diag-hard: -18deg;
+
+  /* ----------------------------------------------------------------
+     MOTION — FAST · PRECISE · AUTOMOTIVE
+     ---------------------------------------------------------------- */
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);      /* primary reveal     */
+  --ease-kinetic: cubic-bezier(0.2, 0.7, 0.2, 1);   /* UI / tactile       */
+  --ease-snap: cubic-bezier(0.65, 0, 0.35, 1);      /* symmetric precision*/
+  --dur-1: 140ms;
+  --dur-2: 260ms;
+  --dur-3: 480ms;
+  --dur-4: 760ms;
+  --dur-5: 1200ms;
+
+  /* ----------------------------------------------------------------
+     Z-INDEX SCALE
+     ---------------------------------------------------------------- */
+  --z-base: 1;
+  --z-sticky: 100;
+  --z-conversion: 200;
+  --z-drawer: 400;
+  --z-modal: 500;
+  --z-transition: 600;
+  --z-skip: 700;
+
+  /* Channels for rgb() composition in components */
+  --focus-ring: 2px solid var(--kg-green);
+  color-scheme: light;
+}
+
+/* ==========================================================================
+   DARK SURFACE CONTEXT — any section with [data-surface="dark"]
+   ========================================================================== */
+[data-surface='dark'] {
+  --s-bg: var(--kg-charcoal);
+  --s-bg-alt: var(--kg-ink);
+  --s-fg: #FFFFFF;
+  --s-fg-muted: var(--kg-silver);
+  --s-fg-subtle: var(--kg-steel);
+  --s-line: rgb(255 255 255 / 0.10);
+  --s-line-strong: var(--kg-graphite);
+  --s-accent: var(--kg-green-400);   /* on dark, the bright green is legible */
+  --s-accent-bg: var(--kg-green);
+  --s-on-accent: #00240F;
+  color-scheme: dark;
+}
+
+[data-surface='mist'] {
+  --s-bg: var(--kg-mist);
+  --s-bg-alt: var(--kg-paper);
+  --s-fg: var(--kg-ink);
+  --s-fg-muted: #55606A;
+  --s-fg-subtle: #7E898F;
+  --s-line: var(--kg-mist-2);
+  --s-line-strong: #CFD8D4;
+  --s-accent: var(--kg-green-700);
+}
+
+[data-surface='ink'] {
+  --s-bg: var(--kg-ink);
+  --s-bg-alt: #050706;
+  --s-fg: #FFFFFF;
+  --s-fg-muted: var(--kg-silver);
+  --s-fg-subtle: #6E7A82;
+  --s-line: rgb(255 255 255 / 0.08);
+  --s-line-strong: #1E2529;
+  --s-accent: var(--kg-green-400);
+  color-scheme: dark;
+}

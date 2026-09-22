@@ -1,0 +1,389 @@
+---
+/**
+ * Ownership — "THE EV EXPERIENCE DOESN'T END AT DELIVERY." (IA slot 11)
+ *
+ * Four pillars — Charging · Service · Finance · Dealers — each with a real
+ * interaction, because this section's job is to remove purchase friction. Every
+ * pillar routes somewhere useful: a lead form, the finance estimator, or the
+ * dealer finder. Nothing here is a dead end.
+ *
+ * Each pillar deliberately names the friction it removes rather than listing a
+ * feature, which is what makes a "why buy from us" section actually persuasive.
+ */
+import Icon from './Icon.astro';
+import { pillars } from '../data/content';
+
+/* The friction each pillar resolves — this is the real content of the section */
+const friction: Record<string, string> = {
+  charging: 'Removes: range anxiety and installation cost',
+  service: 'Removes: “who fixes it if something goes wrong?”',
+  finance: 'Removes: upfront cost hesitation',
+  dealers: 'Removes: “is there anyone near me?”',
+};
+
+const icons: Record<string, string> = {
+  charging: 'plug',
+  service: 'wrench',
+  finance: 'rupee',
+  dealers: 'map-pin',
+};
+
+/* Where each pillar's action actually goes */
+const routes: Record<string, { href?: string; leadType?: string; intent?: string }> = {
+  charging: { leadType: 'charging', intent: 'medium' },
+  service: { leadType: 'service', intent: 'high' },
+  finance: { href: '#finance' },
+  dealers: { href: '#dealers' },
+};
+---
+
+<section class="kg-own kg-section kg-section--lg" id="ownership" data-section="ownership">
+  <div class="kg-shell">
+    <!-- ============================================================== HEAD -->
+    <header class="kg-own__head">
+      <div>
+        <p class="kg-eyebrow" data-reveal>Ownership</p>
+        <h2 class="kg-display kg-own__title" data-reveal="clip">
+          The EV experience<br /><span class="kg-accent">doesn&rsquo;t end at delivery.</span>
+        </h2>
+      </div>
+      <p class="kg-lead kg-own__intro" data-reveal style="--reveal-delay:120ms">
+        Buying the vehicle is the easy part. What decides whether electric works for you is what
+        happens in the two years afterwards. Here is what Kinetic Green puts behind the vehicle.
+      </p>
+    </header>
+
+    <!-- ========================================================== PILLARS -->
+    <ul class="kg-own__grid">
+      {
+        pillars.map((p, i) => {
+          const route = routes[p.id] ?? {};
+          const isLead = Boolean(route.leadType);
+          const Tag = isLead ? 'button' : 'a';
+          return (
+            <li class="kg-own__pillar" data-reveal style={`--i:${i};--reveal-delay:${i * 70}ms`}>
+              <article class="kg-own__card" data-pillar={p.id}>
+                <span class="kg-own__card-index" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+
+                <span class="kg-own__icon">
+                  <Icon name={icons[p.id] ?? 'spark'} size={24} />
+                </span>
+
+                <p class="kg-own__pillar-label">{p.label}</p>
+                <h3 class="kg-own__pillar-title">{p.headline}</h3>
+                <p class="kg-own__pillar-body">{p.body}</p>
+
+                <p class="kg-own__friction">
+                  <Icon name="check-circle" size={13} />
+                  <span>{friction[p.id]}</span>
+                </p>
+
+                {/* The pillar's real interaction */}
+                {
+                  isLead ? (
+                    <Tag
+                      type="button"
+                      class="kg-own__action"
+                      data-lead-open
+                      data-lead-type={route.leadType}
+                      data-lead-intent={route.intent}
+                      data-lead-source={`ownership-${p.id}`}
+                      data-track={p.id === 'service' ? 'callback_submit' : 'business_enquiry_start'}
+                      data-track-source={`ownership-${p.id}`}
+                    >
+                      <span>{p.actionLabel}</span>
+                      <Icon name="arrow-right" size={16} />
+                    </Tag>
+                  ) : (
+                    <Tag
+                      href={route.href}
+                      class="kg-own__action"
+                      data-track={p.id === 'finance' ? 'finance_calculator' : 'dealer_search'}
+                      data-track-source={`ownership-${p.id}`}
+                    >
+                      <span>{p.actionLabel}</span>
+                      <Icon name="arrow-right" size={16} />
+                    </Tag>
+                  )
+                }
+              </article>
+            </li>
+          );
+        })
+      }
+    </ul>
+
+    <!-- ================================================ SUPPORT STRIP -->
+    <aside class="kg-own__support" data-reveal>
+      <div class="kg-own__support-copy">
+        <p class="kg-label">Still have questions</p>
+        <p class="kg-own__support-title">Talk to a human before you decide.</p>
+        <p class="kg-own__support-body">
+          Charging at home, what servicing actually costs, whether finance will clear on your profile —
+          these are worth a five-minute conversation rather than a form.
+        </p>
+      </div>
+
+      <div class="kg-own__support-actions">
+        <button
+          type="button"
+          class="kg-btn"
+          data-lead-open
+          data-lead-type="callback"
+          data-lead-intent="medium"
+          data-lead-source="ownership-support"
+          data-track="callback_submit"
+          data-track-source="ownership-support"
+        >
+          <Icon name="phone" size={16} />
+          Request a callback
+        </button>
+        <a href="#dealers" class="kg-btn kg-btn--outline" data-track="dealer_search" data-track-source="ownership-support">
+          <Icon name="map-pin" size={16} />
+          Find a dealer
+        </a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .kg-own {
+    position: relative;
+    background: var(--kg-paper);
+    color: var(--kg-ink);
+    --s-bg: var(--kg-paper);
+    --s-bg-alt: var(--kg-mist);
+    --s-fg: var(--kg-ink);
+    --s-fg-muted: #55606a;
+    --s-fg-subtle: #7e898f;
+    --s-line: #e6ebe9;
+    --s-line-strong: #cfd8d4;
+    --s-accent: var(--kg-green-700);
+    --s-accent-bg: var(--kg-green);
+  }
+
+  /* ------------------------------------------------------------------ head */
+  .kg-own__head {
+    display: grid;
+    gap: clamp(1rem, 3vw, 2rem);
+    margin-block-end: clamp(2rem, 5vw, 3.5rem);
+  }
+  .kg-own__title { font-size: var(--fs-d2); }
+  .kg-own__intro { max-width: 54ch; }
+
+  /* --------------------------------------------------------------- pillars */
+  .kg-own__grid {
+    display: grid;
+    gap: clamp(0.875rem, 2vw, 1.25rem);
+    grid-template-columns: 1fr;
+  }
+
+  .kg-own__pillar { display: flex; }
+
+  .kg-own__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: clamp(1.25rem, 3vw, 1.875rem);
+    background: var(--kg-mist);
+    border: 1px solid var(--s-line);
+    border-radius: var(--r-4);
+    overflow: hidden;
+    transition:
+      border-color var(--dur-3) var(--ease-kinetic),
+      background-color var(--dur-3) var(--ease-kinetic),
+      transform var(--dur-3) var(--ease-expo),
+      box-shadow var(--dur-3);
+  }
+  .kg-own__card:hover {
+    border-color: var(--kg-green-a40);
+    background: #fff;
+    transform: translateY(-4px);
+    box-shadow: var(--sh-2);
+  }
+  /* the diagonal cut, at card scale — appears on hover only */
+  .kg-own__card::after {
+    content: '';
+    position: absolute;
+    inset-block-start: -50%;
+    inset-inline-end: -30%;
+    width: 70%;
+    height: 180%;
+    background: linear-gradient(118deg, transparent 48%, rgb(0 200 83 / 0.09) 72%, transparent 94%);
+    transform: rotate(var(--diag-soft));
+    opacity: 0;
+    transition: opacity var(--dur-4) var(--ease-kinetic);
+    pointer-events: none;
+  }
+  .kg-own__card:hover::after { opacity: 1; }
+
+  .kg-own__card-index {
+    position: absolute;
+    inset-block-start: clamp(1rem, 2.5vw, 1.5rem);
+    inset-inline-end: clamp(1rem, 2.5vw, 1.5rem);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    color: var(--s-fg-subtle);
+  }
+
+  .kg-own__icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    margin-block-end: 1.25rem;
+    background: #fff;
+    border: 1px solid var(--s-line);
+    border-radius: var(--r-3);
+    color: var(--kg-green-700);
+    transition: all var(--dur-3) var(--ease-kinetic);
+  }
+  .kg-own__card:hover .kg-own__icon {
+    background: var(--kg-green);
+    border-color: var(--kg-green);
+    color: #00240f;
+  }
+
+  .kg-own__pillar-label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--kg-green-700);
+    margin: 0 0 0.5rem;
+  }
+
+  .kg-own__pillar-title {
+    font-size: clamp(1.125rem, 2.1vw, 1.4375rem);
+    letter-spacing: -0.022em;
+    margin: 0 0 0.75rem;
+    max-width: 22ch;
+  }
+
+  .kg-own__pillar-body {
+    font-size: 0.875rem;
+    line-height: 1.72;
+    color: var(--s-fg-muted);
+    margin: 0 0 1rem;
+  }
+
+  .kg-own__friction {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 0 0 1.25rem;
+    padding: 0.6rem 0.75rem;
+    background: var(--kg-green-050);
+    border-left: 2px solid var(--kg-green);
+    border-radius: var(--r-2);
+    font-size: 0.6875rem;
+    line-height: 1.55;
+    color: #2c3a33;
+    margin-block-start: auto;
+  }
+  .kg-own__friction svg { color: var(--kg-green-700); flex: none; margin-block-start: 0.1rem; }
+
+  /* --------------------------------------------------------------- action */
+  .kg-own__action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.875rem 1rem;
+    min-height: 50px;
+    background: transparent;
+    border: 1px solid var(--s-line-strong);
+    border-radius: var(--r-3);
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--kg-ink);
+    text-align: start;
+    transition: all var(--dur-2) var(--ease-kinetic);
+  }
+  .kg-own__action svg { color: var(--kg-green-700); flex: none; transition: transform var(--dur-2) var(--ease-kinetic); }
+  .kg-own__action:hover {
+    background: var(--kg-ink);
+    border-color: var(--kg-ink);
+    color: #fff;
+  }
+  .kg-own__action:hover svg { color: var(--kg-green); transform: translateX(4px); }
+
+  /* -------------------------------------------------------------- support */
+  .kg-own__support {
+    display: grid;
+    gap: clamp(1.25rem, 3vw, 2rem);
+    align-items: center;
+    margin-block-start: clamp(1.5rem, 4vw, 2.5rem);
+    padding: clamp(1.5rem, 3.5vw, 2.25rem);
+    background: linear-gradient(150deg, var(--kg-charcoal) 0%, var(--kg-ink) 100%);
+    color: #fff;
+    border-radius: var(--r-4);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .kg-own__support::after {
+    content: '';
+    position: absolute;
+    inset-block-start: -60%;
+    inset-inline-end: -10%;
+    width: 55%;
+    height: 200%;
+    background: linear-gradient(118deg, transparent 46%, rgb(0 200 83 / 0.16) 70%, transparent 92%);
+    transform: rotate(var(--diag-soft));
+    pointer-events: none;
+  }
+  .kg-own__support-copy { position: relative; }
+  .kg-own__support-copy .kg-label { color: var(--kg-green-400); }
+  .kg-own__support-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 3vw, 1.875rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    margin: 0.5rem 0 0.5rem;
+  }
+  .kg-own__support-body {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--kg-silver);
+    margin: 0;
+    max-width: 52ch;
+  }
+
+  .kg-own__support-actions {
+    display: grid;
+    gap: 0.625rem;
+    position: relative;
+  }
+  .kg-own__support-actions .kg-btn--outline { --s-fg: #fff; --s-line-strong: rgb(255 255 255 / 0.26); }
+  .kg-own__support-actions .kg-btn--outline:hover { background: rgb(255 255 255 / 0.06); --s-line-strong: #fff; }
+
+  /* ============================================================ RESPONSIVE */
+  @media (min-width: 640px) {
+    .kg-own__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .kg-own__support-actions { grid-auto-flow: column; }
+    .kg-own__support-actions .kg-btn { width: 100%; }
+  }
+
+  @media (min-width: 900px) {
+    .kg-own__head { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); align-items: end; }
+  }
+
+  @media (min-width: 1200px) {
+    .kg-own__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .kg-own__support { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kg-own__card:hover { transform: none; }
+    .kg-own__action:hover svg { transform: none; }
+  }
+</style>

@@ -1,0 +1,184 @@
+---
+/**
+ * Kinetic Green — homepage.
+ *
+ * INFORMATION ARCHITECTURE
+ * The section order below is not a list of components; it is the intended
+ * journey, and each slot exists to move the visitor one step along it:
+ *
+ *   DISCOVER      Hero → ConversionBar → VehicleExplorer
+ *   PERSONALISE   EVFinder
+ *   CALCULATE     SavingsCalculator
+ *   UNDERSTAND    ProductStory → IndiaMobility → Technology → LegacyTimeline
+ *   TRUST         Ownership → Finance → DealerFinder → PriceLead
+ *   CONVERT       Stories → FinalCTA → Footer
+ *
+ * A visitor can leave the funnel at any point and re-enter it, because every
+ * section ends in an action rather than a full stop. That redundancy is
+ * deliberate: the page is a lead magnet, so the same three routes (test ride /
+ * dealer / savings) recur at every level of commitment.
+ *
+ * SEO
+ * Every section renders its full content in static HTML. Interactive switchers
+ * (explorer, story, technology, region map) ship ALL panels in the source and
+ * only *hide* the inactive ones with JS, so the complete product catalogue,
+ * every engineering explanation and every region narrative is indexable — and
+ * readable by a visitor with JavaScript switched off.
+ *
+ * STRUCTURED DATA
+ * BaseLayout emits the Organization + WebSite @graph. Sections that make their
+ * own claims (ProductStory, Finance, DealerFinder) emit their own nodes. The
+ * FAQPage node for the Q&A block is emitted here rather than in the component so
+ * the questions in schema always match the questions rendered on the page.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import ConversionBar from '../components/ConversionBar.astro';
+import VehicleExplorer from '../components/VehicleExplorer.astro';
+import EVFinder from '../components/EVFinder.astro';
+import SavingsCalculator from '../components/SavingsCalculator.astro';
+import ProductStory from '../components/ProductStory.astro';
+import IndiaMobility from '../components/IndiaMobility.astro';
+import Technology from '../components/Technology.astro';
+import LegacyTimeline from '../components/LegacyTimeline.astro';
+import Ownership from '../components/Ownership.astro';
+import Finance from '../components/Finance.astro';
+import DealerFinder from '../components/DealerFinder.astro';
+import PriceLead from '../components/PriceLead.astro';
+import Stories from '../components/Stories.astro';
+import FinalCTA from '../components/FinalCTA.astro';
+import Footer from '../components/Footer.astro';
+
+import LeadModal from '../components/LeadModal.astro';
+import StickyCTA from '../components/StickyCTA.astro';
+
+import { faqs, brand } from '../data/content';
+
+/* ------------------------------------------------------------------ meta */
+const title = `${brand.name} — Electric Two & Three Wheelers Built for India`;
+const description =
+  'Kinetic Green builds electric two-wheelers and three-wheelers for the way India moves — the E-Luna family, Safar passenger and cargo three-wheelers, and electric carts. Book a test ride, find your nearest dealer, or calculate what electric could save you.';
+
+/**
+ * FAQPage — emitted from the same data the component renders, so the schema
+ * cannot describe a question the visitor never sees. This is the one place on
+ * the page where structured data and visible content share a single source.
+ */
+const faqSchema = {
+  '@type': 'FAQPage',
+  '@id': `${brand.website}/#faq`,
+  isPartOf: { '@id': `${brand.website}/#website` },
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: f.a,
+    },
+  })),
+};
+
+/**
+ * ItemList — the vehicle lineup as an ordered collection. Helps search engines
+ * understand the range as a product family rather than as unrelated mentions,
+ * and gives the explorer rail a machine-readable counterpart.
+ */
+const vehicleListSchema = {
+  '@type': 'ItemList',
+  '@id': `${brand.website}/#vehicle-range`,
+  name: 'Kinetic Green electric vehicle range',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'E-Luna family', description: 'Electric two-wheelers' },
+    { '@type': 'ListItem', position: 2, name: 'Safar passenger three-wheelers' },
+    { '@type': 'ListItem', position: 3, name: 'Safar Shakti cargo three-wheeler' },
+    { '@type': 'ListItem', position: 4, name: 'Electric carts' },
+  ],
+};
+
+const schema = [faqSchema, vehicleListSchema];
+---
+
+<BaseLayout title={title} description={description} path="/" schema={schema}>
+  <!--
+    The header sits OUTSIDE <main> — it is site chrome, not page content, so it
+    stays out of the skip-link target and out of the main landmark.
+  -->
+  <Header />
+
+  <main id="main">
+    <!-- ==================================================== 01 · DISCOVER -->
+    <Hero />
+
+    <!-- Three routes on one line: locate → justify → convert. The first place
+         the visitor sees the whole funnel in one band. -->
+    <ConversionBar />
+
+    <!-- The full lineup. One product presented at a time, with the complete
+         catalogue also present in the HTML for SEO and no-JS readers. -->
+    <VehicleExplorer />
+
+    <!-- ================================================= 02 · PERSONALISE -->
+    <!-- Four questions, not a spec sheet. This is the primary lead magnet: the
+         answers are attached to the enquiry so the dealer arrives prepared. -->
+    <EVFinder />
+
+    <!-- =================================================== 03 · CALCULATE -->
+    <!-- Transparent cost model. Assumptions are visible by default and the
+         figures are labelled as estimates, not guarantees. -->
+    <SavingsCalculator />
+
+    <!-- =================================================== 04 · UNDERSTAND -->
+    <!-- The product story, told in chapters. Native horizontal scroll on touch,
+         pinned scroll on desktop — same content either way. -->
+    <ProductStory />
+
+    <!-- Regional mobility context. Abstract, stylised map keyed to where the
+         network actually concentrates; no invented per-state figures. -->
+    <IndiaMobility />
+
+    <!-- Six systems explained in plain language. Missing specs are left blank
+         and flagged rather than filled with a plausible-looking number. -->
+    <Technology />
+
+    <!-- Company history as eras, not as a list of invented dates. Only sourced
+         entries assert a specific event. -->
+    <LegacyTimeline />
+
+    <!-- ====================================================== 05 · TRUST -->
+    <!-- What happens after purchase: charging, service, finance, dealers —
+         each framing the friction it removes rather than a feature it adds. -->
+    <Ownership />
+
+    <!-- EMI estimator that also shows total interest and total repayment. -->
+    <Finance />
+
+    <!-- Dealer locator with a soft-capture fallback, so a visitor who searches
+         without booking is still reachable. -->
+    <DealerFinder />
+
+    <!-- The highest-intent surface before a test ride: city-specific on-road
+         price. Deliberately placed after the dealer context. -->
+    <PriceLead />
+
+    <!-- ==================================================== 06 · CONVERT -->
+    <!-- Editorial plus the Q&A block. Answers the "can I trust you" question
+         that the closing CTA depends on. -->
+    <Stories />
+
+    <!-- Three routes in descending commitment, so a visitor who is not ready to
+         book is routed rather than lost. -->
+    <FinalCTA />
+  </main>
+
+  <Footer />
+
+  <!--
+    Persistent conversion surfaces. Both are enhancement layers: the modal is
+    opened by any [data-lead-open] trigger, and the sticky bar only ever appears
+    on touch devices after the hero has been cleared.
+  -->
+  <StickyCTA />
+  <LeadModal />
+</BaseLayout>

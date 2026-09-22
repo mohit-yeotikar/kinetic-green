@@ -1,0 +1,28 @@
+# Kinetic Green — robots.txt
+# Homepage redesign (concept build)
+
+User-agent: *
+Allow: /
+
+# Block the build artefacts and any private surfaces
+Disallow: /_astro/
+Disallow: /api/
+
+# Explicitly welcome the major crawlers (no crawl-delay: this is a static site)
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Ad / social crawlers that need to read OG assets
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+Sitemap: https://kineticgreen.com/sitemap-index.xml

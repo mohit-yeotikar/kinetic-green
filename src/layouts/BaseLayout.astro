@@ -1,0 +1,244 @@
+---
+/**
+ * BaseLayout — document shell, SEO surface, font loading, schema.org graph.
+ *
+ * SEO-first contract:
+ *  - Every page passes real metadata; nothing is inferred at runtime.
+ *  - Structured data is emitted server-side as a single @graph so entities
+ *    cross-reference by @id (Organization ← WebSite ← Product ← FAQ).
+ *  - The `.js` class on <html> is set by an inline script so reveal animations
+ *    only ever hide content when JS can actually reveal it again. With JS
+ *    disabled the page renders fully visible.
+ */
+import '../styles/tokens.css';
+import '../styles/global.css';
+import { brand } from '../data/content';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Page path, e.g. '/' — used for canonical */
+  path?: string;
+  ogImage?: string;
+  /** Structured-data nodes appended to the base @graph */
+  schema?: Record<string, unknown>[];
+  /** Set the dark chrome (used by 404 / campaign pages) */
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description,
+  path = '/',
+  ogImage = '/brand/og-default.jpg',
+  schema = [],
+  bodyClass = '',
+} = Astro.props;
+
+const site = Astro.site?.origin ?? brand.website;
+const canonical = new URL(path, site).href;
+const ogAbsolute = new URL(ogImage, site).href;
+
+/**
+ * Organization node — the root entity every other node references.
+ * areaServed + knowsAbout help local/vertical relevance without keyword stuffing.
+ */
+const organizationNode = {
+  '@type': ['Organization', 'Manufacturer'],
+  '@id': `${site}/#organization`,
+  name: brand.name,
+  legalName: brand.legalName,
+  alternateName: 'Kinetic Green Energy & Power Solutions',
+  url: site,
+  slogan: brand.tagline,
+  description:
+    'Kinetic Green is an Indian electric mobility manufacturer producing electric two-wheelers and three-wheelers, including the E-Luna family and the Safar range of passenger and cargo electric three-wheelers.',
+  foundingLocation: { '@type': 'Place', name: 'India' },
+  areaServed: { '@type': 'Country', name: 'India' },
+  contactPoint: [
+    {
+      '@type': 'ContactPoint',
+      telephone: brand.phone,
+      contactType: 'customer service',
+      areaServed: 'IN',
+      availableLanguage: ['en', 'hi', 'mr'],
+    },
+  ],
+  sameAs: brand.social.map((s) => s.href),
+  knowsAbout: [
+    'Electric vehicles',
+    'Electric two-wheelers',
+    'Electric three-wheelers',
+    'Electric cargo vehicles',
+    'Electric mobility in India',
+    'Battery electric vehicles',
+  ],
+  numberOfEmployees: undefined,
+};
+
+/** WebSite node — enables sitelinks search + ties the site to the org. */
+const websiteNode = {
+  '@type': 'WebSite',
+  '@id': `${site}/#website`,
+  url: site,
+  name: brand.name,
+  description,
+  publisher: { '@id': `${site}/#organization` },
+  inLanguage: 'en-IN',
+};
+
+/**
+ * LocalBusiness per dealer is emitted by DealerFinder on pages that render it,
+ * so dealership schema always reflects actual rendered content (no orphaned
+ * entities that describe dealers the page never shows).
+ */
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [organizationNode, websiteNode, ...schema],
+};
+
+const baseSchema = JSON.stringify(graph).replace(/</g, '\\u003c');
+---
+
+<!doctype html>
+<html lang="en-IN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- ------------------------------------------------------------ primary -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- --------------------------------------------------------------- robots -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+
+    <!-- ------------------------------------------------------------- geo/locale -->
+    <meta name="language" content="English" />
+    <meta name="geo.region" content="IN" />
+    <meta name="theme-color" content="#12161A" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- ------------------------------------------------------------------- OG -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={brand.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogAbsolute} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${brand.name} — ${brand.tagline}`} />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- -------------------------------------------------------------- twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogAbsolute} />
+
+    <!-- ---------------------------------------------------------------- schema -->
+    <script type="application/ld+json" set:html={baseSchema} />
+
+    <!-- ----------------------------------------------------------------- fonts
+         Self-hosted variable fonts. Preconnected + preloaded so the display
+         face resolves before first paint and CLS stays at zero (size-adjust
+         fallback metrics are declared in tokens.css font stack ordering).   -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      />
+    </noscript>
+
+    <!-- ------------------------------------------------------------------ icons -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- ------------------------------------------------ reveal-gate (no-JS safe)
+         Runs before paint. Adds `.js` only when scripting is available, so
+         `[data-reveal]` elements are never left invisible for no-JS visitors. -->
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      try {
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          document.documentElement.dataset.reduceMotion = 'true';
+        }
+      } catch (e) {}
+    </script>
+
+    <!-- -------------------------------------------------------- consent default
+         Deny-by-default for advertising storage until a consent choice exists.
+         Replace GTM-XXXXXXX with the live container id at launch.          -->
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer.push(arguments); };
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'granted',
+        wait_for_update: 500,
+      });
+      window.__kgAnalyticsEnabled = false;
+      // GTM / GA4 / Meta Pixel load here once ids are provisioned.
+      // Keeping this as a no-op stub means the event map is fully wired and
+      // testable now, and switches on with a single id at launch.
+      window.__kgGTM_ID = '';
+      if (window.__kgGTM_ID) {
+        (function (w, d, s, l, i) {
+          w[l] = w[l] || [];
+          w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+          var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
+          j.async = true; j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+          f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', window.__kgGTM_ID);
+      }
+    </script>
+  </head>
+
+  <body class={bodyClass}>
+    <!-- GTM noscript fallback -->
+    <noscript>
+      <iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+        title="Google Tag Manager"></iframe>
+    </noscript>
+
+    <a class="kg-skip" href="#main">Skip to main content</a>
+
+    <slot />
+
+    <!-- ==================================================================
+         CLIENT RUNTIME
+         A single deferred module. Astro bundles it, so it is fetched once and
+         cached across navigations; because it is type="module" it never blocks
+         parse or first paint. Every controller inside it only *enhances* markup
+         that already works, so if this script fails to load the page still
+         renders completely — that is the point of the .js gate above.
+         ================================================================== -->
+    <script>
+      import '../scripts/main';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,333 @@
+---
+/**
+ * PriceLead — "WANT THE ON-ROAD PRICE?" (IA slot 15)
+ *
+ * A high-intent lead magnet. On-road price is a genuine information request — the
+ * visitor has moved past "which vehicle" to "what will it actually cost me here".
+ * That is the closest thing to purchase intent a homepage will see before a test
+ * ride, so it gets its own surface rather than being buried in a generic form.
+ *
+ * NON-JS FALLBACK
+ * The selects are real <select> elements and the fields are real inputs. Without
+ * JS the visitor can open the lead form and the payload is still meaningful.
+ */
+import Icon from './Icon.astro';
+import { priceableVehicles, formatINR, PRICE_DISCLAIMER } from '../data/vehicles';
+import { dealers } from '../data/content';
+
+const cities = [...new Set(dealers.map((d) => d.city))].sort();
+
+/* Variant options are intentionally generic until the OEM supplies variant tables */
+const variants = ['Standard', 'Mid', 'Top', 'Not sure — advise me'];
+
+/**
+ * Data island for the price controller — id, name and ex-showroom figure only.
+ * Used to attach the starting price to the lead payload so the sales team knows
+ * which vehicle was quoted without re-deriving it. It is NOT used to display an
+ * "on-road price": that figure is city- and variant-specific and is what we send
+ * the visitor, rather than fabricating one from a national average.
+ */
+const priceData = priceableVehicles.map((v) => ({
+  id: v.id,
+  name: v.name,
+  price: v.priceFrom,
+}));
+---
+
+<script type="application/json" data-price-data set:html={JSON.stringify(priceData).replace(/</g, '\\u003c')} />
+
+
+<section class="kg-price kg-section" id="price" data-section="price">
+  <div class="kg-shell">
+    <div class="kg-price__panel">
+      <div class="kg-price__grid-bg" aria-hidden="true"></div>
+
+      <div class="kg-price__copy">
+        <p class="kg-eyebrow">On-road price</p>
+        <h2 class="kg-price__title">
+          Want the<br /><span class="kg-accent">on-road price?</span>
+        </h2>
+        <p class="kg-price__body">
+          Ex-showroom is not what you pay. Registration, insurance, road tax and any state subsidy
+          change the number meaningfully by city. Tell us where you are buying and we will send the
+          actual on-road price for your variant.
+        </p>
+
+        <ul class="kg-price__points">
+          <li><Icon name="check" size={14} /><span>City-specific on-road price, not a national average</span></li>
+          <li><Icon name="check" size={14} /><span>State subsidy and registration included where applicable</span></li>
+          <li><Icon name="check" size={14} /><span>Variant-level breakdown</span></li>
+        </ul>
+
+        <p class="kg-price__disclaimer">
+          <Icon name="info" size={13} />
+          <span>{PRICE_DISCLAIMER}</span>
+        </p>
+      </div>
+
+      <!-- ------------------------------------------------------------ FORM -->
+      <form class="kg-price__form" data-price-form novalidate>
+        <p class="kg-label kg-price__form-label">Get detailed on-road price</p>
+
+        <div class="kg-price__fields">
+          <label class="kg-field">
+            <span class="kg-field__label">City <span class="kg-req" aria-hidden="true">*</span></span>
+            <select class="kg-input" name="city" required data-price-city>
+              <option value="">Select your city</option>
+              {cities.map((c) => <option value={c}>{c}</option>)}
+              <option value="Other">Other city</option>
+            </select>
+            <span class="kg-error" data-price-error-for="city"></span>
+          </label>
+
+          <label class="kg-field">
+            <span class="kg-field__label">Vehicle <span class="kg-req" aria-hidden="true">*</span></span>
+            <select class="kg-input" name="vehicle" required data-price-vehicle>
+              <option value="">Select a vehicle</option>
+              {
+                priceableVehicles.map((v) => (
+                  <option value={v.id}>
+                    {v.name} — from {formatINR(v.priceFrom!)}
+                  </option>
+                ))
+              }
+            </select>
+            <span class="kg-error" data-price-error-for="vehicle"></span>
+          </label>
+
+          <label class="kg-field">
+            <span class="kg-field__label">Variant</span>
+            <select class="kg-input" name="variant" data-price-variant>
+              {variants.map((v) => <option value={v}>{v}</option>)}
+            </select>
+          </label>
+        </div>
+
+        <!-- progressive: contact is the second half, only after the choice -->
+        <div class="kg-price__fields kg-price__fields--contact">
+          <label class="kg-field">
+            <span class="kg-field__label">Name <span class="kg-req" aria-hidden="true">*</span></span>
+            <input type="text" class="kg-input" name="name" placeholder="Full name" autocomplete="name" required data-price-name />
+            <span class="kg-error" data-price-error-for="name"></span>
+          </label>
+
+          <label class="kg-field">
+            <span class="kg-field__label">Mobile <span class="kg-req" aria-hidden="true">*</span></span>
+            <div class="kg-price__prefix-wrap">
+              <span class="kg-price__prefix">+91</span>
+              <input
+                type="tel"
+                class="kg-input"
+                name="phone"
+                placeholder="10-digit mobile"
+                autocomplete="tel-national"
+                inputmode="numeric"
+                maxlength="10"
+                required
+                data-price-phone
+              />
+            </div>
+            <span class="kg-error" data-price-error-for="phone"></span>
+          </label>
+
+          <label class="kg-field">
+            <span class="kg-field__label">Email <span class="kg-opt">optional</span></span>
+            <input type="email" class="kg-input" name="email" placeholder="you@example.com" autocomplete="email" data-price-email />
+            <span class="kg-error" data-price-error-for="email"></span>
+          </label>
+        </div>
+
+        <label class="kg-check">
+          <input type="checkbox" name="whatsapp_consent" data-price-whatsapp />
+          <span class="kg-check__box" aria-hidden="true"><Icon name="check" size={12} /></span>
+          <span class="kg-check__text">Send the price to me on WhatsApp <span class="kg-opt">optional</span></span>
+        </label>
+
+        <button type="submit" class="kg-btn kg-btn--lg kg-btn--block" data-price-submit>
+          <span>Send me the on-road price</span>
+          <Icon name="arrow-right" size={16} />
+        </button>
+
+        <p class="kg-price__msg" data-price-msg hidden aria-live="polite"></p>
+
+        <p class="kg-price__privacy">
+          By submitting you agree to be contacted about this enquiry. We do not sell your data.
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<style>
+  .kg-price {
+    background: var(--kg-charcoal);
+    color: #fff;
+    --s-bg: var(--kg-charcoal);
+    --s-bg-alt: var(--kg-charcoal-2);
+    --s-fg: #fff;
+    --s-fg-muted: var(--kg-silver);
+    --s-fg-subtle: var(--kg-steel);
+    --s-line: rgb(255 255 255 / 0.1);
+    --s-line-strong: var(--kg-graphite);
+    --s-accent: var(--kg-green-400);
+    --s-accent-bg: var(--kg-green);
+  }
+
+  .kg-price__panel {
+    position: relative;
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    padding: clamp(1.5rem, 4vw, 3.5rem);
+    background: linear-gradient(150deg, #1b2127 0%, #12161a 60%, #0b0e10 100%);
+    border: 1px solid var(--kg-graphite);
+    border-radius: var(--r-5);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .kg-price__panel::after {
+    content: '';
+    position: absolute;
+    inset-block-start: -50%;
+    inset-inline-end: -8%;
+    width: 48%;
+    height: 200%;
+    background: linear-gradient(118deg, transparent 46%, rgb(0 200 83 / 0.12) 70%, transparent 92%);
+    transform: rotate(var(--diag-soft));
+    pointer-events: none;
+  }
+  .kg-price__grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, rgb(94 108 118 / 0.14) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(94 108 118 / 0.14) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 80% at 22% 40%, #000 10%, transparent 76%);
+    pointer-events: none;
+  }
+
+  /* ----------------------------------------------------------------- copy */
+  .kg-price__copy { position: relative; z-index: 1; }
+
+  .kg-price__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.875rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.03;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    margin: 0.75rem 0 1rem;
+  }
+
+  .kg-price__body {
+    font-size: var(--fs-lead);
+    line-height: 1.65;
+    color: var(--kg-silver);
+    margin: 0 0 1.5rem;
+    max-width: 44ch;
+  }
+
+  .kg-price__points { display: grid; gap: 0.6rem; margin-block-end: 1.5rem; }
+  .kg-price__points li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.875rem;
+    color: var(--kg-silver);
+  }
+  .kg-price__points svg { color: var(--kg-green); flex: none; margin-block-start: 0.2rem; }
+
+  .kg-price__disclaimer {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    margin: 0;
+    padding: 0.75rem 0.875rem;
+    background: rgb(255 255 255 / 0.04);
+    border-left: 2px solid var(--kg-graphite-2);
+    border-radius: var(--r-2);
+    font-size: 0.6875rem;
+    line-height: 1.6;
+    color: var(--kg-steel);
+  }
+  .kg-price__disclaimer svg { flex: none; margin-block-start: 0.15rem; }
+
+  /* ----------------------------------------------------------------- form */
+  .kg-price__form {
+    position: relative;
+    z-index: 1;
+    padding: clamp(1.125rem, 3vw, 1.75rem);
+    background: rgb(255 255 255 / 0.035);
+    border: 1px solid rgb(255 255 255 / 0.09);
+    border-radius: var(--r-4);
+    backdrop-filter: blur(8px);
+  }
+  .kg-price__form-label { color: var(--kg-green-400); margin: 0 0 1.125rem; }
+
+  .kg-price__fields { display: grid; gap: 0; margin-block-end: 0.75rem; }
+  .kg-price__fields--contact {
+    padding-block-start: 0.875rem;
+    border-block-start: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  .kg-price .kg-input {
+    background: rgb(255 255 255 / 0.04);
+    border-color: rgb(255 255 255 / 0.14);
+    color: #fff;
+  }
+  .kg-price .kg-input::placeholder { color: var(--kg-steel); }
+  .kg-price select.kg-input { background-color: rgb(20 25 29 / 0.9); color: #fff; }
+
+  .kg-price__prefix-wrap { position: relative; }
+  .kg-price__prefix {
+    position: absolute;
+    inset-inline-start: 1rem;
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--kg-silver);
+    pointer-events: none;
+  }
+  .kg-price__prefix-wrap .kg-input { padding-inline-start: 3.75rem; }
+
+  .kg-price__msg {
+    margin: 1rem 0 0;
+    padding: 0.875rem 1rem;
+    background: rgb(0 200 83 / 0.12);
+    border: 1px solid rgb(0 200 83 / 0.34);
+    border-radius: var(--r-2);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: #fff;
+  }
+  .kg-price__msg[hidden] { display: none; }
+
+  .kg-price__privacy {
+    margin: 0.875rem 0 0;
+    font-size: 0.625rem;
+    line-height: 1.6;
+    color: var(--kg-steel);
+  }
+
+  .kg-price .kg-check__text { color: var(--kg-silver); }
+
+  /* ============================================================ RESPONSIVE */
+  @media (min-width: 640px) {
+    .kg-price__fields { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1rem; }
+    .kg-price__fields > .kg-field:first-child { grid-column: 1 / -1; }
+  }
+
+  @media (min-width: 1024px) {
+    .kg-price__panel { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: center; }
+    .kg-price__fields { grid-template-columns: 1fr; }
+    .kg-price__fields > .kg-field:first-child { grid-column: auto; }
+    .kg-price__fields--contact { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1rem; }
+  }
+
+  @media (min-width: 1280px) {
+    .kg-price__panel { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+    .kg-price__fields { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 1rem; }
+    .kg-price__fields > .kg-field:first-child { grid-column: auto; }
+  }
+</style>

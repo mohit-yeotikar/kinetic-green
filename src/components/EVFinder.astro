@@ -1,0 +1,835 @@
+---
+/**
+ * EVFinder — "WHICH KINETIC GREEN IS RIGHT FOR YOU?" (IA slot 05)
+ *
+ * The lead magnet. Four questions, then a matched vehicle with a cost story,
+ * then a single CTA that opens the lead modal with every answer attached.
+ *
+ * WHY THIS IS BUILD AS A <form>
+ * It is a real form with real radio inputs, so keyboard navigation, arrow-key
+ * group selection and screen-reader semantics come free — no ARIA re-implementation
+ * of a radio group. JS only moves between steps.
+ *
+ * SCORING
+ * The match is computed from an explicit rule table (below), not a black box.
+ * Answers are also written into the CTA's data attributes so the lead payload
+ * carries `need`, `distance`, `priority` and `location` — that is the whole
+ * qualification value of this section.
+ */
+import Icon from './Icon.astro';
+import { vehicles, formatINR } from '../data/vehicles';
+import { dealers } from '../data/content';
+import { finderRules, distanceMidpoints, finderEconomics, estimateCosts } from '../data/finder';
+
+/* ------------------------------------------------------------------ steps */
+const steps = [
+  {
+    id: 'need',
+    n: 1,
+    question: 'What do you need it for?',
+    help: 'Pick the closest fit — you can change this later.',
+    options: [
+      { v: 'commute', label: 'Daily commute', meta: 'Work and back, every day', icon: 'route' },
+      { v: 'family', label: 'Family use', meta: 'Two up, household duty', icon: 'users' },
+      { v: 'business', label: 'Business', meta: 'A vehicle that has to earn', icon: 'building' },
+      { v: 'passenger', label: 'Passenger transport', meta: 'Carrying people for hire', icon: 'compass' },
+      { v: 'cargo', label: 'Cargo', meta: 'Moving goods and loads', icon: 'truck' },
+      { v: 'multiple', label: 'Multiple purposes', meta: 'A bit of everything', icon: 'layers' },
+    ],
+  },
+  {
+    id: 'distance',
+    n: 2,
+    question: 'How far do you travel daily?',
+    help: 'An honest average beats a best-day estimate.',
+    options: [
+      { v: '0-20', label: 'Under 20 km', meta: 'Short local loop', icon: 'gauge' },
+      { v: '20-40', label: '20 – 40 km', meta: 'Typical city commute', icon: 'route' },
+      { v: '40-70', label: '40 – 70 km', meta: 'Longer daily run', icon: 'trending-down' },
+      { v: '70+', label: '70+ km', meta: 'High daily mileage', icon: 'bolt' },
+    ],
+  },
+  {
+    id: 'priority',
+    n: 3,
+    question: 'What matters most?',
+    help: 'Only one answer — this decides your match.',
+    options: [
+      { v: 'running-cost', label: 'Low running cost', meta: 'Spend less per km', icon: 'rupee' },
+      { v: 'range', label: 'Range', meta: 'Go further on a charge', icon: 'battery' },
+      { v: 'load', label: 'Load capacity', meta: 'Carry more, more often', icon: 'truck' },
+      { v: 'comfort', label: 'Comfort', meta: 'Better for long days', icon: 'spark' },
+      { v: 'performance', label: 'Performance', meta: 'Stronger motor, more speed', icon: 'bolt' },
+      { v: 'affordability', label: 'Affordability', meta: 'Lowest entry price', icon: 'rupee' },
+    ],
+  },
+] as const;
+
+/**
+ * MATCH TABLE — readable, auditable, one line per rule.
+ * Order matters: the first rule whose conditions are all satisfied wins.
+ * Every rule resolves to a vehicle id that exists in data/vehicles.ts.
+ */
+const rules: { when: Partial<Record<string, string[]>>; pick: string; why: string }[] = [
+  {
+    when: { need: ['cargo'], priority: ['load'] },
+    pick: 'safar-shakti',
+    why: 'You are moving loads, so deck capacity decides the vehicle before anything else.',
+  },
+  {
+    when: { need: ['passenger', 'business'], priority: ['load', 'comfort'] },
+    pick: 'safar-smart',
+    why: 'Passenger duty rewards low cost per trip and easy boarding more than outright speed.',
+  },
+  {
+    when: { need: ['passenger', 'business'], priority: ['performance', 'range'] },
+    pick: 'super-dx',
+    why: 'Higher duty cycles need a stronger drivetrain and a more robust platform.',
+  },
+  {
+    when: { need: ['commute', 'multiple'], distance: ['70+'], priority: ['range', 'performance'] },
+    pick: 'eluna-prime',
+    why: 'High daily mileage puts the commuter motorcycle variant ahead of the moped family.',
+  },
+  {
+    when: { need: ['family'], priority: ['comfort', 'load'] },
+    pick: 'eluna-pro',
+    why: 'Regular pillion use favours the strongest everyday E-Luna specification.',
+  },
+  {
+    when: { need: ['commute', 'multiple'], distance: ['40-70'] },
+    pick: 'eluna-plus',
+    why: 'A longer daily loop is exactly where the larger battery pack pays for itself.',
+  },
+  {
+    when: { priority: ['range', 'performance'] },
+    pick: 'eluna-plus',
+    why: 'Range and drive quality are what separate the Plus from the base E-Luna.',
+  },
+  {
+    when: { priority: ['affordability'] },
+    pick: 'eluna-go',
+    why: 'Lowest entry price in the E-Luna family, with the same household-socket charging.',
+  },
+  {
+    when: { priority: ['running-cost'], distance: ['0-20', '20-40'] },
+    pick: 'eluna-go',
+    why: 'Short daily distances are where the cheapest electric option saves the most per km.',
+  },
+  // Fallbacks — always resolve to something sensible
+  { when: { need: ['commute', 'multiple'], priority: ['running-cost'] }, pick: 'eluna-plus', why: 'The broadest everyday fit across the E-Luna family.' },
+  { when: {}, pick: 'eluna-plus', why: 'The balanced choice across most everyday use cases.' },
+];
+
+/* ----------------------------------------------------- running cost model  */
+/**
+ * TRANSPARENT ASSUMPTIONS — shown to the visitor in the UI, not buried.
+ * Electricity ₹8/kWh, petrol ₹105/l, petrol comparison 55 km/l (moped class).
+ * These are illustrative Indian metro averages, labelled as such.
+ */
+const RATE = finderEconomics;
+
+/**
+ * COSTING — delegated to the shared module so the server-rendered seed result
+ * and the client-side result come from the same code path. If these diverged,
+ * a visitor would see one number on load and a different one after answering,
+ * which is exactly how a calculator loses credibility.
+ */
+
+const inr = (n: number) => new Intl.NumberFormat('en-IN').format(n);
+
+/* ------------------------------------------------------------------ seed */
+/**
+ * A real, server-rendered recommendation for the default answers, so the result
+ * panel contains meaningful content with JS disabled and for crawlers. JS
+ * replaces it once the visitor answers.
+ */
+const seedRule = finderRules[finderRules.length - 1];
+const seedVehicle = vehicles.find((v) => v.id === seedRule.pick) ?? vehicles[0];
+const seedCosts = estimateCosts('20-40');
+const seedDealer = dealers[0];
+
+/**
+ * The JSON island. This is the single source of truth the client controller
+ * reads — rules, economics and the dealer roster are never duplicated in the
+ * script. Rendered as application/json so it is inert (never executed) and
+ * crawled as data rather than as prose.
+ */
+const finderConfig = {
+  vehicles: vehicles.map((v) => ({
+    id: v.id,
+    name: v.name,
+    tagline: v.tagline,
+    segment: v.segment,
+    priceFrom: v.priceFrom,
+    rangeKm: v.specs.rangeKm,
+    batteryKwh: v.specs.batteryKwh,
+    batteryType: v.specs.batteryType,
+    useCases: v.useCases,
+  })),
+  rules: finderRules,
+  distanceMidpoints,
+  economics: { ...finderEconomics },
+  dealers: dealers.map((d) => ({
+    id: d.id,
+    name: d.name,
+    city: d.city,
+    state: d.state,
+    pincode: d.pincode,
+    distanceKm: d.distanceKm,
+    testRide: d.testRide,
+  })),
+};
+---
+
+<script type="application/json" data-finder-config set:html={JSON.stringify(finderConfig)} />
+
+<section
+  class="kg-find kg-section kg-section--lg"
+  id="find-your-ev"
+  data-section="ev-finder"
+  data-finder
+  data-vehicles={JSON.stringify(vehicles.map((v) => ({ id: v.id, name: v.name, segment: v.segment, price: v.priceFrom })))}
+>
+  <div class="kg-find__bg" aria-hidden="true">
+    <div class="kg-find__beam"></div>
+    <div class="kg-grid-bg"></div>
+  </div>
+
+  <div class="kg-shell kg-find__inner">
+    <!-- ============================================================== HEAD -->
+    <header class="kg-find__head">
+      <p class="kg-eyebrow" data-reveal>
+        <Icon name="target" size={13} />
+        Find your EV
+      </p>
+      <h2 class="kg-display kg-find__title" data-reveal="clip">
+        Which Kinetic Green<br />is <span class="kg-accent">right for you?</span>
+      </h2>
+      <p class="kg-lead kg-find__intro" data-reveal style="--reveal-delay:100ms">
+        Four questions. No spec sheet required. We will match you to the vehicle that fits how you
+        actually use it — and show you what it would cost to run.
+      </p>
+    </header>
+
+    <!-- ============================================================== TOOL -->
+    <div class="kg-find__tool" data-finder-tool>
+      <!-- ---------------------------------------------------------- aside -->
+      <aside class="kg-find__aside">
+        <ol class="kg-find__steps" data-finder-steplist>
+          {
+            steps.map((s) => (
+              <li class="kg-find__step" data-finder-stepitem={s.n}>
+                <button type="button" class="kg-find__step-btn" data-finder-goto={s.n}>
+                  <span class="kg-find__step-num">{String(s.n).padStart(2, '0')}</span>
+                  <span class="kg-find__step-text">{s.question}</span>
+                  <span class="kg-find__step-state" data-finder-stepstate={s.n} aria-hidden="true" />
+                </button>
+              </li>
+            ))
+          }
+          <li class="kg-find__step kg-find__step--result" data-finder-stepitem="4">
+            <button type="button" class="kg-find__step-btn" data-finder-goto="4">
+              <span class="kg-find__step-num">04</span>
+              <span class="kg-find__step-text">Your location &amp; match</span>
+              <span class="kg-find__step-state" data-finder-stepstate="4" aria-hidden="true" />
+            </button>
+          </li>
+        </ol>
+
+        <div class="kg-find__aside-note">
+          <Icon name="info" size={14} />
+          <p>
+            Answers are used to pick a vehicle and are sent with your enquiry so the dealer can
+            prepare. Nothing is shared with third parties.
+          </p>
+        </div>
+      </aside>
+
+      <!-- --------------------------------------------------------- panels -->
+      <form class="kg-find__panels" data-finder-form novalidate>
+        {
+          steps.map((s) => (
+            <fieldset class="kg-find__panel" data-finder-panel={s.n} data-active={s.n === 1 ? 'true' : 'false'}>
+              <legend class="kg-find__legend">
+                <span class="kg-find__legend-num">Question {s.n} of 4</span>
+                <span class="kg-find__legend-q">{s.question}</span>
+                <span class="kg-find__legend-help">{s.help}</span>
+              </legend>
+
+              <ul class="kg-find__options">
+                {s.options.map((o, i) => (
+                  <li style={`--i:${i}`}>
+                    <label class="kg-find__opt">
+                      <input
+                        type="radio"
+                        name={s.id}
+                        value={o.v}
+                        class="kg-find__radio"
+                        data-finder-input={s.id}
+                      />
+                      <span class="kg-find__opt-card">
+                        <span class="kg-find__opt-icon"><Icon name={o.icon} size={20} /></span>
+                        <span class="kg-find__opt-body">
+                          <span class="kg-find__opt-label">{o.label}</span>
+                          <span class="kg-find__opt-meta">{o.meta}</span>
+                        </span>
+                        <span class="kg-find__opt-mark" aria-hidden="true">
+                          <Icon name="check" size={13} />
+                        </span>
+                      </span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+
+              <div class="kg-find__nav">
+                <button type="button" class="kg-btn kg-btn--outline" data-finder-prev hidden>
+                  <Icon name="arrow-left" size={16} /> Back
+                </button>
+                <button type="button" class="kg-btn" data-finder-next>
+                  {s.n === 3 ? 'See my match' : 'Continue'}
+                  <Icon name="arrow-right" size={16} />
+                </button>
+              </div>
+            </fieldset>
+          ))
+        }
+
+        <!-- ============================================ STEP 4 · LOCATION -->
+        <fieldset class="kg-find__panel" data-finder-panel="4" data-active="false">
+          <legend class="kg-find__legend">
+            <span class="kg-find__legend-num">Question 4 of 4</span>
+            <span class="kg-find__legend-q">Where are you?</span>
+            <span class="kg-find__legend-help">
+              So we can point you at your nearest dealer and local on-road price.
+            </span>
+          </legend>
+
+          <label class="kg-field">
+            <span class="kg-field__label">City or PIN code</span>
+            <div class="kg-input-icon">
+              <Icon name="map-pin" size={18} />
+              <input
+                type="text"
+                class="kg-input"
+                name="location"
+                list="kg-city-list-finder"
+                placeholder="e.g. Pune or 411001"
+                autocomplete="address-level2"
+                data-finder-location
+              />
+            </div>
+          </label>
+          <datalist id="kg-city-list-finder">
+            <option value="Pune" />
+            <option value="Mumbai" />
+            <option value="Nashik" />
+            <option value="Nagpur" />
+            <option value="Bengaluru" />
+            <option value="Mysuru" />
+            <option value="Hyderabad" />
+            <option value="Chennai" />
+            <option value="Coimbatore" />
+            <option value="Delhi" />
+            <option value="Gurugram" />
+            <option value="Noida" />
+            <option value="Lucknow" />
+            <option value="Jaipur" />
+            <option value="Ahmedabad" />
+            <option value="Indore" />
+            <option value="Kolkata" />
+            <option value="Patna" />
+            <option value="Kochi" />
+            <option value="Guwahati" />
+          </datalist>
+
+          <div class="kg-find__nav">
+            <button type="button" class="kg-btn kg-btn--outline" data-finder-prev>
+              <Icon name="arrow-left" size={16} /> Back
+            </button>
+            <button type="button" class="kg-btn" data-finder-reveal>
+              Get my recommendation
+              <Icon name="spark" size={16} />
+            </button>
+          </div>
+        </fieldset>
+
+        <!-- ================================================ STEP 5 · RESULT -->
+        <div class="kg-find__panel kg-result" data-finder-panel="5" data-active="false">
+          <header class="kg-result__head">
+            <p class="kg-eyebrow" data-reveal>Your Kinetic Green match</p>
+            <h3 class="kg-result__title" data-result-name>Kinetic Green {seedVehicle.name}</h3>
+            <p class="kg-result__why" data-result-why>{seedRule.why}</p>
+          </header>
+
+          <div class="kg-result__grid">
+            <!-- ------------------------------------------- spec summary -->
+            <div class="kg-result__specs">
+              <dl class="kg-result__dl">
+                <div><dt>Best for</dt><dd data-result-bestsuited>{seedVehicle.useCases.slice(0, 2).join(' · ')}</dd></div>
+                <div>
+                  <dt>Claimed range</dt>
+                  <dd data-result-range>
+                    {seedVehicle.specs.rangeKm ? `${seedVehicle.specs.rangeKm} km` : 'Confirm with dealer'}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Battery</dt>
+                  <dd data-result-battery>
+                    {seedVehicle.specs.batteryKwh
+                      ? `${seedVehicle.specs.batteryKwh} kWh ${seedVehicle.specs.batteryType}`
+                      : seedVehicle.specs.batteryType}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Starting from</dt>
+                  <dd data-result-price>
+                    {seedVehicle.priceFrom ? formatINR(seedVehicle.priceFrom) : 'On enquiry'}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Nearest dealer</dt>
+                  <dd data-result-dealer>{seedDealer.name} · {seedDealer.city} · {seedDealer.distanceKm} km</dd>
+                </div>
+              </dl>
+            </div>
+
+            <!-- -------------------------------------- transparent costing -->
+            <div class="kg-result__cost">
+              <p class="kg-label">Estimated running cost</p>
+              <ul class="kg-result__cost-rows" data-result-costrows>
+                {
+                  seedCosts.rows.map((row) => (
+                    <li>
+                      <span>{row.label}</span>
+                      <b class="kg-num">{row.value}</b>
+                    </li>
+                  ))
+                }
+              </ul>
+
+              <div class="kg-result__saving">
+                <span class="kg-result__saving-label">Estimated monthly saving vs petrol</span>
+                <span class="kg-result__saving-value">
+                  <span class="kg-num">₹</span><span class="kg-num" data-result-saving>{seedCosts.saving.toLocaleString('en-IN')}</span>
+                </span>
+              </div>
+
+              <details class="kg-result__assumptions">
+                <summary>How this is calculated</summary>
+                <ul>
+                  <li>Electricity at ₹{RATE.electricityPerKwh}/kWh and petrol at ₹{RATE.petrolPerLitre}/litre.</li>
+                  <li>Petrol comparison at {RATE.petrolKmpl} km/l, a 110cc moped-class figure.</li>
+                  <li>E-Luna class consumption of ~0.022 kWh/km from the 2.0 kWh pack and 110 km claimed range.</li>
+                  <li>{RATE.daysPerMonth} riding days per month.</li>
+                  <li>
+                    Estimates for illustration only. Actual costs depend on tariffs, routes, load,
+                    terrain and battery age, and are not a guarantee of savings.
+                  </li>
+                </ul>
+              </details>
+            </div>
+          </div>
+
+          <!-- ------------------------------------------------------ CTAs -->
+          <div class="kg-result__actions">
+            <button
+              type="button"
+              class="kg-btn kg-btn--lg"
+              data-finder-cta
+              data-lead-type="vehicle-enquiry"
+              data-lead-intent="high"
+              data-lead-source="ev-finder"
+            >
+              Get my personalised recommendation
+              <Icon name="arrow-right" size={17} />
+            </button>
+            <button type="button" class="kg-btn kg-btn--outline kg-btn--lg" data-finder-restart>
+              <Icon name="sliders" size={16} /> Start again
+            </button>
+          </div>
+          <p class="kg-result__foot">
+            <Icon name="lock" size={13} />
+            We send your answers with the enquiry so the dealer arrives prepared — not to a blank
+            conversation.
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* =============================================================== SHELL */
+  .kg-find {
+    position: relative;
+    overflow: hidden;
+    background: var(--kg-ink);
+    color: #fff;
+    --s-bg: var(--kg-ink);
+    --s-bg-alt: var(--kg-charcoal);
+    --s-fg: #fff;
+    --s-fg-muted: var(--kg-silver);
+    --s-fg-subtle: #6e7a82;
+    --s-line: rgb(255 255 255 / 0.08);
+    --s-line-strong: #1e2529;
+    --s-accent: var(--kg-green-400);
+    --s-accent-bg: var(--kg-green);
+  }
+
+  .kg-find__bg { position: absolute; inset: 0; pointer-events: none; }
+  .kg-find__bg .kg-grid-bg { opacity: 0.16; }
+
+  /* The signature diagonal, anchored to the section head */
+  .kg-find__beam {
+    position: absolute;
+    inset-block: -10%;
+    inset-inline-start: 62%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--kg-green-a40) 40%, transparent 85%);
+    transform: rotate(var(--diag-soft));
+  }
+
+  .kg-find__inner { position: relative; z-index: 2; }
+
+  /* ================================================================ HEAD */
+  .kg-find__head { display: grid; gap: clamp(0.75rem, 2vw, 1.25rem); margin-block-end: clamp(2rem, 5vw, 3.5rem); }
+  .kg-find__head .kg-eyebrow svg { flex: none; }
+  .kg-find__title { font-size: var(--fs-d2); max-width: 22ch; }
+  .kg-find__intro { max-width: 56ch; }
+
+  /* ================================================================ TOOL */
+  .kg-find__tool {
+    display: grid;
+    gap: clamp(1.5rem, 3.5vw, 3rem);
+    align-items: start;
+  }
+
+  /* --------------------------------------------------------------- aside */
+  .kg-find__steps { display: grid; gap: 0; margin: 0; }
+  .kg-find__step { border-block-start: 1px solid var(--s-line); }
+  .kg-find__step:last-child { border-block-end: 1px solid var(--s-line); }
+
+  .kg-find__step-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    width: 100%;
+    padding: 1rem 0.25rem;
+    text-align: start;
+    color: var(--s-fg-subtle);
+    transition: color var(--dur-2) var(--ease-kinetic), padding var(--dur-3) var(--ease-expo);
+  }
+  .kg-find__step-btn:hover { color: #fff; padding-inline-start: 0.6rem; }
+
+  .kg-find__step-num {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    color: var(--kg-steel);
+    flex: none;
+  }
+  .kg-find__step-text {
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    flex: 1;
+  }
+  .kg-find__step-state {
+    width: 22px;
+    height: 2px;
+    flex: none;
+    background: currentColor;
+    opacity: 0.35;
+    transition: all var(--dur-3) var(--ease-expo);
+  }
+  .kg-find__step[data-done='true'] .kg-find__step-state { background: var(--kg-green); opacity: 1; }
+  .kg-find__step[data-done='true'] .kg-find__step-btn { color: var(--kg-silver); }
+  .kg-find__step[data-active='true'] .kg-find__step-btn { color: #fff; }
+  .kg-find__step[data-active='true'] .kg-find__step-num { color: var(--kg-green-400); }
+  .kg-find__step[data-active='true'] .kg-find__step-state {
+    width: 40px;
+    background: var(--kg-green);
+    opacity: 1;
+  }
+
+  .kg-find__aside-note {
+    display: flex;
+    gap: 0.6rem;
+    margin-block-start: 1.5rem;
+    padding: 0.875rem 1rem;
+    background: rgb(255 255 255 / 0.03);
+    border: 1px solid var(--s-line);
+    border-radius: var(--r-2);
+  }
+  .kg-find__aside-note svg { color: var(--kg-green-400); flex: none; margin-block-start: 0.2rem; }
+  .kg-find__aside-note p { margin: 0; font-size: 0.75rem; line-height: 1.6; color: var(--s-fg-subtle); }
+
+  /* -------------------------------------------------------------- panels */
+  .kg-find__panels { min-height: 420px; }
+  .kg-find__panel { border: 0; padding: 0; margin: 0; }
+  .kg-find__panel[data-active='false'] { display: none; }
+  .kg-find__panel[data-active='true'] { animation: kg-find-in 0.45s var(--ease-expo) both; }
+  @keyframes kg-find-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .kg-find__legend { display: grid; gap: 0.4rem; margin-block-end: 1.5rem; }
+  .kg-find__legend-num {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--kg-green-400);
+  }
+  .kg-find__legend-q {
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 3vw, 1.875rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+  .kg-find__legend-help { font-size: 0.875rem; color: var(--s-fg-subtle); }
+
+  /* ------------------------------------------------------------- options */
+  .kg-find__options {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0 0 1.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  }
+  .kg-find__radio { position: absolute; opacity: 0; width: 1px; height: 1px; }
+
+  .kg-find__opt-card {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    height: 100%;
+    padding: 1rem;
+    background: rgb(255 255 255 / 0.03);
+    border: 1px solid var(--s-line);
+    border-radius: var(--r-3);
+    cursor: pointer;
+    transition: all var(--dur-2) var(--ease-kinetic);
+  }
+  .kg-find__opt-card:hover {
+    border-color: var(--kg-green-a40);
+    background: rgb(0 200 83 / 0.07);
+    transform: translateY(-2px);
+  }
+
+  .kg-find__opt-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex: none;
+    border-radius: var(--r-2);
+    background: rgb(255 255 255 / 0.05);
+    border: 1px solid var(--s-line);
+    color: var(--kg-green-400);
+    transition: all var(--dur-2) var(--ease-kinetic);
+  }
+
+  .kg-find__opt-body { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; flex: 1; }
+  .kg-find__opt-label {
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  .kg-find__opt-meta { font-size: 0.75rem; color: var(--s-fg-subtle); }
+
+  .kg-find__opt-mark {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    flex: none;
+    border: 1px solid var(--s-line-strong);
+    border-radius: 50%;
+    color: transparent;
+    transition: all var(--dur-2) var(--ease-kinetic);
+  }
+
+  .kg-find__radio:checked + .kg-find__opt-card {
+    border-color: var(--kg-green);
+    background: rgb(0 200 83 / 0.12);
+    box-shadow: 0 0 0 1px var(--kg-green);
+  }
+  .kg-find__radio:checked + .kg-find__opt-card .kg-find__opt-mark {
+    background: var(--kg-green);
+    border-color: var(--kg-green);
+    color: #00240f;
+  }
+  .kg-find__radio:checked + .kg-find__opt-card .kg-find__opt-icon {
+    background: rgb(0 200 83 / 0.2);
+    border-color: var(--kg-green-a40);
+  }
+  .kg-find__radio:focus-visible + .kg-find__opt-card { outline: var(--focus-ring); outline-offset: 2px; }
+
+  /* ------------------------------------------------------------------ nav */
+  .kg-find__nav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-block-start: 1.25rem;
+    border-block-start: 1px solid var(--s-line);
+  }
+  .kg-find__nav .kg-btn { margin-inline-start: auto; }
+  .kg-find__nav .kg-btn--outline { --s-fg: #fff; --s-line-strong: rgb(255 255 255 / 0.24); }
+  .kg-find__nav .kg-btn--outline:hover { --s-line-strong: #fff; background: rgb(255 255 255 / 0.06); }
+
+  /* ============================================================== RESULT */
+  .kg-result[data-active='true'] { animation: kg-find-in 0.5s var(--ease-expo) both; }
+
+  .kg-result__head { display: grid; gap: 0.5rem; margin-block-end: 1.5rem; }
+  .kg-result__title {
+    font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    color: var(--kg-green-400);
+    margin: 0;
+  }
+  .kg-result__why { font-size: var(--fs-lead); color: var(--s-fg-muted); margin: 0; max-width: 52ch; }
+
+  .kg-result__grid {
+    display: grid;
+    gap: 1.25rem;
+    margin-block-end: 1.75rem;
+  }
+
+  .kg-result__specs,
+  .kg-result__cost {
+    background: rgb(255 255 255 / 0.03);
+    border: 1px solid var(--s-line);
+    border-radius: var(--r-3);
+    padding: 1.25rem;
+  }
+
+  .kg-result__dl { display: grid; gap: 0.75rem; margin: 0; }
+  .kg-result__dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: baseline;
+    padding-block-end: 0.6rem;
+    border-block-end: 1px solid var(--s-line);
+  }
+  .kg-result__dl > div:last-child { border-block-end: 0; padding-block-end: 0; }
+  .kg-result__dl dt {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--s-fg-subtle);
+    flex: none;
+  }
+  .kg-result__dl dd {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: end;
+    color: #fff;
+  }
+
+  .kg-result__cost-rows { display: grid; gap: 0.5rem; margin: 0.75rem 0 1rem; }
+  .kg-result__cost-rows li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.8125rem;
+    color: var(--s-fg-muted);
+  }
+  .kg-result__cost-rows b { font-family: var(--font-mono); color: #fff; font-weight: 500; }
+
+  .kg-result__saving {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.875rem 1rem;
+    background: rgb(0 200 83 / 0.12);
+    border: 1px solid var(--kg-green-a40);
+    border-radius: var(--r-2);
+  }
+  .kg-result__saving-label {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--kg-green-400);
+  }
+  .kg-result__saving-value {
+    display: flex;
+    align-items: baseline;
+    gap: 0.15rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3.5vw, 2.125rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: #fff;
+  }
+
+  .kg-result__assumptions { margin-block-start: 0.875rem; }
+  .kg-result__assumptions summary {
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--kg-steel);
+    padding-block: 0.5rem;
+    transition: color var(--dur-2);
+  }
+  .kg-result__assumptions summary:hover { color: var(--kg-green-400); }
+  .kg-result__assumptions ul {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0.5rem 0 0;
+    padding-inline-start: 1rem;
+    list-style: disc;
+  }
+  .kg-result__assumptions li {
+    font-size: 0.6875rem;
+    line-height: 1.6;
+    color: var(--s-fg-subtle);
+  }
+
+  .kg-result__actions { display: flex; flex-wrap: wrap; gap: 0.625rem; }
+  .kg-result__actions .kg-btn { flex: 1 1 auto; }
+  .kg-result__actions .kg-btn--outline { --s-fg: #fff; --s-line-strong: rgb(255 255 255 / 0.24); }
+  .kg-result__actions .kg-btn--outline:hover { --s-line-strong: #fff; background: rgb(255 255 255 / 0.06); }
+
+  .kg-result__foot {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    margin: 1rem 0 0;
+    font-size: 0.6875rem;
+    color: var(--s-fg-subtle);
+  }
+  .kg-result__foot svg { flex: none; margin-block-start: 0.15rem; }
+
+  /* ============================================================ RESPONSIVE */
+  @media (min-width: 900px) {
+    .kg-find__tool { grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); }
+    .kg-result__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  }
+  @media (min-width: 1200px) {
+    .kg-find__tool { grid-template-columns: minmax(0, 3.4fr) minmax(0, 9fr); gap: 3.5rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kg-find__panel[data-active='true'],
+    .kg-result[data-active='true'] { animation: none; }
+    .kg-find__opt-card:hover { transform: none; }
+  }
+</style>

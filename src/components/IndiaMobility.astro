@@ -1,0 +1,523 @@
+---
+/**
+ * IndiaMobility — "BUILT FOR THE WAY INDIA MOVES." (IA slot 08)
+ *
+ * An ABSTRACT India silhouette built as a single SVG with per-state paths, so the
+ * map is an interaction surface rather than decoration. Selecting a state reports
+ * the mobility context for that region and routes to the nearest-dealer flow.
+ *
+ * WHY ABSTRACT, NOT CARTOGRAPHIC
+ * A precise political map would need accuracy we cannot guarantee in a marketing
+ * component, and would date badly. This is a stylised 9-region grid keyed to the
+ * states where the dealer network actually concentrates — honest about being
+ * schematic, and it keeps the interaction meaningful.
+ *
+ * DATA HONESTY
+ * Per-state dealer counts are NOT published by Kinetic Green. The component
+ * therefore reports the nationally published figure (550+) and shows the regional
+ * context instead of inventing a per-state split. The UI states this explicitly.
+ */
+import Icon from './Icon.astro';
+import { regions, metrics } from '../data/content';
+
+const nationalDealerMetric = metrics.find((m) => m.id === 'dealers');
+
+/* Environments shown as a filter rail so the section reads as a matrix */
+const environments = ['City', 'Suburban', 'Rural', 'Business', 'Last-mile'] as const;
+
+/**
+ * Data island for the region controller.
+ *
+ * Carries the region list plus the *published national* dealer figure. It
+ * deliberately does NOT carry a per-state dealer count: those are not published
+ * by the company, and a map that invents a per-state split is worse than a map
+ * that admits it only has a national number. The badge reflects that.
+ */
+const indiaData = {
+  regions: regions.map((r) => ({ id: r.id, state: r.state })),
+  nationalDealerFigure: `${nationalDealerMetric?.value ?? '550'}${nationalDealerMetric?.suffix ?? '+'} dealers pan India`,
+};
+---
+
+<script type="application/json" data-india-data set:html={JSON.stringify(indiaData).replace(/</g, '\\u003c')} />
+
+
+<section class="kg-india kg-section kg-section--lg" id="why-electric" data-section="india" data-india>
+  <div class="kg-india__grid" aria-hidden="true"></div>
+
+  <div class="kg-shell">
+    <!-- ============================================================== HEAD -->
+    <header class="kg-india__head">
+      <div>
+        <p class="kg-eyebrow" data-reveal>Built for India</p>
+        <h2 class="kg-display kg-india__title" data-reveal="clip">
+          Built for the way<br /><span class="kg-accent">India moves.</span>
+        </h2>
+      </div>
+      <p class="kg-lead kg-india__intro" data-reveal style="--reveal-delay:120ms">
+        An electric vehicle only makes sense if it fits the place it is used. Select a region to see
+        the mobility context behind it — the trips, the distances and the reasons electric works there.
+      </p>
+    </header>
+
+    <div class="kg-india__body">
+      <!-- ========================================================= MAP STAGE -->
+      <div class="kg-india__map-wrap">
+        <div class="kg-india__map-frame">
+          <svg
+            class="kg-india__map"
+            viewBox="0 0 100 105"
+            role="group"
+            aria-label="Select an Indian region to see its mobility context"
+            data-india-map
+            data-line-draw
+          >
+            <defs>
+              <linearGradient id="india-fill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1B2126" />
+                <stop offset="100%" stop-color="#12161A" />
+              </linearGradient>
+              <linearGradient id="india-active" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#00C853" stop-opacity="0.35" />
+                <stop offset="100%" stop-color="#00C853" stop-opacity="0.1" />
+              </linearGradient>
+            </defs>
+
+            <!-- technical frame: a measuring grid, not a border -->
+            <g opacity="0.22" stroke="#4B555C" stroke-width="0.15" fill="none">
+              <path d="M0 21 H100 M0 42 H100 M0 63 H100 M0 84 H100" />
+              <path d="M20 0 V105 M40 0 V105 M60 0 V105 M80 0 V105" />
+            </g>
+
+            <!-- regions -->
+            <g class="kg-india__regions" data-india-regions>
+              {
+                regions.map((r, i) => (
+                  <g class="kg-india__region" data-region={r.id} style={`--i:${i}`}>
+                    <path
+                      class="kg-india__shape"
+                      d={r.path}
+                      fill="url(#india-fill)"
+                      stroke="#4B555C"
+                      stroke-width="0.4"
+                      data-region-path={r.id}
+                    />
+                    <circle
+                      class="kg-india__node"
+                      cx={r.labelX}
+                      cy={r.labelY}
+                      r="1.1"
+                      fill="#00C853"
+                      data-region-node={r.id}
+                    />
+                  </g>
+                ))
+              }
+            </g>
+
+            <!-- connectivity arcs — the network, drawn as movement -->
+            <g class="kg-india__arcs" fill="none" stroke="#00C853" stroke-width="0.3" opacity="0.35" data-india-arcs>
+              <path d="M29 58 Q40 46 53 37" stroke-dasharray="1.5 1.5" />
+              <path d="M47 76 Q42 68 29 58" stroke-dasharray="1.5 1.5" />
+              <path d="M53 37 Q60 41 68 45" stroke-dasharray="1.5 1.5" />
+              <path d="M19 58 Q14 50 20 42" stroke-dasharray="1.5 1.5" />
+            </g>
+          </svg>
+
+          <!-- floating readout that follows the selection -->
+          <div class="kg-india__map-badge" aria-hidden="true">
+            <span class="kg-india__map-badge-pulse"></span>
+            <span data-india-badge-label>{nationalDealerMetric?.value}{nationalDealerMetric?.suffix} dealers pan India</span>
+          </div>
+        </div>
+
+        <!-- environment filter -->
+        <ul class="kg-india__envs" aria-label="Environments served">
+          {environments.map((env) => <li class="kg-india__env"><Icon name="check" size={12} />{env}</li>)}
+        </ul>
+      </div>
+
+      <!-- ==================================================== REGION DETAIL -->
+      <div class="kg-india__detail">
+        <!-- tablist for keyboard users; the map is a pointer affordance -->
+        <div class="kg-india__tabs" role="tablist" aria-label="Select region">
+          {
+            regions.map((r, i) => (
+              <button
+                type="button"
+                role="tab"
+                class="kg-india__tab"
+                id={`region-tab-${r.id}`}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                aria-controls={`region-panel-${r.id}`}
+                tabindex={i === 0 ? 0 : -1}
+                data-india-tab={r.id}
+                data-track="dealer_search"
+                data-track-source="india-map"
+                data-track-state={r.state}
+              >
+                {r.state}
+              </button>
+            ))
+          }
+        </div>
+
+        {
+          regions.map((r, i) => (
+            <article
+              class="kg-india__panel"
+              id={`region-panel-${r.id}`}
+              role="tabpanel"
+              aria-labelledby={`region-tab-${r.id}`}
+              data-india-panel={r.id}
+              data-active={i === 0 ? 'true' : 'false'}
+              hidden
+            >
+              <h3 class="kg-india__state">{r.state}</h3>
+
+              <ul class="kg-india__state-envs">
+                {r.environments.map((env) => (
+                  <li class="kg-tag">{env}</li>
+                ))}
+              </ul>
+
+              <p class="kg-india__narrative">{r.narrative}</p>
+
+              <!-- network figures — national, honestly labelled -->
+              <dl class="kg-india__stats">
+                <div>
+                  <dt>Network</dt>
+                  <dd>
+                    <span class="kg-num">{nationalDealerMetric?.value}</span>
+                    <em>{nationalDealerMetric?.suffix} dealers pan India</em>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Group heritage</dt>
+                  <dd>
+                    <span class="kg-num">50</span>
+                    <em>+ years of operations</em>
+                  </dd>
+                </div>
+              </dl>
+
+              <p class="kg-india__caveat">
+                <Icon name="info" size={13} />
+                <span>
+                  Kinetic Green publishes a national network figure of 550+ dealers. Per-state splits are
+                  not published, so we do not state one — search your city below for the dealers nearest you.
+                </span>
+              </p>
+
+              <div class="kg-india__actions">
+                <button
+                  type="button"
+                  class="kg-btn"
+                  data-lead-open
+                  data-lead-type="test-ride"
+                  data-lead-intent="high"
+                  data-lead-source={`india-${r.id}`}
+                  data-track="test_ride_start"
+                  data-track-source="india-map"
+                >
+                  <Icon name="calendar" size={16} />
+                  Book a test ride in {r.state}
+                </button>
+                <a href="#dealers" class="kg-btn kg-btn--outline" data-track="dealer_search" data-track-source="india-map">
+                  <Icon name="map-pin" size={16} />
+                  Find a dealer
+                </a>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .kg-india {
+    position: relative;
+    background: var(--kg-mist);
+    color: var(--kg-ink);
+    overflow: hidden;
+    --s-bg: var(--kg-mist);
+    --s-bg-alt: #fff;
+    --s-fg: var(--kg-ink);
+    --s-fg-muted: #55606a;
+    --s-fg-subtle: #7e898f;
+    --s-line: #e2e8e5;
+    --s-line-strong: #cfd8d4;
+    --s-accent: var(--kg-green-700);
+    --s-accent-bg: var(--kg-green);
+  }
+  .kg-india__grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgb(18 22 26 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(18 22 26 / 0.05) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: linear-gradient(to bottom, transparent, #000 20%, #000 80%, transparent);
+  }
+
+  /* ------------------------------------------------------------------ head */
+  .kg-india__head {
+    position: relative;
+    display: grid;
+    gap: clamp(1rem, 3vw, 2rem);
+    margin-block-end: clamp(2rem, 5vw, 3.5rem);
+  }
+  .kg-india__title { font-size: var(--fs-d2); }
+  .kg-india__intro { max-width: 54ch; }
+
+  /* ------------------------------------------------------------------ body */
+  .kg-india__body {
+    position: relative;
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+  }
+
+  /* --------------------------------------------------------------- map ---- */
+  .kg-india__map-wrap { display: grid; gap: 1.25rem; align-content: start; }
+
+  .kg-india__map-frame {
+    position: relative;
+    padding: clamp(0.75rem, 2vw, 1.5rem);
+    background: linear-gradient(160deg, #161b20 0%, #0e1215 100%);
+    border: 1px solid var(--kg-graphite);
+    border-radius: var(--r-4);
+    overflow: hidden;
+  }
+  .kg-india__map-frame::after {
+    content: '';
+    position: absolute;
+    inset-block-end: -30%;
+    inset-inline-start: 10%;
+    width: 70%;
+    height: 80%;
+    background: radial-gradient(ellipse at bottom, rgb(0 200 83 / 0.16), transparent 68%);
+    pointer-events: none;
+  }
+
+  .kg-india__map { width: 100%; height: auto; position: relative; z-index: 1; }
+
+  .kg-india__region { cursor: pointer; }
+  .kg-india__shape {
+    transition:
+      fill var(--dur-3) var(--ease-kinetic),
+      stroke var(--dur-3) var(--ease-kinetic);
+    transform-origin: center;
+  }
+  .kg-india__region:hover .kg-india__shape {
+    fill: url(#india-active);
+    stroke: var(--kg-green);
+    stroke-width: 0.6;
+  }
+  .kg-india__region[data-active='true'] .kg-india__shape {
+    fill: url(#india-active);
+    stroke: var(--kg-green);
+    stroke-width: 0.7;
+  }
+  .kg-india__node {
+    transition: r var(--dur-3) var(--ease-expo), filter var(--dur-3);
+    filter: drop-shadow(0 0 3px rgb(0 200 83 / 0.8));
+  }
+  .kg-india__region:hover .kg-india__node,
+  .kg-india__region[data-active='true'] .kg-india__node { r: 1.9; }
+
+  /* staggered region entrance */
+  :global(.js) .kg-india__region {
+    opacity: 0;
+    animation: kg-region-in 0.7s var(--ease-expo) both;
+    animation-delay: calc(0.05s + var(--i) * 0.05s);
+  }
+  @keyframes kg-region-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .kg-india__map-badge {
+    position: absolute;
+    inset-block-end: clamp(0.75rem, 2vw, 1.25rem);
+    inset-inline-start: clamp(0.75rem, 2vw, 1.25rem);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.7rem;
+    background: rgb(8 10 9 / 0.7);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: var(--r-2);
+    backdrop-filter: blur(8px);
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.75);
+  }
+  .kg-india__map-badge-pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--kg-green);
+    flex: none;
+    animation: kg-pulse-sm 2.4s var(--ease-snap) infinite;
+  }
+  @keyframes kg-pulse-sm {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+
+  /* -------------------------------------------------------- environment rail */
+  .kg-india__envs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .kg-india__env {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.7rem;
+    background: #fff;
+    border: 1px solid var(--s-line);
+    border-radius: var(--r-1);
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--s-fg-muted);
+  }
+  .kg-india__env svg { color: var(--kg-green-700); flex: none; }
+
+  /* --------------------------------------------------------------- detail */
+  .kg-india__detail { display: grid; gap: 1rem; align-content: start; }
+
+  .kg-india__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    padding-block-end: 0.875rem;
+    border-block-end: 1px solid var(--s-line);
+  }
+  .kg-india__tab {
+    padding: 0.5rem 0.75rem;
+    min-height: 40px;
+    background: #fff;
+    border: 1px solid var(--s-line);
+    border-radius: var(--r-2);
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--s-fg-muted);
+    transition: all var(--dur-2) var(--ease-kinetic);
+  }
+  .kg-india__tab:hover { border-color: var(--kg-green); color: var(--kg-ink); background: var(--kg-green-050); }
+  .kg-india__tab[aria-selected='true'] {
+    background: var(--kg-ink);
+    border-color: var(--kg-ink);
+    color: #fff;
+  }
+
+  .kg-india__panel { animation: kg-panel-in 0.5s var(--ease-expo) both; }
+  .kg-india__panel[hidden] { display: none; }
+  /* without JS the first panel is the only visible one, which is fine —
+     the map is an enhancement, and every region has a tab a no-JS user
+     simply cannot activate. The narrative content is preserved in the tabs'
+     aria labels and in the FAQ. */
+  @keyframes kg-panel-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .kg-india__state {
+    font-size: clamp(1.5rem, 3.4vw, 2.25rem);
+    text-transform: uppercase;
+    letter-spacing: -0.025em;
+    margin: 0 0 0.75rem;
+  }
+
+  .kg-india__state-envs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-block-end: 1rem; }
+
+  .kg-india__narrative {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--s-fg-muted);
+    margin: 0 0 1.25rem;
+  }
+
+  .kg-india__stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    margin: 0 0 1rem;
+    border-block: 1px solid var(--s-line);
+  }
+  .kg-india__stats > div { padding: 0.75rem 0.5rem 0.75rem 0; border-inline-end: 1px solid var(--s-line); }
+  .kg-india__stats > div:last-child { border-inline-end: 0; }
+  .kg-india__stats dt {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--s-fg-subtle);
+    margin-block-end: 0.35rem;
+  }
+  .kg-india__stats dd { margin: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+  .kg-india__stats dd .kg-num {
+    font-family: var(--font-display);
+    font-size: clamp(1.125rem, 2.2vw, 1.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .kg-india__stats dd em {
+    font-style: normal;
+    font-size: 0.6875rem;
+    color: var(--s-fg-subtle);
+  }
+
+  .kg-india__caveat {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    padding: 0.75rem 0.875rem;
+    background: var(--kg-green-050);
+    border-left: 2px solid var(--kg-green);
+    border-radius: var(--r-2);
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: #2c3a33;
+    margin: 0 0 1.25rem;
+  }
+  .kg-india__caveat svg { color: var(--kg-green-700); flex: none; margin-block-start: 0.15rem; }
+
+  .kg-india__actions { display: grid; gap: 0.625rem; }
+
+  /* ============================================================ RESPONSIVE */
+  @media (min-width: 640px) {
+    .kg-india__actions { grid-auto-flow: column; }
+    .kg-india__actions .kg-btn { width: 100%; }
+  }
+
+  @media (min-width: 900px) {
+    .kg-india__head { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); align-items: end; }
+    .kg-india__body { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+    .kg-india__map-wrap { position: sticky; inset-block-start: 6rem; }
+  }
+
+  @media (min-width: 1280px) {
+    .kg-india__body { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 4rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .kg-india__region { animation: none; opacity: 1; }
+    .kg-india__panel { animation: none; }
+    .kg-india__map-badge-pulse { animation: none; }
+  }
+</style>

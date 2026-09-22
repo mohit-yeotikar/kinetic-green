@@ -1,0 +1,429 @@
+---
+/**
+ * Finance — "WHAT COULD YOUR MONTHLY EMI LOOK LIKE?" (IA slot 16)
+ *
+ * An EMI estimator that is honest about being an estimate. Crucially it also
+ * states the two things most EV finance widgets hide: the total interest paid and
+ * the total cost of the vehicle — because a low monthly figure that hides a long
+ * expensive term is not helpful to the buyer.
+ *
+ * The interest rate is a clearly-labelled illustrative assumption with a visible
+ * disclaimer, since rates are lender- and profile-specific.
+ */
+import Icon from './Icon.astro';
+import { priceableVehicles, formatINR, PRICE_DISCLAIMER } from '../data/vehicles';
+
+const DEFAULT_RATE = 10.5;
+
+const schema = {
+  '@type': 'FAQPage',
+  '@id': 'https://kineticgreen.com/#faq-finance',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'How is the monthly EMI on a Kinetic Green electric vehicle calculated?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'The EMI estimator uses the standard amortisation formula on the loan amount (vehicle price minus down payment) over the chosen tenure at an illustrative annual interest rate. The result is an estimate: actual rates depend on the lender, your credit profile and the scheme available at the time.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Is finance available for commercial electric three-wheelers?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Finance structures are available for both personal and commercial buyers, including arrangements for commercial operators where daily running-cost savings contribute toward the instalment. Confirm current schemes and eligibility with your nearest Kinetic Green dealer.',
+      },
+    },
+  ],
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />
+
+<!-- Price map for the EMI estimator, keyed by vehicle id -->
+<script
+  type="application/json"
+  data-finance-data
+  set:html={JSON.stringify(
+    Object.fromEntries(priceableVehicles.map((v) => [v.id, v.priceFrom])),
+  ).replace(/</g, '\\u003c')}
+/>
+
+<section class="kg-fin kg-section kg-section--lg" id="finance" data-section="finance" data-finance>
+  <div class="kg-shell">
+    <!-- ============================================================== HEAD -->
+    <header class="kg-fin__head">
+      <p class="kg-eyebrow" data-reveal>Finance</p>
+      <h2 class="kg-display kg-fin__title" data-reveal="clip">
+        What could your<br /><span class="kg-accent">monthly EMI look like?</span>
+      </h2>
+      <p class="kg-lead kg-fin__intro" data-reveal style="--reveal-delay:120ms">
+        Move the controls to see an indicative monthly instalment. We show you the total interest and
+        the total cost as well — a low monthly number over a long tenure is not automatically a good one.
+      </p>
+    </header>
+
+    <div class="kg-fin__body">
+      <!-- ============================================================ INPUTS -->
+      <form class="kg-fin__inputs" data-finance-form novalidate>
+        <div class="kg-fin__field">
+          <label class="kg-field__label" for="fin-vehicle">Vehicle</label>
+          <select class="kg-input" id="fin-vehicle" name="vehicle" data-finance-vehicle>
+            {
+              priceableVehicles.map((v, i) => (
+                <option value={v.id} selected={i === 0} data-price={v.priceFrom}>
+                  {v.name} — {formatINR(v.priceFrom!)}
+                </option>
+              ))
+            }
+          </select>
+        </div>
+
+        <div class="kg-fin__field">
+          <div class="kg-fin__field-head">
+            <label class="kg-field__label" for="fin-down">Down payment</label>
+            <output class="kg-fin__output" for="fin-down">
+              ₹<span class="kg-num" data-finance-readout="down">20,000</span>
+              <em><span class="kg-num" data-finance-down-pct>29</span>%</em>
+            </output>
+          </div>
+          <input type="range" id="fin-down" class="kg-range" name="down" min="0" max="60000" step="1000" value="20000" data-finance-input />
+          <div class="kg-fin__scale" aria-hidden="true"><span>₹0</span><span>₹60,000</span></div>
+        </div>
+
+        <div class="kg-fin__field">
+          <div class="kg-fin__field-head">
+            <label class="kg-field__label" for="fin-tenure">Loan period</label>
+            <output class="kg-fin__output" for="fin-tenure">
+              <span class="kg-num" data-finance-readout="tenure">24</span> <em>months</em>
+            </output>
+          </div>
+          <input type="range" id="fin-tenure" class="kg-range" name="tenure" min="6" max="60" step="6" value="24" data-finance-input />
+          <div class="kg-fin__scale" aria-hidden="true"><span>6 mo</span><span>60 mo</span></div>
+        </div>
+
+        <div class="kg-fin__field">
+          <div class="kg-fin__field-head">
+            <label class="kg-field__label" for="fin-rate">Interest rate (illustrative)</label>
+            <output class="kg-fin__output" for="fin-rate">
+              <span class="kg-num" data-finance-readout="rate">{DEFAULT_RATE}</span> <em>% p.a.</em>
+            </output>
+          </div>
+          <input type="range" id="fin-rate" class="kg-range" name="rate" min="7" max="18" step="0.5" value={DEFAULT_RATE} data-finance-input />
+          <div class="kg-fin__scale" aria-hidden="true"><span>7%</span><span>18%</span></div>
+        </div>
+
+        <p class="kg-fin__note">
+          <Icon name="info" size={13} />
+          <span>
+            {DEFAULT_RATE}% p.a. is an illustrative rate for demonstration. Actual rates depend on the
+            lender, your credit profile and the scheme running at the time.
+          </span>
+        </p>
+      </form>
+
+      <!-- =========================================================== OUTPUT -->
+      <div class="kg-fin__outputs">
+        <!-- the headline EMI -->
+        <div class="kg-fin__emi" data-finance-emi-card>
+          <p class="kg-label">Indicative monthly EMI</p>
+          <p class="kg-fin__emi-value">
+            <span class="kg-fin__emi-cur">₹</span><span class="kg-num" data-finance-out="emi">3,900</span>
+          </p>
+          <p class="kg-fin__emi-meta">
+            <span data-finance-out-label>E-Luna Go</span> · <span data-finance-out="tenureLabel">24 months</span>
+          </p>
+          <span class="kg-fin__emi-bar" aria-hidden="true"><i data-finance-bar style="width: 62%"></i></span>
+        </div>
+
+        <!-- the honest breakdown -->
+        <dl class="kg-fin__breakdown">
+          <div>
+            <dt>Vehicle price (ex-showroom)</dt>
+            <dd class="kg-num" data-finance-out="price">₹69,990</dd>
+          </div>
+          <div>
+            <dt>Down payment</dt>
+            <dd class="kg-num" data-finance-out="down">₹20,000</dd>
+          </div>
+          <div>
+            <dt>Loan amount</dt>
+            <dd class="kg-num" data-finance-out="principal">₹49,990</dd>
+          </div>
+          <div>
+            <dt>Interest payable over the term</dt>
+            <dd class="kg-num" data-finance-out="interest">₹15,600</dd>
+          </div>
+          <div class="kg-fin__breakdown-total">
+            <dt>Total repayment (loan + interest)</dt>
+            <dd class="kg-num" data-finance-out="total">₹65,590</dd>
+          </div>
+        </dl>
+
+        <!-- reality check: what the vehicle costs per km in finance terms -->
+        <div class="kg-fin__context">
+          <p class="kg-label">Putting it in context</p>
+          <p class="kg-fin__context-body" data-finance-context>
+            At 30 km a day and 300 riding days a year, an indicative EMI of this size works out to roughly
+            ₹8 per day.
+          </p>
+        </div>
+
+        <div class="kg-fin__actions">
+          <button
+            type="button"
+            class="kg-btn kg-btn--lg"
+            data-lead-open
+            data-lead-type="finance"
+            data-lead-intent="high"
+            data-lead-source="finance"
+            data-track="finance_submit"
+            data-track-source="finance"
+            data-finance-cta
+          >
+            <Icon name="rupee" size={17} />
+            Check finance options
+          </button>
+          <button
+            type="button"
+            class="kg-btn kg-btn--outline"
+            data-lead-open
+            data-lead-type="callback"
+            data-lead-intent="medium"
+            data-lead-source="finance-callback"
+            data-track="callback_submit"
+            data-track-source="finance"
+          >
+            <Icon name="phone" size={17} />
+            Talk to a finance expert
+          </button>
+        </div>
+
+        <p class="kg-fin__disclaimer">
+          <Icon name="info" size={13} />
+          <span>
+            This is an illustrative estimate, not a loan offer, approval or quotation. {PRICE_DISCLAIMER}
+            Interest rates, processing fees, eligibility and scheme terms are set by the lender.
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .kg-fin {
+    background: var(--kg-paper);
+    color: var(--kg-ink);
+    --s-bg: var(--kg-paper);
+    --s-bg-alt: var(--kg-mist);
+    --s-fg: var(--kg-ink);
+    --s-fg-muted: #55606a;
+    --s-fg-subtle: #7e898f;
+    --s-line: #e6ebe9;
+    --s-line-strong: #cfd8d4;
+    --s-accent: var(--kg-green-700);
+    --s-accent-bg: var(--kg-green);
+  }
+
+  .kg-fin__head {
+    display: grid;
+    gap: 0.75rem;
+    margin-block-end: clamp(2rem, 5vw, 3.5rem);
+    max-width: 68ch;
+  }
+  .kg-fin__title { font-size: var(--fs-d2); max-width: 20ch; }
+  .kg-fin__intro { max-width: 56ch; }
+
+  .kg-fin__body { display: grid; gap: clamp(1.5rem, 4vw, 3rem); align-items: start; }
+
+  /* -------------------------------------------------------------- inputs */
+  .kg-fin__inputs {
+    padding: clamp(1.25rem, 3vw, 1.875rem);
+    background: var(--kg-mist);
+    border: 1px solid var(--s-line);
+    border-radius: var(--r-4);
+  }
+  .kg-fin__field { margin-block-end: 1.5rem; }
+  .kg-fin__field:last-of-type { margin-block-end: 1rem; }
+
+  .kg-fin__field-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-block-end: 0.25rem;
+  }
+  .kg-fin__output {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .kg-fin__output em {
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--kg-green-700);
+  }
+
+  .kg-fin__scale {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.1em;
+    color: var(--s-fg-subtle);
+    margin-block-start: -0.5rem;
+  }
+
+  .kg-fin__note {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    margin: 0;
+    padding-block-start: 1rem;
+    border-block-start: 1px solid var(--s-line);
+    font-size: 0.6875rem;
+    line-height: 1.6;
+    color: var(--s-fg-subtle);
+  }
+  .kg-fin__note svg { flex: none; margin-block-start: 0.15rem; color: var(--kg-green-700); }
+
+  /* ------------------------------------------------------------- outputs */
+  .kg-fin__outputs { display: grid; gap: 0; }
+
+  .kg-fin__emi {
+    position: relative;
+    padding: clamp(1.375rem, 3vw, 2rem);
+    background: linear-gradient(150deg, var(--kg-charcoal) 0%, var(--kg-ink) 100%);
+    color: #fff;
+    border-radius: var(--r-4);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .kg-fin__emi::after {
+    content: '';
+    position: absolute;
+    inset-block-start: -40%;
+    inset-inline-end: -15%;
+    width: 60%;
+    height: 160%;
+    background: linear-gradient(118deg, transparent 44%, rgb(0 200 83 / 0.2) 70%, transparent 92%);
+    transform: rotate(var(--diag-soft));
+    pointer-events: none;
+  }
+  .kg-fin__emi .kg-label { color: var(--kg-green-400); position: relative; }
+  .kg-fin__emi-value {
+    display: flex;
+    align-items: baseline;
+    gap: 0.04em;
+    margin: 0.6rem 0 0.35rem;
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 6vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    position: relative;
+  }
+  .kg-fin__emi-cur { font-size: 0.55em; color: var(--kg-green-400); }
+  .kg-fin__emi-meta {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--kg-silver);
+    position: relative;
+  }
+  .kg-fin__emi-bar {
+    display: block;
+    height: 4px;
+    margin-block-start: 1.125rem;
+    background: rgb(255 255 255 / 0.12);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+  .kg-fin__emi-bar i {
+    display: block;
+    height: 100%;
+    background: var(--kg-green);
+    border-radius: 2px;
+    transition: width var(--dur-4) var(--ease-expo);
+  }
+
+  /* ----------------------------------------------------------- breakdown */
+  .kg-fin__breakdown {
+    display: grid;
+    gap: 0;
+    margin: 1.25rem 0 0;
+    border-block: 1px solid var(--s-line);
+  }
+  .kg-fin__breakdown > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-block-end: 1px solid var(--s-line);
+  }
+  .kg-fin__breakdown > div:last-child { border-block-end: 0; }
+  .kg-fin__breakdown dt { font-size: 0.8125rem; color: var(--s-fg-muted); }
+  .kg-fin__breakdown dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    white-space: nowrap;
+  }
+  .kg-fin__breakdown-total dt { color: var(--kg-ink); font-weight: 500; }
+  .kg-fin__breakdown-total dd { color: var(--kg-green-700); }
+
+  .kg-fin__context {
+    margin-block-start: 1.25rem;
+    padding: 1rem 1.125rem;
+    background: var(--kg-mist);
+    border-radius: var(--r-3);
+    border-left: 2px solid var(--kg-green);
+  }
+  .kg-fin__context-body {
+    font-size: 0.875rem;
+    line-height: 1.65;
+    color: var(--s-fg-muted);
+    margin: 0.5rem 0 0;
+  }
+
+  .kg-fin__actions { display: grid; gap: 0.625rem; margin-block-start: 1.5rem; }
+
+  .kg-fin__disclaimer {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    margin: 1rem 0 0;
+    font-size: 0.625rem;
+    line-height: 1.65;
+    color: var(--s-fg-subtle);
+  }
+  .kg-fin__disclaimer svg { flex: none; margin-block-start: 0.15rem; }
+
+  /* ============================================================ RESPONSIVE */
+  @media (min-width: 640px) {
+    .kg-fin__actions { grid-auto-flow: column; }
+    .kg-fin__actions .kg-btn { width: 100%; }
+    .kg-fin__field { display: grid; grid-template-columns: 1fr; }
+  }
+
+  @media (min-width: 1024px) {
+    .kg-fin__body { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+  }
+
+  @media (min-width: 1280px) {
+    .kg-fin__body { grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); gap: 4rem; }
+  }
+</style>

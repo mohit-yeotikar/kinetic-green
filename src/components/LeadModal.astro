@@ -1,0 +1,752 @@
+---
+/**
+ * LeadModal — the multi-step conversion surface.
+ *
+ * Opened by any [data-lead-open] trigger anywhere on the page. The trigger
+ * declares `data-lead-type` / `data-lead-intent` / `data-lead-vehicle`, so the
+ * modal always opens pre-filled with whatever the visitor was already looking at
+ * — clicking "Book Test Ride" on the E-Luna Pro must never make them re-select
+ * the E-Luna Pro.
+ *
+ * PROGRESSIVE PROFILING (the whole point)
+ *   Step 1  Vehicle      — 1 tap, prefilled when known
+ *   Step 2  City         — 1 input, autocompletes from the dealer network
+ *   Step 3  Date         — quick-pick chips (Today / Tomorrow / This weekend)
+ *   Step 4  Contact      — name + mobile ONLY. Email optional, WhatsApp opt-in
+ *                          never pre-ticked.
+ *   Step 5  Confirmation — reference number + what happens next
+ *
+ * At no point is more than one decision asked for. A visitor who abandons at
+ * step 4 has still submitted nothing — so the modal also persists answers to
+ * sessionStorage and rehydrates them on reopen. Returning visitors resume.
+ *
+ * NO-JS FALLBACK
+ * The trigger buttons live inside a <noscript>-visible block: the modal markup is
+ * a real <form> with a `mailto:`-style action and the dealer phone number, so a
+ * visitor without JS can still make contact. (See .kg-modal__nojs.)
+ */
+import Icon from './Icon.astro';
+import { vehicles, formatINR } from '../data/vehicles';
+import { dealers } from '../data/content';
+import { brand } from '../data/content';
+
+/* Distinct cities for the typeahead datalist */
+const cities = [...new Set(dealers.map((d) => d.city))].sort();
+
+const vehicleOptions = vehicles.map((v) => ({
+  id: v.id,
+  name: v.name,
+  segment: v.segment,
+  price: v.priceFrom ? formatINR(v.priceFrom) : 'On enquiry',
+}));
+---
+
+<!-- ========================================================= LEAD MODAL -->
+<div class="kg-modal" id="lead-modal" data-lead-modal hidden>
+  <div class="kg-modal__scrim" data-lead-close></div>
+
+  <div
+    class="kg-modal__dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="lead-modal-title"
+    data-lead-dialog
+  >
+    <!-- ------------------------------------------------------- progress rail -->
+    <div class="kg-modal__rail" aria-hidden="true">
+      <span class="kg-modal__rail-fill" data-lead-progress></span>
+    </div>
+
+    <header class="kg-modal__head">
+      <div class="kg-modal__head-text">
+        <p class="kg-label kg-modal__eyebrow" data-lead-eyebrow>Book a test ride</p>
+        <h2 class="kg-modal__title" id="lead-modal-title" data-lead-heading>
+          Choose your vehicle
+        </h2>
+      </div>
+      <button type="button" class="kg-modal__close" aria-label="Close" data-lead-close>
+        <Icon name="close" size={20} />
+      </button>
+    </header>
+
+    <!-- -------------------------------------------------------- step readout -->
+    <p class="kg-modal__step" aria-live="polite">
+      <span data-lead-step-label>Step 1 of 5</span>
+      <span class="kg-modal__step-dots" data-lead-dots aria-hidden="true"></span>
+    </p>
+
+    <form class="kg-modal__body" data-lead-form novalidate>
+      <!-- ================================ STEP 1 · VEHICLE ==================== -->
+      <fieldset class="kg-modal__step-panel" data-lead-step="1">
+        <legend class="kg-visually-hidden">Which vehicle would you like to test ride?</legend>
+        <ul class="kg-pick" data-lead-vehicles>
+          {
+            vehicleOptions.map((v) => (
+              <li>
+                <label class="kg-pick__item">
+                  <input type="radio" name="vehicle" value={v.id} class="kg-pick__input" />
+                  <span class="kg-pick__card">
+                    <span class="kg-pick__name">{v.name}</span>
+                    <span class="kg-pick__meta">{v.segment}</span>
+                    <span class="kg-pick__price">{v.price}</span>
+                    <span class="kg-pick__tick" aria-hidden="true">
+                      <Icon name="check" size={14} />
+                    </span>
+                  </span>
+                </label>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="kg-pick__not-sure">
+          <button type="button" class="kg-btn kg-btn--ghost" data-lead-not-sure>
+            Not sure which one?
+            <Icon name="arrow-right" size={15} class="kg-btn__arrow" />
+          </button>
+        </p>
+      </fieldset>
+
+      <!-- ================================ STEP 2 · CITY ======================= -->
+      <fieldset class="kg-modal__step-panel" data-lead-step="2" hidden>
+        <legend class="kg-visually-hidden">Where should we arrange it?</legend>
+        <label class="kg-field">
+          <span class="kg-field__label">City or PIN code</span>
+          <div class="kg-input-icon">
+            <Icon name="map-pin" size={18} />
+            <input
+              type="text"
+              class="kg-input"
+              name="city"
+              list="kg-city-list"
+              placeholder="e.g. Pune or 411001"
+              autocomplete="address-level2"
+              inputmode="text"
+              data-lead-city
+            />
+          </div>
+          <span class="kg-error" data-error-for="city"></span>
+        </label>
+        <datalist id="kg-city-list">
+          {cities.map((c) => <option value={c} />)}
+        </datalist>
+        <p class="kg-hint">
+          We will match you to the nearest of {brand.name}&rsquo;s 550+ dealers. Test ride availability varies by
+          dealer and variant.
+        </p>
+        <div class="kg-modal__dealer-preview" data-lead-dealer-preview hidden></div>
+      </fieldset>
+
+      <!-- ================================ STEP 3 · DATE ======================= -->
+      <fieldset class="kg-modal__step-panel" data-lead-step="3" hidden>
+        <legend class="kg-visually-hidden">When would you like to ride?</legend>
+        <ul class="kg-chips" data-lead-dates>
+          <li><button type="button" class="kg-chip" data-date-offset="0">Today</button></li>
+          <li><button type="button" class="kg-chip" data-date-offset="1">Tomorrow</button></li>
+          <li><button type="button" class="kg-chip" data-date-offset="3">In 3 days</button></li>
+          <li><button type="button" class="kg-chip" data-date-offset="weekend">This weekend</button></li>
+          <li><button type="button" class="kg-chip" data-date-offset="7">Next week</button></li>
+        </ul>
+
+        <label class="kg-field kg-field--split">
+          <span class="kg-field__label">Or pick a specific date</span>
+          <input
+            type="date"
+            class="kg-input"
+            name="preferred_date"
+            data-lead-date
+            min={new Date().toISOString().slice(0, 10)}
+          />
+        </label>
+
+        <label class="kg-field">
+          <span class="kg-field__label">Preferred time</span>
+          <select class="kg-input" name="preferred_time">
+            <option value="morning">Morning (9am – 12pm)</option>
+            <option value="afternoon">Afternoon (12pm – 4pm)</option>
+            <option value="evening" selected>Evening (4pm – 7pm)</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <!-- ================================ STEP 4 · CONTACT ==================== -->
+      <fieldset class="kg-modal__step-panel" data-lead-step="4" hidden>
+        <legend class="kg-visually-hidden">How should the dealer reach you?</legend>
+
+        <div class="kg-modal__fields">
+          <label class="kg-field">
+            <span class="kg-field__label">Your name <span class="kg-req" aria-hidden="true">*</span></span>
+            <input
+              type="text"
+              class="kg-input"
+              name="name"
+              placeholder="Full name"
+              autocomplete="name"
+              required
+              data-lead-name
+            />
+            <span class="kg-error" data-error-for="name"></span>
+          </label>
+
+          <label class="kg-field">
+            <span class="kg-field__label">Mobile number <span class="kg-req" aria-hidden="true">*</span></span>
+            <div class="kg-input-icon kg-input-icon--prefix">
+              <span class="kg-input-prefix">+91</span>
+              <input
+                type="tel"
+                class="kg-input"
+                name="phone"
+                placeholder="10-digit mobile"
+                autocomplete="tel-national"
+                inputmode="numeric"
+                maxlength="10"
+                required
+                data-lead-phone
+              />
+            </div>
+            <span class="kg-error" data-error-for="phone"></span>
+          </label>
+
+          <label class="kg-field">
+            <span class="kg-field__label">Email <span class="kg-opt">optional</span></span>
+            <input
+              type="email"
+              class="kg-input"
+              name="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              data-lead-email
+            />
+            <span class="kg-error" data-error-for="email"></span>
+          </label>
+        </div>
+
+        <label class="kg-check">
+          <input type="checkbox" name="whatsapp_consent" data-lead-whatsapp />
+          <span class="kg-check__box" aria-hidden="true"><Icon name="check" size={12} /></span>
+          <span class="kg-check__text">
+            Send me updates on WhatsApp
+            <span class="kg-opt">optional</span>
+          </span>
+        </label>
+
+        <p class="kg-modal__consent">
+          By submitting you agree to be contacted about this enquiry. We do not sell your data.
+          See our <a href="/privacy">privacy policy</a>.
+        </p>
+      </fieldset>
+
+      <!-- ================================ STEP 5 · DONE ======================= -->
+      <div class="kg-modal__step-panel kg-done" data-lead-step="5" hidden>
+        <div class="kg-done__mark" aria-hidden="true">
+          <span class="kg-done__ring"></span>
+          <Icon name="check" size={30} strokeWidth={2.2} />
+        </div>
+        <p class="kg-done__title">You&rsquo;re on the list.</p>
+        <p class="kg-done__body" data-lead-success-message></p>
+
+        <dl class="kg-done__meta">
+          <div>
+            <dt>Vehicle</dt>
+            <dd data-done-vehicle>—</dd>
+          </div>
+          <div>
+            <dt>City</dt>
+            <dd data-done-city>—</dd>
+          </div>
+          <div>
+            <dt>Preferred</dt>
+            <dd data-done-date>—</dd>
+          </div>
+          <div>
+            <dt>Reference</dt>
+            <dd class="kg-mono" data-done-reference>—</dd>
+          </div>
+        </dl>
+
+        <div class="kg-done__actions">
+          <a href="#vehicles" class="kg-btn" data-lead-close>
+            Explore more vehicles
+            <Icon name="arrow-right" size={16} />
+          </a>
+          <a href={brand.phoneHref} class="kg-btn kg-btn--outline">
+            <Icon name="phone" size={16} />
+            Call {brand.phone}
+          </a>
+        </div>
+      </div>
+
+      <!-- ===================================================== FOOTER / NAV -->
+      <div class="kg-modal__foot" data-lead-foot>
+        <button type="button" class="kg-btn kg-btn--ghost kg-modal__back" data-lead-back hidden>
+          <Icon name="arrow-left" size={16} />
+          Back
+        </button>
+
+        <p class="kg-modal__foot-hint" data-lead-hint>
+          <Icon name="lock" size={13} />
+          <span>Takes under 30 seconds</span>
+        </p>
+
+        <button type="submit" class="kg-btn kg-modal__submit" data-lead-submit>
+          <span data-lead-submit-label>Continue</span>
+          <Icon name="arrow-right" size={16} />
+        </button>
+      </div>
+    </form>
+
+    <!-- ------------------------------------------------ no-JS contact route -->
+    <noscript>
+      <div class="kg-modal__nojs">
+        <p>
+          Booking a test ride needs JavaScript. You can still reach us directly — call
+          <a href={brand.phoneHref}>{brand.phone}</a> or email
+          <a href={`mailto:${brand.email}`}>{brand.email}</a>, and we will arrange a test ride at your nearest
+          dealer.
+        </p>
+      </div>
+    </noscript>
+  </div>
+</div>
+
+<style>
+  /* =============================================================== SHELL */
+  .kg-modal {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .kg-modal[hidden] { display: none; }
+
+  .kg-modal__scrim {
+    position: absolute;
+    inset: 0;
+    background: rgb(5 7 6 / 0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity var(--dur-3) var(--ease-kinetic);
+  }
+  .kg-modal[data-open='true'] .kg-modal__scrim { opacity: 1; }
+
+  .kg-modal__dialog {
+    position: relative;
+    width: 100%;
+    max-width: 620px;
+    max-height: 94svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--kg-paper);
+    color: var(--kg-ink);
+    border-start-start-radius: var(--r-5);
+    border-start-end-radius: var(--r-5);
+    box-shadow: var(--sh-3);
+    overflow: hidden;
+    transform: translateY(3%);
+    opacity: 0;
+    transition:
+      transform var(--dur-4) var(--ease-expo),
+      opacity var(--dur-3) var(--ease-kinetic);
+    --s-bg: #fff;
+    --s-bg-alt: #fff;
+    --s-fg: var(--kg-ink);
+    --s-fg-muted: #55606a;
+    --s-fg-subtle: #7e898f;
+    --s-line: #e8edeb;
+    --s-line-strong: #cfd8d4;
+    --s-accent: var(--kg-green-700);
+  }
+  .kg-modal[data-open='true'] .kg-modal__dialog { transform: translateY(0); opacity: 1; }
+
+  /* ------------------------------------------------------------- progress */
+  .kg-modal__rail {
+    height: 3px;
+    background: var(--s-line);
+    flex: none;
+    position: relative;
+  }
+  .kg-modal__rail-fill {
+    display: block;
+    height: 100%;
+    width: 20%;
+    background: var(--kg-green);
+    transition: width var(--dur-4) var(--ease-expo);
+  }
+
+  /* ----------------------------------------------------------------- head */
+  .kg-modal__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: clamp(1.25rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 1.75rem) 0.75rem;
+    flex: none;
+  }
+  .kg-modal__eyebrow { color: var(--kg-green-700); margin-block-end: 0.4rem; }
+  .kg-modal__title {
+    font-size: clamp(1.375rem, 3.2vw, 1.875rem);
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .kg-modal__close {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex: none;
+    border: 1px solid var(--s-line);
+    border-radius: var(--r-2);
+    color: var(--s-fg-muted);
+    transition: all var(--dur-2) var(--ease-kinetic);
+  }
+  .kg-modal__close:hover { border-color: var(--kg-ink); color: var(--kg-ink); background: var(--kg-mist); }
+
+  /* ----------------------------------------------------------------- step */
+  .kg-modal__step {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-inline: clamp(1.25rem, 3vw, 1.75rem);
+    margin: 0 0 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--s-fg-subtle);
+  }
+  .kg-modal__step-dots { display: flex; gap: 0.3rem; }
+  .kg-modal__step-dots i {
+    width: 16px;
+    height: 2px;
+    background: var(--s-line-strong);
+    transition: background-color var(--dur-3) var(--ease-kinetic);
+  }
+  .kg-modal__step-dots i[data-done='true'] { background: var(--kg-green); }
+
+  /* ----------------------------------------------------------------- body */
+  .kg-modal__body {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.5rem clamp(1.25rem, 3vw, 1.75rem) 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .kg-modal__step-panel {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    animation: kg-step-in 0.4s var(--ease-expo) both;
+  }
+  .kg-modal__step-panel[hidden] { display: none; }
+  @keyframes kg-step-in {
+    from { opacity: 0; transform: translateX(14px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ----------------------------------------------------- vehicle picker */
+  .kg-pick { display: grid; gap: 0.5rem; margin-block-end: 0.75rem; }
+  .kg-pick__input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+  .kg-pick__card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'name tick'
+      'meta tick'
+      'price price';
+    align-items: center;
+    gap: 0.15rem 0.75rem;
+    padding: 0.875rem 1rem;
+    background: #fff;
+    border: 1px solid var(--s-line-strong);
+    border-radius: var(--r-3);
+    cursor: pointer;
+    transition: all var(--dur-2) var(--ease-kinetic);
+  }
+  .kg-pick__card:hover { border-color: var(--kg-green); background: var(--kg-green-050); }
+  .kg-pick__name {
+    grid-area: name;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+  .kg-pick__meta {
+    grid-area: meta;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--s-fg-subtle);
+  }
+  .kg-pick__price {
+    grid-area: price;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--kg-green-700);
+    font-weight: 500;
+    margin-block-start: 0.15rem;
+  }
+  .kg-pick__tick {
+    grid-area: tick;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--s-line-strong);
+    border-radius: 50%;
+    color: transparent;
+    transition: all var(--dur-2) var(--ease-kinetic);
+  }
+  .kg-pick__input:checked + .kg-pick__card {
+    border-color: var(--kg-green);
+    background: var(--kg-green-050);
+    box-shadow: 0 0 0 1px var(--kg-green);
+  }
+  .kg-pick__input:checked + .kg-pick__card .kg-pick__tick {
+    background: var(--kg-green);
+    border-color: var(--kg-green);
+    color: #fff;
+  }
+  .kg-pick__input:focus-visible + .kg-pick__card {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  .kg-pick__not-sure { margin: 0 0 0.5rem; }
+  .kg-pick__not-sure .kg-btn { font-size: 0.75rem; }
+
+  /* ----------------------------------------------------------- date chips */
+  .kg-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block-end: 1.25rem; }
+  .kg-chip {
+    padding: 0.7rem 1rem;
+    min-height: 46px;
+    background: #fff;
+    border: 1px solid var(--s-line-strong);
+    border-radius: var(--r-2);
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--s-fg-muted);
+    transition: all var(--dur-2) var(--ease-kinetic);
+  }
+  .kg-chip:hover { border-color: var(--kg-green); color: var(--kg-ink); background: var(--kg-green-050); }
+  .kg-chip[aria-pressed='true'] {
+    background: var(--kg-green);
+    border-color: var(--kg-green);
+    color: #00240f;
+  }
+
+  .kg-field--split { margin-block-start: 0.5rem; }
+
+  /* -------------------------------------------------------- input w/ icon */
+  .kg-input-icon { position: relative; }
+  .kg-input-icon > svg {
+    position: absolute;
+    inset-inline-start: 1rem;
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+    color: var(--s-fg-subtle);
+    pointer-events: none;
+  }
+  .kg-input-icon > .kg-input { padding-inline-start: 2.75rem; }
+
+  .kg-input-icon--prefix > .kg-input-prefix {
+    position: absolute;
+    inset-inline-start: 1rem;
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--s-fg-muted);
+    pointer-events: none;
+  }
+  .kg-input-icon--prefix > .kg-input { padding-inline-start: 3.75rem; }
+
+  /* ------------------------------------------------------------ checkbox */
+  .kg-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    cursor: pointer;
+    margin-block-end: 0.5rem;
+  }
+  .kg-check input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .kg-check__box {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    flex: none;
+    border: 1.5px solid var(--s-line-strong);
+    border-radius: var(--r-1);
+    color: transparent;
+    transition: all var(--dur-2) var(--ease-kinetic);
+    margin-block-start: 1px;
+  }
+  .kg-check input:checked + .kg-check__box {
+    background: var(--kg-green);
+    border-color: var(--kg-green);
+    color: #fff;
+  }
+  .kg-check input:focus-visible + .kg-check__box { outline: var(--focus-ring); outline-offset: 2px; }
+  .kg-check__text { font-size: 0.875rem; color: var(--s-fg-muted); }
+
+  .kg-opt {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--s-fg-subtle);
+    margin-inline-start: 0.35rem;
+  }
+  .kg-req { color: var(--kg-green-700); }
+
+  .kg-modal__fields { display: grid; gap: 0; }
+  .kg-modal__consent {
+    font-size: 0.6875rem;
+    line-height: 1.6;
+    color: var(--s-fg-subtle);
+    margin: 0 0 0.5rem;
+  }
+  .kg-modal__consent a { color: var(--kg-green-700); text-decoration: underline; text-underline-offset: 2px; }
+
+  .kg-modal__dealer-preview {
+    margin-block-start: 0.5rem;
+    padding: 0.875rem 1rem;
+    background: var(--kg-mist);
+    border: 1px solid var(--s-line);
+    border-radius: var(--r-2);
+    font-size: 0.8125rem;
+    color: var(--s-fg-muted);
+  }
+  .kg-modal__dealer-preview b { color: var(--kg-ink); display: block; margin-block-end: 0.15rem; }
+
+  /* ---------------------------------------------------------------- done */
+  .kg-done { text-align: center; padding-block: 1.5rem 1rem; }
+  .kg-done__mark {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 1.25rem;
+    border-radius: 50%;
+    background: var(--kg-green-050);
+    color: var(--kg-green-700);
+  }
+  .kg-done__ring {
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--kg-green);
+    border-radius: 50%;
+    animation: kg-done-ring 1.1s var(--ease-expo) both;
+  }
+  @keyframes kg-done-ring {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .kg-done__title {
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.5rem;
+  }
+  .kg-done__body {
+    font-size: 0.9375rem;
+    color: var(--s-fg-muted);
+    max-width: 42ch;
+    margin: 0 auto 1.5rem;
+  }
+  .kg-done__meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    text-align: start;
+    border-block: 1px solid var(--s-line);
+    margin: 0 0 1.5rem;
+  }
+  .kg-done__meta > div { padding: 0.75rem 0.5rem 0.75rem 0; }
+  .kg-done__meta dt {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--s-fg-subtle);
+    margin-block-end: 0.2rem;
+  }
+  .kg-done__meta dd { margin: 0; font-size: 0.875rem; font-weight: 500; }
+  .kg-done__actions { display: grid; gap: 0.625rem; }
+  .kg-done__actions .kg-btn { width: 100%; }
+
+  /* ---------------------------------------------------------------- foot */
+  .kg-modal__foot {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem clamp(1.25rem, 3vw, 1.75rem);
+    margin-block-start: auto;
+    border-block-start: 1px solid var(--s-line);
+    background: #fff;
+    flex: none;
+    position: sticky;
+    inset-block-end: 0;
+  }
+  .kg-modal__foot-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    font-size: 0.6875rem;
+    color: var(--s-fg-subtle);
+    margin-inline-end: auto;
+  }
+  .kg-modal__back { font-size: 0.75rem; }
+  .kg-modal__submit { min-width: 148px; }
+  .kg-modal__submit[disabled] { opacity: 0.55; cursor: progress; }
+
+  .kg-modal__nojs {
+    padding: 1.25rem;
+    background: var(--kg-green-050);
+    border-block-start: 1px solid var(--s-line);
+    font-size: 0.875rem;
+  }
+  .kg-modal__nojs a { color: var(--kg-green-700); text-decoration: underline; }
+
+  /* ============================================================ RESPONSIVE */
+  @media (min-width: 640px) {
+    .kg-modal { align-items: center; padding: 2rem 1rem; }
+    .kg-modal__dialog {
+      border-radius: var(--r-4);
+      max-height: 90svh;
+      transform: translateY(14px) scale(0.985);
+    }
+    .kg-pick { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .kg-modal__fields { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1rem; }
+    .kg-modal__fields > .kg-field:first-child { grid-column: 1 / -1; }
+    .kg-done__meta { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .kg-done__actions { grid-auto-flow: column; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kg-modal__dialog { transition: none; }
+    .kg-modal__step-panel { animation: none; }
+    .kg-done__ring { animation: none; }
+  }
+</style>

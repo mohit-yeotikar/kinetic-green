@@ -1,0 +1,425 @@
+---
+/**
+ * LegacyTimeline — "50+ YEARS OF MOVEMENT." (IA slot 10)
+ *
+ * A horizontal timeline. Company figures are rendered as animated counters so the
+ * numbers register as facts rather than decoration.
+ *
+ * DATA DISCIPLINE — IMPORTANT
+ * Only milestones marked `verification: 'verified'` in content.ts assert a
+ * specific event. The rest are thematic era markers written without a date or a
+ * claim, because inventing corporate history is both a credibility risk and a
+ * legal one. The component makes this transparent with a visible note, so the
+ * communications team can see exactly which entries need sourcing before launch.
+ */
+import Icon from './Icon.astro';
+import { milestones, metrics, brand } from '../data/content';
+
+const verifiedCount = milestones.filter((m) => m.verification === 'verified').length;
+---
+
+<section class="kg-legacy kg-section kg-section--lg" id="legacy" data-section="legacy" data-legacy data-hscroll>
+  <div class="kg-legacy__grid" aria-hidden="true"></div>
+
+  <div class="kg-legacy__stage" data-hscroll-stage>
+    <div class="kg-shell">
+      <!-- ============================================================ HEAD -->
+      <header class="kg-legacy__head">
+        <div>
+          <p class="kg-eyebrow" data-reveal>Legacy</p>
+          <h2 class="kg-display kg-legacy__title" data-reveal="clip">
+            50+ years<br /><span class="kg-accent">of movement.</span>
+          </h2>
+        </div>
+        <p class="kg-lead kg-legacy__intro" data-reveal style="--reveal-delay:120ms">
+          Kinetic Green did not begin as an EV company. It began as a mobility company — and the
+          electrification of that business is the continuation of the same work, not a detour from it.
+        </p>
+      </header>
+
+      <!-- ========================================================= METRICS -->
+      <ul class="kg-legacy__metrics" data-reveal>
+        {
+          metrics.map((m) => (
+            <li class="kg-legacy__metric">
+              <span class="kg-legacy__metric-value">
+                <span class="kg-num" data-count={m.value} data-count-decimals={m.decimals ?? 0}>{m.value}</span>
+                <em>{m.suffix}</em>
+              </span>
+              <span class="kg-legacy__metric-label">{m.label}</span>
+              <span class="kg-visually-hidden">{m.sentence}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="kg-legacy__metric-note">
+        <Icon name="info" size={13} />
+        <span>
+          Figures as published by {brand.name}. Tree count is stated by the company as an equivalent,
+          not a literal planting record.
+        </span>
+      </p>
+    </div>
+
+    <!-- ========================================================= TIMELINE -->
+    <div class="kg-legacy__track-outer">
+      <ol class="kg-legacy__track" data-hscroll-track>
+        {
+          milestones.map((m, i) => (
+            <li class="kg-legacy__item" data-milestone={m.id} style={`--i:${i}`}>
+              <article class="kg-legacy__card" data-verified={m.verification}>
+                <header class="kg-legacy__card-head">
+                  <span class="kg-legacy__era">{m.era}</span>
+                  {m.year ? (
+                    <span class="kg-legacy__year kg-num">{m.year}</span>
+                  ) : (
+                    <span class="kg-legacy__year kg-legacy__year--open" aria-label="Year to be confirmed">
+                      Year TBC
+                    </span>
+                  )}
+                </header>
+
+                <h3 class="kg-legacy__card-title">{m.title}</h3>
+                <p class="kg-legacy__card-body">{m.body}</p>
+
+                <footer class="kg-legacy__card-foot">
+                  {m.verification === 'verified' ? (
+                    <span class="kg-tag kg-tag--green">
+                      <Icon name="check" size={11} />
+                      Sourced
+                    </span>
+                  ) : (
+                    <span class="kg-tag">
+                      <Icon name="info" size={11} />
+                      Awaiting confirmation
+                    </span>
+                  )}
+                  <span class="kg-legacy__index">{String(i + 1).padStart(2, '0')}</span>
+                </footer>
+              </article>
+            </li>
+          ))
+        }
+      </ol>
+
+      <!-- progress rail -->
+      <div class="kg-legacy__progress kg-shell" aria-hidden="true">
+        <span class="kg-legacy__progress-track"><i data-legacy-progress></i></span>
+      </div>
+    </div>
+
+    <div class="kg-shell">
+      <p class="kg-legacy__hint">
+        <Icon name="arrow-right" size={15} />
+        <span>Drag or swipe the timeline</span>
+        <span class="kg-legacy__hint-count">
+          {verifiedCount} of {milestones.length} entries sourced
+        </span>
+      </p>
+
+      <div class="kg-legacy__actions">
+        <button
+          type="button"
+          class="kg-btn"
+          data-lead-open
+          data-lead-type="test-ride"
+          data-lead-intent="high"
+          data-lead-source="legacy"
+          data-track="test_ride_start"
+          data-track-source="legacy"
+        >
+          <Icon name="calendar" size={16} />
+          Book a test ride
+        </button>
+        <a href="#ownership" class="kg-btn kg-btn--outline" data-track="section_view" data-track-section="ownership">
+          <Icon name="arrow-right" size={16} />
+          What ownership looks like
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .kg-legacy {
+    position: relative;
+    background: var(--kg-mist);
+    color: var(--kg-ink);
+    overflow: hidden;
+    --s-bg: var(--kg-mist);
+    --s-bg-alt: #fff;
+    --s-fg: var(--kg-ink);
+    --s-fg-muted: #55606a;
+    --s-fg-subtle: #7e898f;
+    --s-line: #e2e8e5;
+    --s-line-strong: #cfd8d4;
+    --s-accent: var(--kg-green-700);
+    --s-accent-bg: var(--kg-green);
+  }
+  .kg-legacy__grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgb(18 22 26 / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(18 22 26 / 0.045) 1px, transparent 1px);
+    background-size: 84px 84px;
+    mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+  }
+
+  .kg-legacy__stage { position: relative; padding-block: var(--section-y-lg); }
+  .kg-legacy[data-hscroll-ready='true'] .kg-legacy__stage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: 0;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* ------------------------------------------------------------------ head */
+  .kg-legacy__head {
+    display: grid;
+    gap: clamp(1rem, 3vw, 2rem);
+    margin-block-end: clamp(1.75rem, 4vw, 2.75rem);
+  }
+  .kg-legacy__title { font-size: var(--fs-d2); }
+  .kg-legacy__intro { max-width: 56ch; }
+
+  /* --------------------------------------------------------------- metrics */
+  .kg-legacy__metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    border-block-start: 1px solid var(--s-line);
+  }
+  .kg-legacy__metric {
+    padding: 1.25rem 1rem 1.25rem 0;
+    border-block-end: 1px solid var(--s-line);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .kg-legacy__metric-value {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.15rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 4.4vw, 2.875rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .kg-legacy__metric-value em {
+    font-style: normal;
+    font-size: 0.42em;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--kg-green-700);
+  }
+  .kg-legacy__metric-label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--s-fg-subtle);
+  }
+
+  .kg-legacy__metric-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 1rem 0 0;
+    font-size: 0.6875rem;
+    line-height: 1.65;
+    color: var(--s-fg-subtle);
+    max-width: 80ch;
+  }
+  .kg-legacy__metric-note svg { flex: none; margin-block-start: 0.15rem; color: var(--kg-green-700); }
+
+  /* -------------------------------------------------------------- timeline */
+  .kg-legacy__track-outer {
+    position: relative;
+    margin-block-start: clamp(2rem, 5vw, 3.25rem);
+  }
+
+  .kg-legacy__track {
+    display: flex;
+    gap: clamp(0.875rem, 2vw, 1.5rem);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-inline: var(--gutter);
+    padding-block-end: 1.25rem;
+    will-change: transform;
+  }
+  .kg-legacy__track::-webkit-scrollbar { display: none; }
+
+  .kg-legacy[data-hscroll-ready='true'] .kg-legacy__track {
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .kg-legacy__item { flex: none; scroll-snap-align: start; }
+
+  .kg-legacy__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: min(82vw, 330px);
+    height: 100%;
+    min-height: 300px;
+    padding: 1.5rem 1.375rem;
+    background: #fff;
+    border: 1px solid var(--s-line);
+    border-radius: var(--r-4);
+    transition: border-color var(--dur-3) var(--ease-kinetic), transform var(--dur-3) var(--ease-expo), box-shadow var(--dur-3);
+  }
+  .kg-legacy__card:hover {
+    border-color: var(--kg-green);
+    transform: translateY(-4px);
+    box-shadow: var(--sh-2);
+  }
+  /* sourced cards get the green spine; unconfirmed ones do not pretend */
+  .kg-legacy__card[data-verified='verified']::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 3px;
+    background: var(--kg-green);
+    border-start-start-radius: var(--r-4);
+    border-end-start-radius: var(--r-4);
+  }
+
+  .kg-legacy__card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-block-end: 0.875rem;
+  }
+  .kg-legacy__era {
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--kg-green-700);
+  }
+  .kg-legacy__year {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .kg-legacy__year--open {
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    color: var(--s-fg-subtle);
+    border: 1px dashed var(--s-line-strong);
+    border-radius: var(--r-1);
+    padding: 0.2rem 0.4rem;
+  }
+
+  .kg-legacy__card-title {
+    font-size: 1.125rem;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.75rem;
+    max-width: 22ch;
+  }
+
+  .kg-legacy__card-body {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: var(--s-fg-muted);
+    margin: 0 0 1.25rem;
+    flex: 1;
+  }
+
+  .kg-legacy__card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block-start: 0.875rem;
+    border-block-start: 1px solid var(--s-line);
+    margin-block-start: auto;
+  }
+  .kg-legacy__card-foot .kg-tag { display: inline-flex; align-items: center; gap: 0.35rem; }
+  .kg-legacy__card-foot .kg-tag svg { flex: none; }
+  .kg-legacy__index {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    color: var(--s-fg-subtle);
+  }
+
+  /* -------------------------------------------------------------- progress */
+  .kg-legacy__progress { margin-block-start: 0.25rem; }
+  .kg-legacy__progress-track {
+    display: block;
+    height: 2px;
+    background: var(--s-line);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .kg-legacy__progress-track i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--kg-green);
+    transition: width 0.1s linear;
+  }
+
+  .kg-legacy__hint {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.25rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--s-fg-subtle);
+  }
+  .kg-legacy__hint-count {
+    margin-inline-start: auto;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--s-line-strong);
+    border-radius: var(--r-1);
+    color: var(--kg-green-700);
+  }
+
+  .kg-legacy__actions {
+    display: grid;
+    gap: 0.625rem;
+    margin-block-start: 1.5rem;
+  }
+
+  /* ============================================================ RESPONSIVE */
+  @media (min-width: 640px) {
+    .kg-legacy__metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .kg-legacy__actions { grid-auto-flow: column; justify-content: start; }
+  }
+
+  @media (min-width: 900px) {
+    .kg-legacy__head { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); align-items: end; }
+    .kg-legacy__metrics { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  }
+
+  @media (min-width: 1024px) {
+    .kg-legacy__card { width: 340px; min-height: 320px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kg-legacy[data-hscroll-ready='true'] .kg-legacy__stage { display: block; padding-block: var(--section-y-lg); }
+    .kg-legacy[data-hscroll-ready='true'] .kg-legacy__track { overflow-x: auto; }
+    .kg-legacy__card:hover { transform: none; }
+    .kg-legacy__progress-track i { transition: none; }
+  }
+</style>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <title>Kinetic Green</title>
+  <rect width="48" height="48" rx="9" fill="#12161A"/>
+  <!-- Forward-travelling diagonal planes: the brand's kinetic cut -->
+  <path d="M5 10 L23 10 L31 22 L13 22 Z" fill="#FFFFFF"/>
+  <path d="M17 22 L35 22 L43 34 L25 34 Z" fill="#FFFFFF" opacity="0.55"/>
+  <path d="M29 34 L45 34 L45 42 L35 42 Z" fill="#00C853"/>
+  <path d="M37 6 L45 6 L45 16 L39 16 Z" fill="#00C853"/>
+  <path d="M9 14 L19 14 L21 18 L11 18 Z" fill="#00C853" opacity="0.9"/>
+</svg>
