@@ -1,0 +1,717 @@
+/*
+ * KINETIC GREEN — LIGHT EDITORIAL REDESIGN
+ *
+ * This layer deliberately removes the "dark EV microsite" cliché. The page is
+ * mostly warm white and mineral grey; charcoal is reserved for the close and
+ * footer. Green signals energy, decisions and live data — never decoration.
+ *
+ * Component styles remain colocated with their markup. These higher-specificity
+ * rules are the art-direction layer applied across those independent components.
+ */
+
+:root {
+  --kg-ink: #111714;
+  --kg-charcoal: #1b211e;
+  --kg-charcoal-2: #252c28;
+  --kg-graphite: #3e4842;
+  --kg-graphite-2: #66716b;
+  --kg-steel: #68736d;
+  --kg-silver: #d5dcd7;
+  --kg-mist: #f2f4ef;
+  --kg-mist-2: #e4e9e3;
+  --kg-paper: #fbfcf8;
+  --kg-green: #00c853;
+  --kg-green-600: #00a846;
+  --kg-green-700: #087437;
+  --kg-green-400: #2fdb77;
+  --kg-green-050: #e9f9ef;
+  --shell: 1480px;
+  --shell-narrow: 1080px;
+  --gutter: clamp(1.125rem, 4vw, 4.5rem);
+  --section-y: clamp(4.75rem, 9vw, 8.5rem);
+  --section-y-lg: clamp(5.5rem, 11vw, 10rem);
+  --fs-mega: clamp(3.25rem, 9vw, 8.75rem);
+  --fs-d1: clamp(2.55rem, 6.6vw, 6.4rem);
+  --fs-d2: clamp(2.15rem, 4.8vw, 4.75rem);
+  --fs-d3: clamp(1.55rem, 3vw, 2.6rem);
+  --leading-mega: 0.9;
+  --r-4: 12px;
+  --r-5: 18px;
+}
+
+html body {
+  background: var(--kg-paper);
+  color: var(--kg-ink);
+}
+
+html body #main .kg-display {
+  max-width: 16ch;
+  text-transform: none;
+  letter-spacing: -0.047em;
+  line-height: 0.98;
+}
+
+html body #main .kg-eyebrow {
+  color: var(--kg-green-700);
+  font-weight: 600;
+}
+
+html body #main .kg-eyebrow::before {
+  width: 2.5rem;
+  height: 1px;
+}
+
+html body #main .kg-lead {
+  color: #56625b;
+  line-height: 1.68;
+}
+
+html body #main .kg-card,
+html body #main .kg-input {
+  box-shadow: none;
+}
+
+html body #main .kg-btn {
+  border-radius: 3px;
+  box-shadow: none;
+}
+
+html body #main .kg-btn:hover {
+  box-shadow: 0 10px 24px -14px rgb(0 105 47 / 0.55);
+}
+
+/* --------------------------------------------------------------------------
+   NAVIGATION — light from the first frame, quiet enough to sit over the hero
+   -------------------------------------------------------------------------- */
+html body #main .kg-nav {
+  --nav-bg: rgb(251 252 248 / 0.9);
+  --nav-fg: var(--kg-ink);
+  --nav-line: rgb(17 23 20 / 0.13);
+  color: var(--kg-ink);
+  background: var(--nav-bg);
+  border-bottom: 1px solid rgb(17 23 20 / 0.08);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+}
+
+html body #main .kg-nav[data-state='scrolled'] {
+  --nav-bg: rgb(251 252 248 / 0.96);
+  --nav-fg: var(--kg-ink);
+  --nav-line: rgb(17 23 20 / 0.13);
+  background: var(--nav-bg);
+  box-shadow: 0 10px 32px -26px rgb(17 23 20 / 0.55);
+}
+
+html body #main .kg-nav__link,
+html body #main .kg-nav__link:hover,
+html body #main .kg-nav__link:focus-visible,
+html body #main .kg-nav__link[aria-current='true'] {
+  color: var(--kg-ink);
+}
+
+html body #main .kg-nav__link { opacity: 0.72; }
+html body #main .kg-nav__link:hover,
+html body #main .kg-nav__link[aria-current='true'] { opacity: 1; }
+
+html body #main .kg-nav__burger { color: var(--kg-ink); }
+html body #main .kg-nav__inner { --nav-h: 78px; }
+html body #main .kg-nav[data-state='scrolled'] .kg-nav__inner { --nav-h: 64px; }
+
+/* --------------------------------------------------------------------------
+   HERO — daylight, product-first and genuinely responsive
+   -------------------------------------------------------------------------- */
+html body #main .kg-hero {
+  min-height: min(940px, 100svh);
+  background: var(--kg-paper);
+  color: var(--kg-ink);
+  padding-block-start: clamp(6.5rem, 13vh, 8.5rem);
+  padding-block-end: clamp(2.5rem, 6vh, 4.5rem);
+}
+
+html body #main .kg-hero__atmos { inset: 0; }
+
+html body #main .kg-hero__grad {
+  background:
+    radial-gradient(circle at 79% 46%, rgb(0 200 83 / 0.09), transparent 31%),
+    linear-gradient(108deg, #fbfcf8 0 50%, #f0f3ed 50% 100%);
+}
+
+html body #main .kg-hero__grid {
+  background-image:
+    linear-gradient(to right, rgb(17 23 20 / 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(17 23 20 / 0.055) 1px, transparent 1px);
+  opacity: 0.9;
+  mask-image: linear-gradient(90deg, transparent 10%, #000 54%, #000 90%, transparent);
+}
+
+html body #main .kg-hero__glow {
+  inset-block-end: -30%;
+  background: radial-gradient(circle, rgb(0 200 83 / 0.13), transparent 64%);
+  filter: blur(18px);
+}
+
+html body #main .kg-hero__cut {
+  inset-inline-start: 58%;
+  background: linear-gradient(to bottom, transparent, rgb(0 200 83 / 0.32), transparent);
+  opacity: 0.48;
+}
+
+html body #main .kg-hero__vignette {
+  background:
+    linear-gradient(to right, rgb(251 252 248 / 0.94) 0 35%, transparent 58%),
+    linear-gradient(to top, rgb(251 252 248 / 0.9), transparent 26%);
+}
+
+html body #main .kg-hero__inner {
+  grid-template-areas: 'copy' 'stage';
+  align-items: center;
+}
+
+html body #main .kg-hero__eyebrow { color: #65716a; }
+html body #main .kg-hero__eyebrow-top { color: var(--kg-ink); }
+html body #main .kg-hero__eyebrow-sub { color: var(--kg-green-700); }
+
+html body #main .kg-hero__title {
+  font-size: var(--fs-mega);
+  line-height: 0.88;
+  letter-spacing: -0.055em;
+  text-transform: none;
+  max-width: 8ch;
+}
+
+html body #main .kg-hero__title-accent { color: var(--kg-ink); }
+html body #main .kg-hero__period { color: var(--kg-green); }
+html body #main .kg-hero__sub { color: #4e5a53; max-width: 31ch; }
+
+html body #main .kg-hero__ctas .kg-btn--outline {
+  --s-fg: var(--kg-ink);
+  --s-line-strong: rgb(17 23 20 / 0.22);
+  color: var(--kg-ink);
+  backdrop-filter: none;
+}
+
+html body #main .kg-hero__ctas .kg-btn--outline:hover {
+  --s-line-strong: var(--kg-ink);
+  background: transparent;
+}
+
+html body #main .kg-hero__tertiary { color: var(--kg-ink); }
+html body #main .kg-hero__tertiary-icon { color: var(--kg-green-700); background: var(--kg-green-050); }
+html body #main .kg-hero__tertiary-label { color: var(--kg-ink); }
+html body #main .kg-hero__tertiary-meta { color: #68736d; }
+html body #main .kg-hero__tertiary-arrow { color: var(--kg-green-700); }
+
+html body #main .kg-hero__stage {
+  width: min(112%, 760px);
+  margin-inline: auto;
+  filter: drop-shadow(0 28px 30px rgb(21 37 28 / 0.12));
+}
+
+html body #main .kg-hero__vehicle picture {
+  display: block;
+  width: min(100%, 650px);
+  margin-inline: auto;
+}
+
+html body #main .kg-hero__vehicle img {
+  max-height: 58svh;
+  width: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+/* VehicleVisual carries its own dark-stage range badge. The hero already has a
+   dedicated specification system, so showing both creates duplicate data and
+   collisions at narrow widths. */
+html body #main .kg-hero__vehicle .kg-vv__readout { display: none; }
+
+html body #main .kg-hero__chip {
+  background: rgb(251 252 248 / 0.88);
+  border-color: rgb(17 23 20 / 0.12);
+  box-shadow: 0 12px 34px -22px rgb(17 23 20 / 0.42);
+  backdrop-filter: blur(12px);
+}
+
+html body #main .kg-hero__chip-label { color: #68736d; }
+html body #main .kg-hero__chip-value { color: var(--kg-ink); text-shadow: none; }
+html body #main .kg-hero__chip-value em { color: var(--kg-green-700); }
+html body #main .kg-hero__chip--green .kg-hero__chip-value { color: var(--kg-green-700); }
+html body #main .kg-scroll-hint { color: #78837d; }
+html body #main .kg-hero__trust { color: #68736d; }
+
+/* --------------------------------------------------------------------------
+   QUICK CONVERSION — a service desk, not a dark promotional stripe
+   -------------------------------------------------------------------------- */
+html body #main .kg-cbar {
+  background: #fff;
+  color: var(--kg-ink);
+  border-block-color: var(--kg-mist-2);
+  box-shadow: 0 20px 50px -42px rgb(17 23 20 / 0.45);
+}
+
+html body #main .kg-cbar__title { border-color: var(--kg-mist-2); }
+html body #main .kg-cbar__title-text,
+html body #main .kg-cbar__eyebrow,
+html body #main .kg-cbar__meta { color: #6c7871; }
+html body #main .kg-cbar__item { border-color: var(--kg-mist-2); }
+html body #main .kg-cbar__label { color: var(--kg-ink); }
+html body #main .kg-cbar__icon {
+  color: var(--kg-green-700);
+  background: var(--kg-green-050);
+  border-color: #ccecd7;
+}
+html body #main .kg-cbar__arrow { color: #849088; }
+html body #main .kg-cbar__link:hover { background: #f7f9f5; }
+html body #main .kg-cbar__link--primary { background: var(--kg-green); }
+html body #main .kg-cbar__link--primary:hover { background: var(--kg-green-400); }
+
+/* --------------------------------------------------------------------------
+   VEHICLE EXPLORER — studio white, no synthetic "black stage"
+   -------------------------------------------------------------------------- */
+html body #main .kg-vex { background: var(--kg-paper); }
+html body #main .kg-vex__stage {
+  background:
+    linear-gradient(180deg, #f1f4ef 0%, #e9eee8 100%);
+  border-color: #dce3dc;
+  border-radius: 8px;
+}
+html body #main .kg-vex__stage::before {
+  background: radial-gradient(ellipse at bottom, rgb(0 200 83 / 0.12), transparent 68%);
+}
+html body #main .kg-vex__stage-blurb,
+html body #main .kg-vex__models-label { color: #68736d; }
+html body #main .kg-vex__model {
+  background: rgb(255 255 255 / 0.72);
+  border-color: #d5ddd6;
+  color: var(--kg-ink);
+}
+html body #main .kg-vex__model:hover,
+html body #main .kg-vex__model[data-active='true'] {
+  background: var(--kg-green-050);
+  border-color: var(--kg-green);
+  color: var(--kg-ink);
+}
+html body #main .kg-vex__model-price { color: var(--kg-green-700); }
+html body #main .kg-vex__models { border-color: #d8dfd8; }
+
+/* The SVG art was authored for a dark background. Invert its tonal hierarchy on
+   light surfaces without changing the verified product-data path. */
+html body #main .kg-vex__stage .kg-vv__svg,
+html body #main .kg-tech__stage .kg-vv__svg {
+  filter: drop-shadow(0 20px 22px rgb(17 23 20 / 0.11));
+}
+
+/* --------------------------------------------------------------------------
+   EV FINDER — decision tool in daylight
+   -------------------------------------------------------------------------- */
+html body #main .kg-find {
+  background: #f1f4ef;
+  color: var(--kg-ink);
+  --s-bg: #f1f4ef;
+  --s-bg-alt: #fff;
+  --s-fg: var(--kg-ink);
+  --s-fg-muted: #56625b;
+  --s-fg-subtle: #718078;
+  --s-line: #dce3dc;
+  --s-line-strong: #c8d1c9;
+  --s-accent: var(--kg-green-700);
+}
+html body #main .kg-find__bg .kg-grid-bg { opacity: 0.28; }
+html body #main .kg-find__tool {
+  background: #fff;
+  border: 1px solid #dce3dc;
+  border-radius: 10px;
+  padding: clamp(1rem, 3vw, 2rem);
+  box-shadow: 0 28px 70px -54px rgb(17 23 20 / 0.52);
+}
+html body #main .kg-find__step { border-color: #dce3dc; }
+html body #main .kg-find__step-btn { color: #7a857e; }
+html body #main .kg-find__step-btn:hover,
+html body #main .kg-find__step[data-active='true'] .kg-find__step-btn,
+html body #main .kg-find__step[data-done='true'] .kg-find__step-btn { color: var(--kg-ink); }
+html body #main .kg-find__aside-note,
+html body #main .kg-find__opt-card,
+html body #main .kg-result__cost {
+  background: #f7f9f5;
+  border-color: #dce3dc;
+}
+html body #main .kg-find__opt-card:hover { background: var(--kg-green-050); }
+html body #main .kg-find__opt-icon { background: #fff; border-color: #dce3dc; color: var(--kg-green-700); }
+html body #main .kg-find__opt-label,
+html body #main .kg-result__title,
+html body #main .kg-result__cost-rows b { color: var(--kg-ink); }
+html body #main .kg-find__legend-num,
+html body #main .kg-result__saving-value { color: var(--kg-green-700); }
+html body #main .kg-result__saving { background: var(--kg-green-050); border-color: #bce6ca; }
+
+/* --------------------------------------------------------------------------
+   CALCULATOR — financial tool, not dashboard chrome
+   -------------------------------------------------------------------------- */
+html body #main .kg-calc { background: var(--kg-paper); }
+html body #main .kg-calc__headline {
+  background: var(--kg-green-050);
+  color: var(--kg-ink);
+  border: 1px solid #bfe8cc;
+  border-left: 4px solid var(--kg-green);
+  border-radius: 4px;
+}
+html body #main .kg-calc__headline .kg-label,
+html body #main .kg-calc__currency { color: var(--kg-green-700); }
+html body #main .kg-calc__headline-note { color: #65716a; }
+html body #main .kg-calc__inputs,
+html body #main .kg-calc__step { border-radius: 6px; }
+
+/* --------------------------------------------------------------------------
+   PRODUCT STORY — editorial chapters instead of a pinned dark tunnel
+   -------------------------------------------------------------------------- */
+html body #main .kg-story {
+  background: #eef2ed;
+  color: var(--kg-ink);
+  --s-bg: #eef2ed;
+  --s-fg: var(--kg-ink);
+  --s-fg-muted: #59655e;
+  --s-fg-subtle: #748078;
+  --s-line: #d6ded7;
+  --s-line-strong: #c3cec5;
+  --s-accent: var(--kg-green-700);
+}
+html body #main .kg-story__stage,
+html body #main .kg-story[data-hscroll-ready='true'] .kg-story__stage {
+  position: relative;
+  height: auto;
+  min-height: 0;
+  padding-block: var(--section-y);
+  overflow: visible;
+}
+html body #main .kg-story__backdrop-grid {
+  background-image:
+    linear-gradient(to right, rgb(17 23 20 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(17 23 20 / 0.06) 1px, transparent 1px);
+}
+html body #main .kg-story__tabs-progress { background: #d6ded7; }
+html body #main .kg-story__tab { color: #7c8780; }
+html body #main .kg-story__tab:hover { color: var(--kg-ink); }
+html body #main .kg-story__tab[aria-selected='true'],
+html body #main .kg-story__chapter-index { color: var(--kg-green-700); }
+html body #main .kg-story[data-hscroll-ready='true'] .kg-story__track {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  transform: none !important;
+}
+html body #main .kg-story__chapter {
+  background: rgb(255 255 255 / 0.76);
+  border: 1px solid #d9e1da;
+  padding: clamp(1rem, 2.5vw, 2rem);
+  border-radius: 8px;
+}
+html body #main .kg-story__chapter-visual {
+  background: radial-gradient(ellipse at 50% 92%, rgb(0 200 83 / 0.10), transparent 64%);
+}
+html body #main .kg-story__chapter-specs,
+html body #main .kg-story__spec-table,
+html body #main .kg-story__spec-table > div { border-color: #d6ded7; }
+html body #main .kg-story__spec-table dd { color: var(--kg-ink); }
+html body #main .kg-story__spec-actions .kg-btn--outline {
+  --s-fg: var(--kg-ink);
+  --s-line-strong: #bdc8bf;
+  color: var(--kg-ink);
+}
+html body #main .kg-story__spec-actions .kg-btn--outline:hover { background: var(--kg-green-050); }
+
+/* --------------------------------------------------------------------------
+   INDIA, TECHNOLOGY, OWNERSHIP — three distinct chapters, all light
+   -------------------------------------------------------------------------- */
+html body #main .kg-india { background: var(--kg-paper); }
+html body #main .kg-india__tab[aria-selected='true'] {
+  background: var(--kg-green);
+  border-color: var(--kg-green);
+  color: #00240f;
+}
+
+html body #main .kg-tech {
+  background: #f1f4ef;
+  color: var(--kg-ink);
+  --s-bg: #f1f4ef;
+  --s-bg-alt: #fff;
+  --s-fg: var(--kg-ink);
+  --s-fg-muted: #59655e;
+  --s-fg-subtle: #748078;
+  --s-line: #d8e0d9;
+  --s-line-strong: #c4cec6;
+  --s-accent: var(--kg-green-700);
+}
+html body #main .kg-tech__integrity { color: #405047; }
+html body #main .kg-tech__stage-frame {
+  background: linear-gradient(160deg, #e9eee9, #dfe6df);
+  border-color: #ccd5cd;
+  border-radius: 8px;
+}
+html body #main .kg-tech__stage-grid {
+  background-image:
+    linear-gradient(to right, rgb(17 23 20 / 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(17 23 20 / 0.08) 1px, transparent 1px);
+}
+html body #main .kg-tech__pin { color: var(--kg-ink); }
+html body #main .kg-tech__pin-label { color: #4f5c54; }
+html body #main .kg-tech__pin:hover .kg-tech__pin-label,
+html body #main .kg-tech__pin[aria-pressed='true'] .kg-tech__pin-label { color: var(--kg-green-700); }
+html body #main .kg-tech__detail-card,
+html body #main .kg-tech__detail-pending {
+  background: #fff;
+  border-color: #d5ddd6;
+}
+html body #main .kg-tech__detail-spec { background: var(--kg-green-050); }
+html body #main .kg-tech__detail-index { color: var(--kg-green-700); }
+html body #main .kg-tech__detail-source,
+html body #main .kg-tech__transcript,
+html body #main .kg-tech__transcript li { border-color: #d8e0d9; }
+html body #main .kg-tech__transcript summary,
+html body #main .kg-tech__transcript p { color: #59655e; }
+
+html body #main .kg-own { background: var(--kg-paper); }
+html body #main .kg-own__support {
+  background: var(--kg-green-050);
+  color: var(--kg-ink);
+  border: 1px solid #c7ead2;
+  border-left: 4px solid var(--kg-green);
+  border-radius: 5px;
+}
+html body #main .kg-own__support-copy .kg-label { color: var(--kg-green-700); }
+html body #main .kg-own__support-body { color: #58645d; }
+html body #main .kg-own__support-actions .kg-btn--outline {
+  --s-fg: var(--kg-ink);
+  --s-line-strong: #afc5b5;
+  color: var(--kg-ink);
+}
+
+/* --------------------------------------------------------------------------
+   PRICE + STORIES — calm high-intent surfaces, not more dark blocks
+   -------------------------------------------------------------------------- */
+html body #main .kg-price {
+  background: #e8eee8;
+  color: var(--kg-ink);
+  --s-bg: #fff;
+  --s-bg-alt: #f4f7f2;
+  --s-fg: var(--kg-ink);
+  --s-fg-muted: #59655e;
+  --s-fg-subtle: #748078;
+  --s-line: #d2dbd3;
+  --s-line-strong: #bdc9bf;
+  --s-accent: var(--kg-green-700);
+}
+html body #main .kg-price select.kg-input { background-color: #fff; color: var(--kg-ink); }
+html body #main .kg-price .kg-input { background: #fff; color: var(--kg-ink); }
+
+html body #main .kg-stories {
+  background: var(--kg-paper);
+  color: var(--kg-ink);
+  --s-bg: var(--kg-paper);
+  --s-bg-alt: #fff;
+  --s-fg: var(--kg-ink);
+  --s-fg-muted: #59655e;
+  --s-fg-subtle: #748078;
+  --s-line: #dde4dd;
+  --s-line-strong: #c9d2ca;
+  --s-accent: var(--kg-green-700);
+}
+html body #main .kg-stories__filter-btn {
+  background: #fff;
+  border-color: #d8e0d9;
+  color: #5c6961;
+  border-radius: 3px;
+}
+html body #main .kg-stories__filter-btn:hover { color: var(--kg-ink); }
+html body #main .kg-stories__feature,
+html body #main .kg-stories__faq,
+html body #main .kg-stories__faq-list,
+html body #main .kg-faq { border-color: #dde4dd; }
+html body #main .kg-stories__feature-visual,
+html body #main .kg-stories__card-visual {
+  background: #e7ece7;
+  border-color: #d5ddd6;
+}
+html body #main .kg-stories__placeholder {
+  background:
+    linear-gradient(118deg, transparent 40%, rgb(0 200 83 / 0.09) 66%, transparent 90%),
+    repeating-linear-gradient(-45deg, rgb(17 23 20 / 0.025) 0 2px, transparent 2px 14px);
+}
+html body #main .kg-stories__placeholder-rule { background: rgb(17 23 20 / 0.15); }
+html body #main .kg-stories__placeholder-word { color: rgb(17 23 20 / 0.35); }
+html body #main .kg-stories__card {
+  background: #fff;
+  border-color: #dce3dc;
+  border-radius: 7px;
+}
+html body #main .kg-stories__date,
+html body #main .kg-stories__source,
+html body #main .kg-stories__card-excerpt,
+html body #main .kg-stories__feature-excerpt,
+html body #main .kg-stories__faq-intro,
+html body #main .kg-faq__a p { color: #647068; }
+html body #main .kg-stories__feature-title a:hover,
+html body #main .kg-stories__card-title a:hover,
+html body #main .kg-faq__q:hover,
+html body #main .kg-stories__card-more { color: var(--kg-green-700); }
+html body #main .kg-faq__q { color: var(--kg-ink); }
+html body #main .kg-faq__icon { border-color: #ccd5cd; color: var(--kg-green-700); }
+
+/* Final CTA and footer remain charcoal by design: one deliberate night-time close
+   after a predominantly daylight journey. */
+html body #main .kg-final { background: #17201b; }
+html body #main .kg-foot { background: #0f1512; }
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE RECOMPOSITION
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  :root {
+    --gutter: 1.125rem;
+    --section-y: 4.5rem;
+    --section-y-lg: 5.25rem;
+    --fs-mega: clamp(3.2rem, 17vw, 4.6rem);
+    --fs-d2: clamp(2.15rem, 11vw, 3.2rem);
+  }
+
+  html body #main .kg-display { max-width: 13ch; }
+  html body #main .kg-btn--lg { min-height: 54px; padding: 0.95rem 1.2rem; }
+
+  html body #main .kg-nav__inner { --nav-h: 68px; }
+  html body #main .kg-nav__cta { padding-inline: 0.8rem; }
+
+  html body #main .kg-hero {
+    min-height: auto;
+    padding-block-start: 6rem;
+    padding-block-end: 2.25rem;
+  }
+  html body #main .kg-hero__inner { gap: 0.5rem; }
+  html body #main .kg-hero__copy { display: block; }
+  html body #main .kg-hero__eyebrow { margin-block-end: 0.75rem; }
+  html body #main .kg-hero__title { max-width: 7ch; }
+  html body #main .kg-hero__sub { font-size: 1rem; margin-block-start: 0.85rem; }
+  html body #main .kg-hero__ctas { display: grid; grid-template-columns: 1fr; margin-block-start: 1.1rem; width: 100%; }
+  html body #main .kg-hero__ctas .kg-btn { width: 100%; }
+  html body #main .kg-hero__ctas .kg-btn--outline { display: none; }
+  html body #main .kg-hero__tertiary { margin-block-start: 0.35rem; }
+  html body #main .kg-hero__tertiary-meta { display: none; }
+  html body #main .kg-hero__stage { width: 105%; margin-inline: -2.5%; margin-block: 0.5rem -1rem; }
+  html body #main .kg-hero__vehicle img { max-height: 38svh; }
+  html body #main .kg-hero__chips,
+  html body #main .kg-scroll-hint { display: none; }
+  html body #main .kg-hero__foot { margin-block-start: 1.25rem; }
+  html body #main .kg-hero__trust { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem; width: 100%; }
+  html body #main .kg-hero__trust li:last-child { display: none; }
+  html body #main .kg-hero__vignette { background: linear-gradient(to bottom, transparent 58%, rgb(251 252 248 / 0.92)); }
+
+  html body #main .kg-cbar__inner { padding-inline: 0; }
+  html body #main .kg-cbar__list { grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
+  html body #main .kg-cbar__item { border-block-end: 0; border-inline-end: 1px solid var(--kg-mist-2); }
+  html body #main .kg-cbar__item:last-child { border-inline-end: 0; }
+  html body #main .kg-cbar__link { display: grid; justify-items: center; gap: 0.45rem; min-height: 92px; padding: 0.8rem 0.35rem; text-align: center; }
+  html body #main .kg-cbar__body { align-items: center; }
+  html body #main .kg-cbar__eyebrow,
+  html body #main .kg-cbar__meta,
+  html body #main .kg-cbar__arrow { display: none; }
+  html body #main .kg-cbar__label { font-size: 0.67rem; white-space: normal; line-height: 1.25; }
+  html body #main .kg-cbar__icon { width: 36px; height: 36px; }
+
+  html body #main .kg-vex__rail { position: sticky; top: 64px; z-index: 10; background: rgb(251 252 248 / 0.95); backdrop-filter: blur(12px); }
+  html body #main .kg-vex__stage { padding-inline: 0.25rem; }
+  html body #main .kg-vex__stage-meta { padding-inline: 0.75rem; }
+  html body #main .kg-vex__actions { display: grid; }
+
+  html body #main .kg-find__tool { padding: 1rem; }
+  html body #main .kg-find__aside-note { display: none; }
+  html body #main .kg-find__steps { grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 1px solid #dce3dc; margin-bottom: 1.25rem; }
+  html body #main .kg-find__step { border: 0; }
+  html body #main .kg-find__step-btn { justify-content: center; padding: 0.75rem 0.25rem; }
+  html body #main .kg-find__step-text { display: none; }
+  html body #main .kg-find__step-state { width: 10px; }
+  html body #main .kg-find__step[data-active='true'] .kg-find__step-state { width: 22px; }
+  html body #main .kg-find__options { grid-template-columns: 1fr; }
+  html body #main .kg-find__panels { min-height: 0; }
+  html body #main .kg-find__nav { display: grid; grid-template-columns: 1fr 1fr; }
+  html body #main .kg-find__nav .kg-btn:only-child { grid-column: 1 / -1; }
+
+  html body #main .kg-calc__headline { order: -1; }
+  html body #main .kg-seg { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html body #main .kg-seg__item:nth-child(2) .kg-seg__label { border-inline-end: 0; }
+  html body #main .kg-seg__item:nth-child(-n + 2) .kg-seg__label { border-block-end: 1px solid var(--s-line-strong); }
+  html body #main .kg-calc__totals { grid-template-columns: 1fr 1fr; }
+
+  html body #main .kg-story__track { gap: 0.85rem; padding-inline: var(--gutter); }
+  html body #main .kg-story__chapter { width: 88vw; padding: 1rem; }
+  html body #main .kg-story__chapter--spec { width: 88vw; }
+
+  html body #main .kg-tech__stage-frame { aspect-ratio: 1 / 1; }
+  html body #main .kg-tech__pin { width: 38px; height: 38px; }
+  html body #main .kg-tech__pin-label { display: none; }
+
+  html body #main .kg-stories__filter { flex-wrap: nowrap; overflow-x: auto; padding-block-end: 0.5rem; }
+  html body #main .kg-stories__filter-btn { white-space: nowrap; }
+
+  html body #main .kg-final__actions { gap: 0.5rem; }
+  html body #main .kg-final__action { border-radius: 5px; }
+}
+
+@media (min-width: 768px) and (max-width: 1099px) {
+  html body #main .kg-hero { min-height: auto; padding-block-start: 8rem; }
+  html body #main .kg-hero__inner { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); grid-template-areas: 'copy stage'; }
+  html body #main .kg-hero__stage { width: 125%; margin-inline-start: -18%; }
+  html body #main .kg-hero__title { font-size: clamp(4.2rem, 9.8vw, 6.7rem); }
+  html body #main .kg-hero__chips { display: none; }
+  html body #main .kg-find__tool { grid-template-columns: 220px 1fr; }
+}
+
+@media (min-width: 1100px) {
+  html body #main .kg-hero__inner {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-areas: 'copy stage';
+  }
+  html body #main .kg-hero__copy { align-self: center; padding-block-end: 1rem; }
+  html body #main .kg-hero__stage { width: min(116%, 880px); margin-inline-start: -7%; }
+  html body #main .kg-hero__chips { display: block; }
+  html body #main .kg-hero__foot { position: absolute; inset-inline: 0; inset-block-end: 2rem; }
+  html body #main .kg-find__tool { grid-template-columns: minmax(210px, 0.34fr) minmax(0, 1fr); }
+}
+
+@media (min-width: 900px) {
+  html body #main .kg-story__chapter { width: min(72vw, 1040px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body #main .kg-story[data-hscroll-ready='true'] .kg-story__track { transform: none !important; }
+}
+
+/* Header sits outside #main, so it gets its own high-specificity cascade anchor. */
+html body .kg-nav.kg-nav {
+  --nav-bg: rgb(251 252 248 / 0.9);
+  --nav-fg: var(--kg-ink);
+  --nav-line: rgb(17 23 20 / 0.13);
+  color: var(--kg-ink);
+  background: var(--nav-bg);
+  border-bottom: 1px solid rgb(17 23 20 / 0.08);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+}
+html body .kg-nav.kg-nav[data-state='scrolled'] {
+  --nav-bg: rgb(251 252 248 / 0.96);
+  --nav-fg: var(--kg-ink);
+  --nav-line: rgb(17 23 20 / 0.13);
+  background: var(--nav-bg);
+  box-shadow: 0 10px 32px -26px rgb(17 23 20 / 0.55);
+}
+html body .kg-nav.kg-nav .kg-nav__link,
+html body .kg-nav.kg-nav .kg-nav__link:hover,
+html body .kg-nav.kg-nav .kg-nav__link:focus-visible,
+html body .kg-nav.kg-nav .kg-nav__link[aria-current='true'],
+html body .kg-nav.kg-nav .kg-nav__burger { color: var(--kg-ink); }
+html body .kg-nav.kg-nav .kg-nav__link { opacity: 0.72; }
+html body .kg-nav.kg-nav .kg-nav__link:hover,
+html body .kg-nav.kg-nav .kg-nav__link[aria-current='true'] { opacity: 1; }
+html body .kg-nav.kg-nav .kg-nav__inner { --nav-h: 78px; }
+html body .kg-nav.kg-nav[data-state='scrolled'] .kg-nav__inner { --nav-h: 64px; }
+
+@media (max-width: 767px) {
+  html body .kg-nav.kg-nav .kg-nav__inner { --nav-h: 68px; }
+  html body .kg-nav.kg-nav .kg-nav__cta { padding-inline: 0.8rem; }
+}

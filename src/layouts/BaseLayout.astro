@@ -12,6 +12,7 @@
  */
 import '../styles/tokens.css';
 import '../styles/global.css';
+import redesignCss from '../styles/redesign.css?raw';
 import { brand } from '../data/content';
 
 interface Props {
@@ -119,7 +120,7 @@ const baseSchema = JSON.stringify(graph).replace(/</g, '\\u003c');
     <!-- ------------------------------------------------------------- geo/locale -->
     <meta name="language" content="English" />
     <meta name="geo.region" content="IN" />
-    <meta name="theme-color" content="#12161A" />
+    <meta name="theme-color" content="#FBFCF8" />
     <meta name="format-detection" content="telephone=no" />
 
     <!-- ------------------------------------------------------------------- OG -->
@@ -215,6 +216,11 @@ const baseSchema = JSON.stringify(graph).replace(/</g, '\\u003c');
   </head>
 
   <body class={bodyClass}>
+    <!-- Astro hoists component CSS into the head. This in-body style element is
+         intentionally parsed after that link and before visible content, giving
+         the cross-component art-direction layer final cascade precedence. -->
+    <style is:inline set:html={redesignCss}></style>
+
     <!-- GTM noscript fallback -->
     <noscript>
       <iframe

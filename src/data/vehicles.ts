@@ -166,9 +166,9 @@ export const vehicles: Vehicle[] = [
     source: 'kineticgreen.com listing + OEM spec aggregation',
     media: {
       hero: null,
-      card: null,
-      poster: null,
-      alt: 'Kinetic Green E-Luna Plus electric moped, side profile',
+      card: '/media/eluna-hero.webp',
+      poster: '/media/eluna-hero.webp',
+      alt: 'Green Kinetic E-Luna Plus electric moped, three-quarter front view',
     },
     accent: '#00C853',
   },

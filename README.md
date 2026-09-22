@@ -3,10 +3,11 @@
 A production-quality, conversion-led homepage for **Kinetic Green** (Indian electric
 mobility manufacturer), built as a static Astro site.
 
-> **Note on imagery:** this build contains **zero stock photographs and zero
-> AI-generated images**. Every vehicle, map, diagram, icon and data visual is
-> **hand-authored SVG/CSS** drawn in-repo. That was a deliberate art-direction
-> decision (see [Art direction](#art-direction)), not a placeholder.
+> **Note on imagery:** the hero uses one lightweight, background-removed E-Luna
+> product cutout found through a Creative Commons-filtered image search. Other
+> vehicle classes, maps, diagrams, icons, and data visuals remain hand-authored
+> SVG/CSS. Replace the cutout with Kinetic Green's approved campaign master before
+> production launch; the layout does not depend on this temporary source asset.
 
 ---
 
@@ -25,11 +26,13 @@ mobility manufacturer), built as a static Astro site.
 
 | Area | State |
 | --- | --- |
-| Build | ✅ `npm run build` clean |
-| Local serve | ✅ PM2 on `:3000`, HTTP 200 (~85 ms) |
-| Payload (gzipped) | HTML 59 KB · CSS 25 KB · JS 18 KB |
+| Build | `npm run build` clean |
+| Local serve | PM2 on `:3000`, HTTP 200 |
+| Payload (gzipped) | HTML 63 KB · CSS 25 KB · JS 18 KB |
+| Hero product image | 89 KB WebP with transparency |
 | Sections rendered | 15 |
-| Client bundle | Parses clean; all 10 controllers present |
+| Browser QA | Desktop 1440 px + mobile 390 px; no horizontal overflow |
+| Interaction smoke test | Explorer, calculator, lead modal, and EV finder pass |
 | `/api/lead` endpoint | ❌ Not implemented — leads fall to the offline queue |
 | Deploy | ⏸️ **Awaiting choice of deploy path** (see [Deployment](#deployment)) |
 
@@ -90,12 +93,15 @@ commitment.
 
 ## Art direction
 
-**Palette:** `--kg-ink #080A09` · `--kg-charcoal #12161A` · `--kg-green #00C853`
-(single accent — no second green) · `--kg-mist #EEF2F0` · metallic neutrals.
+**Palette:** `--kg-paper #FBFCF8` and mineral mist surfaces now carry most of
+page, with `--kg-ink #111714` for typography and `--kg-green #00C853` as the
+single action/data accent. Charcoal is reserved for the final conversion and
+footer rather than repeated through the journey.
 
-**Semantic surfaces:** sections declare `[data-surface="dark|mist|ink"]` and the
-token layer flips `--s-bg / --s-fg / --s-accent` rather than each section
-restyling itself.
+**Editorial light system:** `src/styles/redesign.css` is the cross-component art
+direction layer. It replaces the former dark-microsite rhythm with daylight
+product stages, quieter technical grids, flat-edged controls, and more measured
+type. The component-level CSS remains intact as the functional baseline.
 
 **The Kinetic Green diagonal** — the logo's forward cut — recurs as the design's
 signature geometry: hero cut plane, section edges, button sweeps, footer edge.
@@ -105,17 +111,16 @@ direction, counters ease-out to a precise settle, and every routine is skipped
 entirely under `prefers-reduced-motion`. Magnetic CTAs (capped at 4 px) are
 pointer-fine only.
 
-### Vehicles are vector, not photographic
+### Product imagery and vector fallback
 
-`VehicleVisual.astro` draws 5 body types (`moped`, `motorcycle`,
+The hero's E-Luna Plus uses an optimized 89 KB transparent WebP product cutout.
+`VehicleVisual.astro` still draws 5 fallback body types (`moped`, `motorcycle`,
 `three-wheeler-passenger`, `three-wheeler-cargo`, `cart`) as layered SVG chassis
-planes with hub motors, battery packs, energy trails and technical datum lines.
+planes when an approved product image is unavailable. This prevents invented
+vehicle renders from being presented as real products.
 
-Advantages: zero licensing risk · ~0 KB image weight (LCP is a text paint) ·
-scales infinitely · matches the "engineering + technical lines" language.
-
-**Replacing them with official photography** requires no code change beyond the
-data — each vehicle carries a documented media slot:
+**Replacing the temporary cutout with approved OEM photography** requires no code
+change beyond the data — each vehicle carries a documented media slot:
 
 ```ts
 // src/data/vehicles.ts
@@ -285,9 +290,10 @@ the event map can be audited by grepping components rather than reading JS.
    form), `/terms`, `/cookies`, `/404`.
 4. **No OG image.** `public/brand/og-default.jpg` is referenced but absent; social
    shares will have no preview image until one is supplied.
-5. **Verify in a real browser.** The sandbox browser could not stay open to capture
-   console output; the bundle was instead verified to parse cleanly and to contain
-   all controllers. A manual pass at mobile breakpoints is recommended.
+5. **Image approval required.** Replace `/public/media/eluna-hero.webp` with the
+   approved Kinetic Green campaign master before production launch.
+6. **CRM and consent review.** Connect the lead endpoint, confirm consent copy, and
+   complete legal review before enabling paid-media tracking.
 
 ---
 
