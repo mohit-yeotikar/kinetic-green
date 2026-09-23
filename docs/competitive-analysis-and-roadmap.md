@@ -23,6 +23,16 @@ Phase 1 (bugs + SEO) and the first slice of Phase 2 (motion) are **implemented a
 - **Motion** — the dormant `motion.ts` is wired (reveal + count-up), scroll-reveal added to
   below-the-fold sections (hero excluded to protect LCP, reduced-motion safe), and a new
   count-up **trust band** surfaces the unused `metrics[]` as social proof.
+- **Conversion + TCO (Phase 3, started)** — the savings calculator now shows a **5-year
+  projection** and an **annual petrol-CO₂-avoided** estimate (honestly labelled) alongside
+  yearly savings; a persistent **mobile CTA bar** keeps "Book test ride" + "Dealers" one tap
+  away at any scroll depth (reveals after the hero, hides with the drawer/modal, no-JS safe).
+
+**Still open (need brand assets or are larger builds):** colour-swatch configurator + 360°
+viewer (need per-colour renders / frame sequences), hero video, the matched 3-vehicle studio
+set + Astro `<Image>` migration, a spec **compare** table (blocked on confirmed Zing/Safar
+specs — the E-Luna variants are ready today), split product sub-pages, and the dealer map
+(awaits the verified dealer feed).
 
 Everything below is the full analysis and the remaining roadmap (Phase 2 finish + Phase 3).
 
