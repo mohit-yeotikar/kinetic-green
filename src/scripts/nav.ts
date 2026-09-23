@@ -194,7 +194,11 @@ function initAnchors(): void {
     const headerH = header?.offsetHeight ?? 0;
     const top = target.getBoundingClientRect().top + window.scrollY - headerH - 12;
 
-    window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+    // Prefer the Lenis engine when it's running so the jump shares the same
+    // smoothing as wheel scroll; fall back to native scrollTo otherwise.
+    const lenis = (window as unknown as { __lenis?: { scrollTo: (t: number, o?: Record<string, unknown>) => void } }).__lenis;
+    if (lenis && !reduce) lenis.scrollTo(top, { offset: 0, duration: 1.05 });
+    else window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
 
     // Move focus for keyboard + screen-reader users without the scroll jump.
     target.setAttribute('tabindex', '-1');

@@ -16,8 +16,9 @@
     "test": "curl -s -o /dev/null -w \"%{http_code}\\n\" http://localhost:3000"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.6.0",
     "astro": "^7.3.3",
-    "@astrojs/sitemap": "^3.6.0"
+    "lenis": "^1.3.26"
   },
   "devDependencies": {
     "wrangler": "^4.110.0"

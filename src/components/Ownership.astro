@@ -8,8 +8,8 @@ const questions = [
 ---
 <section class="ownership-story section-space" id="ownership" data-section="ownership" aria-labelledby="ownership-heading">
   <div class="kg-shell ownership-layout">
-    <figure class="ownership-photo" data-reveal><img src="/media/riding.webp" alt="Two helmeted riders on a Kinetic Green E-Luna electric moped enjoying a ride together" width="1400" height="901" loading="lazy"/><figcaption>MORE LIFE IN EVERY RIDE.</figcaption></figure>
-    <div class="ownership-copy" data-reveal><p class="editorial-label">ELECTRIC. WITHOUT THE OVERTHINKING.</p><h2 id="ownership-heading">Made for life.<br />Your kind of life.<span class="kg-subhead">Charging, service and finance for your Kinetic Green electric vehicle.</span></h2><p>The morning rush. The long way home. The little detours. Going electric should feel like moving forward—not starting over.</p>
+    <figure class="ownership-photo" data-reveal="left"><img src="/media/riding.webp" alt="Two helmeted riders on a Kinetic Green E-Luna electric moped enjoying a ride together" width="1400" height="901" loading="lazy"/><figcaption>MORE LIFE IN EVERY RIDE.</figcaption></figure>
+    <div class="ownership-copy" data-reveal="right"><p class="editorial-label">ELECTRIC. WITHOUT THE OVERTHINKING.</p><h2 id="ownership-heading">Made for life.<br />Your kind of life.<span class="kg-subhead">Charging, service and finance for your Kinetic Green electric vehicle.</span></h2><p>The morning rush. The long way home. The little detours. Going electric should feel like moving forward—not starting over.</p>
       <div class="ownership-answers">{questions.map((q,i) => <details open={i === 0}><summary><span>{q.title}</span><Icon name="plus" size={17}/></summary><p>{q.body}</p></details>)}</div>
       <a href="#dealers" class="text-link">Find a dealer near you <Icon name="arrow-right" size={17}/></a>
     </div>

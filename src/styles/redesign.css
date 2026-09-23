@@ -222,16 +222,12 @@ html:not(.js) .circle-link,html:not(.js) .range-filters{display:none}
 @media(max-width:899px){.faq-section{padding:66px 0}.faq-item>summary{padding:19px 0;gap:16px}.faq-item__answer p{font-size:13px}}
 @media(max-width:640px){.faq-section{padding:56px 0}}
 
-/* ========================================================= SCROLL REVEAL
-   Gated behind .js (added before paint by BaseLayout) so no-JS visitors always
-   see content. motion.ts adds [data-revealed] on view; reduced-motion is forced
-   visible with no transition. Only applied to below-the-fold elements — never
-   the hero (LCP). */
-.js [data-reveal]{opacity:0;transform:translateY(22px);transition:opacity .72s cubic-bezier(.16,1,.3,1),transform .72s cubic-bezier(.16,1,.3,1);will-change:opacity,transform}
-.js [data-reveal][data-revealed]{opacity:1;transform:none}
-.range-grid [data-reveal]{transition-delay:calc(var(--i,0)*90ms)}
-.trust-band__grid [data-reveal]{transition-delay:calc(var(--i,0)*70ms)}
-@media(prefers-reduced-motion:reduce){.js [data-reveal]{opacity:1 !important;transform:none !important;transition:none}}
+/* ================================================= SCROLL REVEAL (stagger)
+   The reveal engine + variants + reduced-motion handling live in global.css
+   ([data-reveal] / [data-reveal='left'|'right'|'scale'|'clip'], --reveal-delay).
+   Here we only feed per-item stagger delays via the index custom property. */
+.range-grid [data-reveal]{--reveal-delay:calc(var(--i,0)*90ms)}
+.trust-band__grid [data-reveal]{--reveal-delay:calc(var(--i,0)*70ms)}
 
 /* ============================================================== TRUST BAND
    Social-proof stat strip with count-up numbers (motion.ts initCounters).
@@ -271,3 +267,47 @@ html:not(.js) .circle-link,html:not(.js) .range-filters{display:none}
 body[data-locked='true'] .kg-mobilecta{opacity:0;pointer-events:none;transform:translateY(120%)}
 @media(max-width:1023px){.kg-mobilecta{display:flex}body.kg-premium{padding-block-end:72px}}
 @media(prefers-reduced-motion:reduce){.kg-mobilecta{transition:none}}
+
+/* ======================================================= LENIS SMOOTH SCROLL
+   Required base rules for the Lenis momentum engine (scripts/smooth.ts). */
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.lenis.lenis-stopped{overflow:clip}
+.lenis.lenis-smooth iframe{pointer-events:none}
+
+/* ========================================================= HERO ENTRANCE
+   Cinematic, staggered load-in. Text elements fade+rise from line masks; the
+   product image uses a transform-only entrance (no opacity) to protect LCP.
+   All of it is neutralised by the global prefers-reduced-motion block. */
+.js .campaign-hero__copy .editorial-label,
+.js .campaign-hero__description,
+.js .campaign-hero__actions,
+.js .campaign-hero__caption,
+.js .campaign-hero__foot > *{animation:kg-rise-in var(--dur-4) var(--ease-expo) both}
+.js .campaign-hero__copy .editorial-label{animation-delay:.05s}
+.js .campaign-hero h1 .hero-line > span{display:block;animation:kg-line-in var(--dur-5) var(--ease-expo) both}
+.js .campaign-hero h1 .hero-line:nth-child(1) > span{animation-delay:.14s}
+.js .campaign-hero h1 .hero-line:nth-child(2) > span{animation-delay:.24s}
+.js .campaign-hero__h1-sub{animation:kg-rise-in var(--dur-4) var(--ease-expo) .42s both}
+.js .campaign-hero__description{animation-delay:.5s}
+.js .campaign-hero__actions{animation-delay:.6s}
+.js .campaign-hero__caption{animation-delay:.9s}
+.js .campaign-hero__foot > *{animation-delay:1s}
+.js .campaign-hero__word{animation:kg-word-in 1.4s var(--ease-expo) .2s both}
+.js .campaign-hero__orbit{animation:kg-fade-in 1.6s var(--ease-expo) .1s both}
+.js .campaign-hero__vehicle{animation:kg-vehicle-in 1.4s var(--ease-expo) .25s both}
+@keyframes kg-rise-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes kg-fade-in{from{opacity:0}to{opacity:1}}
+@keyframes kg-line-in{from{transform:translateY(112%)}to{transform:translateY(0)}}
+@keyframes kg-word-in{from{opacity:0;transform:translateX(-4%) scale(1.04)}to{opacity:1;transform:none}}
+@keyframes kg-vehicle-in{from{transform:translateX(5%) scale(1.05)}to{transform:none}}
+.campaign-hero h1 .hero-line{display:block;overflow:hidden;padding-bottom:.06em}
+
+/* ========================================================= CARD HOVER POLISH
+   Adds a tactile lift on hover. Image-scale + circle-link states already exist
+   in the range styles above; here we only add the card elevation. */
+.range-card{transition:transform var(--dur-3) var(--ease-expo),box-shadow var(--dur-3) var(--ease-expo)}
+@media(hover:hover){
+  .range-card:hover{transform:translateY(-6px)}
+}

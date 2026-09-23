@@ -2,6 +2,7 @@ import { initNav } from './nav';
 import { initExplorer } from './explorer';
 import { initDealer } from './dealer';
 import { initReveal, initCounters } from './motion';
+import { initSmooth } from './smooth';
 import { track, initScrollDepth, initSectionViews } from '../lib/analytics';
 import './calculator';
 import './leadModal';
@@ -14,6 +15,8 @@ function boot(): void {
   guard('nav', initNav);
   guard('range', initExplorer);
   guard('dealer', initDealer);
+  // Momentum smooth scroll (skipped under reduced motion / on touch wheel).
+  guard('smooth', initSmooth);
   // Scroll-reveal + count-up. Both no-op without their data-attributes and are
   // fully skipped under prefers-reduced-motion (content left visible).
   guard('reveal', initReveal);
