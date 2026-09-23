@@ -1,0 +1,24 @@
+---
+/**
+ * TrustBand — social-proof stat strip between the hero and the range.
+ *
+ * Surfaces the credibility metrics from content.ts (previously unused) with a
+ * count-up on scroll (motion.ts initCounters via [data-count]). The animated
+ * value + label are aria-hidden; the full sentence is exposed to assistive tech
+ * so screen readers never hear a mid-count number or an opaque "44 cr+ km".
+ */
+import { metrics } from '../data/content';
+---
+<section class="trust-band" aria-label="Kinetic Green by the numbers">
+  <div class="kg-shell trust-band__grid">
+    {metrics.map((m, i) => (
+      <div class="trust-stat" data-reveal style={`--i:${i}`}>
+        <p class="trust-stat__value" aria-hidden="true">
+          {m.prefix ?? ''}<span data-count={m.value} data-count-decimals={m.decimals ?? 0}>{m.value}</span>{m.suffix}
+        </p>
+        <p class="trust-stat__label" aria-hidden="true">{m.label}</p>
+        <span class="kg-visually-hidden">{m.sentence}</span>
+      </div>
+    ))}
+  </div>
+</section>

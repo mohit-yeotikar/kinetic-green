@@ -11,14 +11,14 @@ import { faqs } from '../data/content';
 ---
 <section class="faq-section" id="faq" data-section="faq" aria-labelledby="faq-heading">
   <div class="kg-shell">
-    <header class="section-heading">
+    <header class="section-heading" data-reveal>
       <div>
         <p class="editorial-label">EVERYDAY QUESTIONS</p>
         <h2 id="faq-heading">Going electric,<br />answered.<span class="kg-subhead">Kinetic Green E-Luna range, charging, price, finance and dealers.</span></h2>
       </div>
       <p>The practical questions riders ask most,<br />before they book a test ride.</p>
     </header>
-    <div class="faq-list">
+    <div class="faq-list" data-reveal>
       {faqs.map((f, i) => (
         <details class="faq-item" open={i === 0}>
           <summary>

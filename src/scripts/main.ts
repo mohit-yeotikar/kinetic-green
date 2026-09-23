@@ -1,6 +1,7 @@
 import { initNav } from './nav';
 import { initExplorer } from './explorer';
 import { initDealer } from './dealer';
+import { initReveal, initCounters } from './motion';
 import { track, initScrollDepth, initSectionViews } from '../lib/analytics';
 import './calculator';
 import './leadModal';
@@ -13,6 +14,10 @@ function boot(): void {
   guard('nav', initNav);
   guard('range', initExplorer);
   guard('dealer', initDealer);
+  // Scroll-reveal + count-up. Both no-op without their data-attributes and are
+  // fully skipped under prefers-reduced-motion (content left visible).
+  guard('reveal', initReveal);
+  guard('counters', initCounters);
   guard('analytics', () => {
     initScrollDepth();
     initSectionViews();

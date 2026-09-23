@@ -221,3 +221,27 @@ html:not(.js) .circle-link,html:not(.js) .range-filters{display:none}
 .faq-item__answer p{font-size:14px;line-height:1.85;color:#54614f}
 @media(max-width:899px){.faq-section{padding:66px 0}.faq-item>summary{padding:19px 0;gap:16px}.faq-item__answer p{font-size:13px}}
 @media(max-width:640px){.faq-section{padding:56px 0}}
+
+/* ========================================================= SCROLL REVEAL
+   Gated behind .js (added before paint by BaseLayout) so no-JS visitors always
+   see content. motion.ts adds [data-revealed] on view; reduced-motion is forced
+   visible with no transition. Only applied to below-the-fold elements — never
+   the hero (LCP). */
+.js [data-reveal]{opacity:0;transform:translateY(22px);transition:opacity .72s cubic-bezier(.16,1,.3,1),transform .72s cubic-bezier(.16,1,.3,1);will-change:opacity,transform}
+.js [data-reveal][data-revealed]{opacity:1;transform:none}
+.range-grid [data-reveal]{transition-delay:calc(var(--i,0)*90ms)}
+.trust-band__grid [data-reveal]{transition-delay:calc(var(--i,0)*70ms)}
+@media(prefers-reduced-motion:reduce){.js [data-reveal]{opacity:1 !important;transform:none !important;transition:none}}
+
+/* ============================================================== TRUST BAND
+   Social-proof stat strip with count-up numbers (motion.ts initCounters).
+   Screen-reader sentence carries the full, unambiguous statement. */
+.trust-band{border-block:1px solid var(--campaign-line);background:#f3f6ee}
+.trust-band__grid{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;padding-block:40px}
+.trust-stat{display:flex;flex-direction:column;gap:6px;text-align:left;position:relative}
+.trust-stat + .trust-stat{padding-inline-start:24px;border-inline-start:1px solid var(--campaign-line)}
+.trust-stat__value{font-family:var(--font-display);font-size:clamp(30px,3.4vw,46px);font-weight:600;letter-spacing:-.04em;line-height:1;color:var(--kg-ink)}
+.trust-stat__value span{color:var(--kg-green-700)}
+.trust-stat__label{font-family:var(--font-body);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--campaign-muted);line-height:1.4}
+@media(max-width:899px){.trust-band__grid{grid-template-columns:repeat(2,1fr);gap:22px 20px;padding-block:32px}.trust-stat:nth-child(n+2){padding-inline-start:0;border-inline-start:0}.trust-stat:nth-child(2n){padding-inline-start:20px;border-inline-start:1px solid var(--campaign-line)}.trust-stat__label{font-size:10px}}
+@media(max-width:420px){.trust-band__grid{padding-block:26px}.trust-stat__value{font-size:29px}}
