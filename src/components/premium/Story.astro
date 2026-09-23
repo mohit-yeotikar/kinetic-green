@@ -1,0 +1,102 @@
+---
+/**
+ * Story — hero + product story on ONE pinned stage.
+ *
+ * The E-Luna never leaves the screen. Step 0 is the hero (headline, colour
+ * picker, CTAs) with the bike oversized and cropped. Steps 1–4 zoom the same
+ * bike to its battery, frame, console and then pull back for range, while a
+ * chapter card and a marker on the bike swap in. The stage is a sticky pin;
+ * scripts/story.ts converts scroll into a step + progress and lerps one
+ * transform on the product. Under reduced motion or on phones the section
+ * unpins and the chapters stack.
+ *
+ * Colour preview: the real E-Luna paints are Night Star Black, Sparkling
+ * Green, Pearl Yellow, Ocean Blue and Mulberry Red. Only one studio photo is
+ * available, so the picker hue-shifts the frame and tints the stage. The UI
+ * says it is a preview.
+ */
+import { vehicles, formatINR } from '../../data/vehicles';
+const eluna = vehicles.find((v) => v.id === 'eluna-go')!;
+const price = formatINR(eluna.priceFrom!);
+
+const paints = [
+  { id: 'green', name: 'Sparkling Green', swatch: '#00c853' },
+  { id: 'blue', name: 'Ocean Blue', swatch: '#1f7ae0' },
+  { id: 'red', name: 'Mulberry Red', swatch: '#b8264f' },
+  { id: 'yellow', name: 'Pearl Yellow', swatch: '#f2c230' },
+  { id: 'black', name: 'Night Star Black', swatch: '#2a2f2d' },
+];
+
+/* Focus points are % of the product image (x, y) and a zoom for each chapter. */
+const chapters = [
+  { id: 'battery', n: '01', title: 'Take the battery with you.', body: 'A 2.0–2.3 kWh lithium pack that lifts out and charges from any 10A socket in about four hours. No wall box, no parking-spot politics.', x: 63, y: 50, zoom: 1.35, stat: '4 h', statLabel: 'home charge' },
+  { id: 'frame', n: '02', title: 'The frame you remember.', body: 'Same upright, step-through stance that carried a generation. Now a steel frame with a 130 kg payload and a rear seat that unbolts for cargo.', x: 49, y: 60, zoom: 1.15, stat: '130 kg', statLabel: 'payload' },
+  { id: 'console', n: '03', title: 'A console that talks back.', body: 'Digital LCD with speed, range and battery state, a USB port for your phone and a side-stand sensor that will not let you ride off carelessly.', x: 33, y: 26, zoom: 1.5, stat: '50', statLabel: 'km/h top speed' },
+  { id: 'range', n: '04', title: '110 km. Every single day.', body: 'Claimed range under standard test conditions. Enough for the office, the market and the school run, then back on the socket overnight.', x: 50, y: 50, zoom: 0.8, stat: '110 km', statLabel: 'claimed range' },
+];
+---
+<section class="p-story" id="top" data-story data-paint="green" style={`--steps:${chapters.length + 1}`}>
+  <div class="p-story__pin">
+    <div class="p-story__wash" aria-hidden="true"></div>
+    <span class="p-story__ghost" aria-hidden="true" data-story-ghost>LUNA</span>
+
+    <!-- ------------------------------------------------------------ product -->
+    <div class="p-story__stage" data-story-stage>
+      <div class="p-story__product" data-story-product>
+        <img
+          class="p-story__img"
+          src="/media/eluna-hero.webp" width="869" height="1000"
+          fetchpriority="high" decoding="async"
+          alt="Kinetic Green E-Luna electric moped, front three-quarter view"
+          data-story-img
+        />
+        {chapters.map((c, i) => (
+          <span class="p-marker" style={`left:${c.x}%;top:${c.y}%`} data-marker={i + 1} aria-hidden="true"><i></i></span>
+        ))}
+      </div>
+    </div>
+
+    <!-- --------------------------------------------------------------- hero -->
+    <div class="p-story__hero kg-shell" data-story-hero>
+      <p class="p-eyebrow"><span class="dot"></span>Kinetic Green · E-Luna</p>
+      <h1 class="p-story__title">
+        <span class="p-story__line"><span class="p-story__word" style="--i:0">Chal meri</span></span>
+        <span class="p-story__line"><span class="p-story__word" style="--i:1">Luna<span class="p-hero__stop">.</span></span></span>
+      </h1>
+      <p class="p-story__sub">The moped India grew up on is back, and it's electric. From <b>{price}</b> ex-showroom*.</p>
+      <div class="p-story__actions">
+        <button type="button" class="p-btn p-btn--green" data-lead-open data-lead-type="test-ride" data-lead-intent="high" data-lead-source="hero" data-lead-vehicle="eluna-plus" data-track="hero_test_ride_click">Book a test ride<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></button>
+        <a class="p-link" href="#range"><span>See the range</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15"/><path d="m6 13 6 6 6-6"/></svg></a>
+      </div>
+      <fieldset class="p-paint" data-paint-picker>
+        <legend class="p-paint__legend">Colour <span data-paint-name>Sparkling Green</span> <small>· preview</small></legend>
+        <div class="p-paint__swatches">
+          {paints.map((p, i) => (
+            <label class="p-paint__swatch" style={`--sw:${p.swatch}`} title={p.name}>
+              <input type="radio" name="paint" value={p.id} checked={i === 0} data-paint-input />
+              <span class="kg-visually-hidden">{p.name}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    </div>
+
+    <!-- ----------------------------------------------------------- chapters -->
+    <ol class="p-chapters" data-story-chapters>
+      {chapters.map((c, i) => (
+        <li class="p-chapter" data-chapter={i + 1} data-x={c.x} data-y={c.y} data-zoom={c.zoom}>
+          <p class="p-chapter__n">{c.n} <span>/ 0{chapters.length}</span></p>
+          <h2 class="p-chapter__title">{c.title}</h2>
+          <p class="p-chapter__body">{c.body}</p>
+          <p class="p-chapter__stat"><b>{c.stat}</b><span>{c.statLabel}</span></p>
+        </li>
+      ))}
+    </ol>
+
+    <div class="p-story__foot kg-shell">
+      <a class="p-scroll" href="#range" aria-label="Scroll"><i aria-hidden="true"></i><span data-story-cue>Scroll the story</span></a>
+      <ol class="p-story__dots" aria-hidden="true">{[0, ...chapters.map((_, i) => i + 1)].map((s) => <li data-dot={s}></li>)}</ol>
+      <p class="p-partner"><span class="p-partner__mark" aria-hidden="true">TL</span><b>Tonino Lamborghini</b><span>Official partner</span></p>
+    </div>
+  </div>
+</section>

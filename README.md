@@ -15,9 +15,10 @@ theme. Updated 23 September 2026.
 ## Page
 | Section | What it does |
 | --- | --- |
-| Hero | Two-line headline rises out of clipped lines on load. The E-Luna sits on a 3D stage that tilts toward the pointer; spec chips, ghost wordmark and floor shadow sit at different depths and parallax. Real figures on the chips (110 km, 50 km/h, 4 h, ₹69,990). Tonino Lamborghini partner badge. |
-| Signature transition | The hero is pinned for one viewport of scroll while the Range section slides over it as a rounded curtain; the stage scales back and dims as it is covered. |
+| Story (hero) | One pinned stage. Step 0 is the hero: “Chal meri Luna.” at display size, the E-Luna oversized and cropped on a tinted colour wash, a five-paint colour preview (real E-Luna paint names; hue-shifts the single studio photo and is labelled as a preview). Steps 1–4 keep the same bike on screen and zoom it to the battery, frame and console, then pull back for range, each with a glass chapter card and a marker on the part. |
+| Signature transition | After the last chapter the Range section slides over the pinned stage as a rounded curtain. |
 | Range | E-Luna, Zing and Safar Smart cards with real ex-showroom prices and specs, hover lift, one “Book a test ride” each (prefills the modal). |
+| Lifestyle | Full-bleed riding photograph with a slow parallax and “Not a statement. A Tuesday.” |
 | Proof | The one full-green band: 550+ dealers, 50+ years, 44 cr+ km, counted up on reveal. Figures from `src/data/content.ts`. |
 | Savings | Daily-distance slider with adjustable assumptions; logic in `src/scripts/calculator.ts`. |
 | Ownership | Lifestyle photo plus charging / service / finance answers. |
@@ -25,13 +26,15 @@ theme. Updated 23 September 2026.
 | Closing + footer | One final test-ride CTA, compact footer with price/spec disclaimer. |
 
 ## Motion contract
-- One `requestAnimationFrame` loop (`src/scripts/hero.ts`) lerps pointer tilt and
-  scroll progress; it writes CSS custom properties that feed `transform`/`opacity`
-  only, and sleeps once values settle. Pointer tilt runs on fine pointers only.
+- One `requestAnimationFrame` loop (`src/scripts/story.ts`) turns scroll into a
+  story step and lerps a single transform on the product (compositor only); it
+  sleeps once values settle. Chapter cards, markers and dots are class toggles.
+- The colour preview is a `data-paint` attribute driving CSS variables (`hue-rotate`
+  on the photo, a tinted radial wash); it works without JS motion and under reduced motion.
 - Section reveals and count-ups use `IntersectionObserver` (`src/scripts/premium.ts`).
 - `prefers-reduced-motion: reduce` disables every animation and transition, unpins
   the hero and shows all content immediately.
-- Mobile (< 768px) never pins the hero; it scrolls naturally.
+- Below 1024px the story never pins: the bike, the hero copy and the four chapters stack.
 - LCP is the product image (`fetchpriority=high`, preloaded, never opacity-animated).
   Measured locally: LCP ≈ 110 ms after load, CLS 0.
 
@@ -45,9 +48,9 @@ lifestyle). Swap in official campaign shots at the same paths.
 
 ## Files
 - `src/pages/index.astro` — page composition
-- `src/components/premium/*` — Nav, Hero, Range, Proof, Savings, Ownership, Dealers, Closing, Footer
+- `src/components/premium/*` — Nav, Story, Range, Lifestyle, Proof, Savings, Ownership, Dealers, Closing, Footer
 - `src/styles/premium.css` — the whole visual system (inlined in `<head>` by BaseLayout)
-- `src/scripts/hero.ts`, `src/scripts/premium.ts` — motion controllers
+- `src/scripts/story.ts`, `src/scripts/premium.ts` — motion controllers
 - `src/components/LeadModal.astro` + `src/scripts/leadModal.ts` — booking flow (skinned by premium.css)
 - Legacy components from earlier iterations remain in `src/components` but are not rendered.
 

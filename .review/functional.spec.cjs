@@ -19,10 +19,15 @@ if (process.env.CHROME_PATH) launch.executablePath = process.env.CHROME_PATH;
   await page.evaluate(() => document.fonts.ready);
 
   // Structure
-  assert.equal(await page.locator('main > section').count(), 7);
-  assert.match(await page.locator('h1').innerText(), /The icon\.\s*Recharged\./);
-  assert.equal(await page.locator('.p-chip').count(), 4);
-  assert.match(await page.locator('.p-chip--price b').innerText(), /₹69,990/);
+  assert.equal(await page.locator('main > section').count(), 8);
+  assert.match(await page.locator('h1').innerText(), /Chal meri\s*Luna\./);
+  assert.equal(await page.locator('.p-chapter').count(), 4);
+  assert.match(await page.locator('.p-story__sub').innerText(), /₹69,990/);
+  // Colour preview swaps the paint and its label
+  assert.equal(await page.locator('[data-paint-input]').count(), 5);
+  await page.locator('.p-paint__swatch:nth-child(2)').click();
+  assert.equal(await page.locator('[data-story]').getAttribute('data-paint'), 'blue');
+  assert.equal(await page.locator('[data-paint-name]').evaluate(el => el.textContent), 'Ocean Blue');
   assert.match(await page.locator('.p-partner').innerText(), /Tonino Lamborghini/);
 
   // Range cards carry real figures and prefill the booking modal
@@ -88,7 +93,7 @@ if (process.env.CHROME_PATH) launch.executablePath = process.env.CHROME_PATH;
 
   // Motion contract: reduced motion means no pin, everything visible
   const rm = await page.evaluate(() => ({
-    heroPinned: getComputedStyle(document.querySelector('.p-hero__pin')).position === 'sticky',
+    heroPinned: getComputedStyle(document.querySelector('.p-story__pin')).position === 'sticky',
     hiddenReveals: [...document.querySelectorAll('[data-reveal]')].filter(el => getComputedStyle(el).opacity !== '1').length,
   }));
   assert.equal(rm.heroPinned, false);
@@ -103,7 +108,13 @@ if (process.env.CHROME_PATH) launch.executablePath = process.env.CHROME_PATH;
     let cls = 0; new PerformanceObserver(l => { l.getEntries().forEach(e => { if (!e.hadRecentInput) cls += e.value; }); r.cls = cls; }).observe({ type: 'layout-shift', buffered: true });
     setTimeout(() => res(r), 2000);
   }));
-  assert.equal(metrics.el, 'p-hero__vehicle', `LCP element was ${metrics.el}`);
+  assert.equal(metrics.el, 'p-story__img', `LCP element was ${metrics.el}`);
+  // Scroll story: steps advance and chapters activate on desktop with motion
+  const travel = await motion.evaluate(() => document.querySelector('[data-story]').offsetHeight - innerHeight * 2);
+  await motion.evaluate(y => window.scrollTo({ top: y, behavior: 'instant' }), Math.round(travel * 0.42));
+  await motion.waitForTimeout(400);
+  assert.equal(await motion.locator('[data-story]').getAttribute('data-step'), '2');
+  assert.ok(await motion.locator('.p-chapter[data-chapter="2"]').evaluate(el => el.classList.contains('is-active')));
   assert.ok((metrics.cls || 0) < 0.05, `CLS ${metrics.cls}`);
 
   assert.deepEqual(errors, []);

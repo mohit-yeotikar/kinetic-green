@@ -1,4 +1,4 @@
-import { initHero } from './hero';
+import { initStory, initParallax } from './story';
 import { initPremiumNav, initReveal } from './premium';
 import { initExplorer } from './explorer';
 import { initDealer } from './dealer';
@@ -11,7 +11,8 @@ function guard(name: string, fn: () => void): void {
 }
 function boot(): void {
   guard('nav', initPremiumNav);
-  guard('hero', initHero);
+  guard('story', initStory);
+  guard('parallax', initParallax);
   guard('reveal', initReveal);
   guard('range', initExplorer);
   guard('dealer', initDealer);
