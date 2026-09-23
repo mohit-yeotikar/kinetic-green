@@ -4,8 +4,9 @@
 User-agent: *
 Allow: /
 
-# Block the build artefacts and any private surfaces
-Disallow: /_astro/
+# Keep /_astro/ (hashed CSS/JS) crawlable — Google renders pages and needs
+# these resources; blocking them triggers Search Console render warnings.
+# Block only private/non-content surfaces.
 Disallow: /api/
 
 # Explicitly welcome the major crawlers (no crawl-delay: this is a static site)

@@ -2,9 +2,9 @@
 import Icon from './Icon.astro';
 import { brand } from '../data/content';
 ---
-<section class="dealer-section" id="dealers" data-section="dealers" data-dealer>
+<section class="dealer-section" id="dealers" data-section="dealers" data-dealer aria-labelledby="dealers-heading">
   <div class="kg-shell dealer-layout">
-    <div class="dealer-heading"><p class="editorial-label">LET’S MEET IN REAL LIFE</p><h2>Your next ride.<br />Closer than you think.</h2><p>See it. Sit on it. Take it for a spin.<br />Start by finding a Kinetic Green dealer near you.</p></div>
+    <div class="dealer-heading"><p class="editorial-label">LET’S MEET IN REAL LIFE</p><h2 id="dealers-heading">Your next ride.<br />Closer than you think.<span class="kg-subhead">Find a Kinetic Green E-Luna and electric scooter dealer near you.</span></h2><p>See it. Sit on it. Take it for a spin.<br />Start by finding a Kinetic Green dealer near you.</p></div>
     <div class="dealer-search">
       <form data-dealer-form action="https://www.google.com/maps/search/" method="get" target="_blank" rel="noopener noreferrer">
         <label for="dealer-city">Where would you like to ride?</label>

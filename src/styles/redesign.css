@@ -189,3 +189,35 @@ html:not(.js) .circle-link,html:not(.js) .range-filters{display:none}
 }
 @media(max-width:359px){.kg-premium .kg-nav__brand .kg-nav__logo{width:127px}.kg-premium .kg-nav__cta{padding-inline:9px;font-size:9px}.campaign-hero__actions{gap:12px}.campaign-hero__actions .action-button{font-size:10px;padding-inline:12px}.campaign-hero__actions .text-link{font-size:10px}.campaign-hero__art{height:330px}.campaign-hero__vehicle{height:290px}.campaign-hero__orbit{width:260px;height:260px}.range-card__visual{height:265px}.kg-premium h2{font-size:34px}.savings-result{padding:22px}.savings-result__total{font-size:55px}.site-footer__main>a .kg-logo{width:145px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.kg-premium *, .kg-premium *::before,.kg-premium *::after{animation:none!important;transition:none!important}}
+
+/* ============================================================ SEO SUBHEADS
+   Keyword-bearing supporting lines folded into the same heading element as the
+   editorial display line. Visually subordinate, semantically inside the H1/H2/H3
+   so the heading outline carries the commercial nouns. */
+.kg-subhead{display:block;margin-top:14px;font-family:var(--font-body);font-size:15px;font-weight:400;line-height:1.5;letter-spacing:normal;text-transform:none;color:var(--campaign-muted);max-width:34ch}
+.campaign-hero__h1-sub{display:block;margin-top:18px;font-family:var(--font-body);font-size:clamp(15px,1.5vw,18px);font-weight:400;line-height:1.45;letter-spacing:normal;text-transform:none;text-wrap:balance;color:#566451;max-width:22ch}
+.section-heading h2 .kg-subhead{color:#5c6b56}
+.final-invitation h2 .kg-subhead{color:#b7c8a4;margin-top:16px}
+.final-invitation h2 .kg-subhead{max-width:26ch}
+.range-card__cat{font-family:var(--font-body);font-size:12px;font-weight:500;letter-spacing:.01em;text-transform:none;color:var(--kg-green-700);white-space:nowrap}
+.range-card__title h3{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px}
+.product-dialog__copy h2 .kg-dialog-seg{font-weight:400;color:var(--campaign-muted)}
+@media(max-width:899px){.kg-subhead{font-size:13px;margin-top:11px}.campaign-hero__h1-sub{font-size:14px;margin-top:14px}.range-card__cat{font-size:11px}}
+
+/* ==================================================================== FAQ */
+.faq-section{padding:104px 0;border-top:1px solid var(--campaign-line)}
+.faq-section .section-heading{margin-bottom:34px}
+.faq-list{display:grid;gap:0;border-top:1px solid var(--campaign-line)}
+.faq-item{border-bottom:1px solid var(--campaign-line)}
+.faq-item>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 0}
+.faq-item>summary::-webkit-details-marker{display:none}
+.faq-item h3{font-family:var(--font-display);font-size:clamp(17px,1.9vw,21px);font-weight:600;letter-spacing:-.02em;line-height:1.3;color:var(--kg-ink)}
+.faq-item .faq-plus{flex:none;position:relative;width:18px;height:18px;color:var(--kg-green-700);transition:transform .35s var(--ease-expo,cubic-bezier(.16,1,.3,1))}
+.faq-item .faq-plus::before,.faq-item .faq-plus::after{content:"";position:absolute;background:currentColor;border-radius:2px}
+.faq-item .faq-plus::before{inset-block:0;inset-inline-start:8px;width:2px}
+.faq-item .faq-plus::after{inset-inline:0;inset-block-start:8px;height:2px}
+.faq-item[open] .faq-plus{transform:rotate(135deg)}
+.faq-item__answer{padding:0 0 26px;max-width:70ch}
+.faq-item__answer p{font-size:14px;line-height:1.85;color:#54614f}
+@media(max-width:899px){.faq-section{padding:66px 0}.faq-item>summary{padding:19px 0;gap:16px}.faq-item__answer p{font-size:13px}}
+@media(max-width:640px){.faq-section{padding:56px 0}}

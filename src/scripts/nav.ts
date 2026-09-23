@@ -10,6 +10,8 @@
  * focus, inert background, scroll lock) rather than pulling in a dependency.
  */
 
+import { track } from '../lib/analytics';
+
 const header = document.querySelector<HTMLElement>('[data-nav]');
 const burger = document.querySelector<HTMLButtonElement>('[data-nav-burger]');
 const drawer = document.querySelector<HTMLElement>('[data-nav-drawer]');
@@ -142,6 +144,7 @@ export function openDrawer(): void {
 
   burger.setAttribute('aria-expanded', 'true');
   document.body.dataset.locked = 'true';
+  track('nav_menu_open', { source: 'nav' });
 
   focusables = Array.from(
     drawer.querySelectorAll<HTMLElement>(

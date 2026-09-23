@@ -1,0 +1,33 @@
+---
+/**
+ * Faq — renders the shared faqs[] as a real, crawlable Q&A block.
+ *
+ * The same faqs[] array feeds the FAQPage JSON-LD emitted by index.astro, so
+ * the structured data always mirrors the visible on-page answers (a hard
+ * requirement for FAQ rich results). Answers live in the DOM regardless of
+ * open/closed state, so every answer is indexable.
+ */
+import { faqs } from '../data/content';
+---
+<section class="faq-section" id="faq" data-section="faq" aria-labelledby="faq-heading">
+  <div class="kg-shell">
+    <header class="section-heading">
+      <div>
+        <p class="editorial-label">EVERYDAY QUESTIONS</p>
+        <h2 id="faq-heading">Going electric,<br />answered.<span class="kg-subhead">Kinetic Green E-Luna range, charging, price, finance and dealers.</span></h2>
+      </div>
+      <p>The practical questions riders ask most,<br />before they book a test ride.</p>
+    </header>
+    <div class="faq-list">
+      {faqs.map((f, i) => (
+        <details class="faq-item" open={i === 0}>
+          <summary>
+            <h3>{f.q}</h3>
+            <span class="faq-plus" aria-hidden="true"></span>
+          </summary>
+          <div class="faq-item__answer"><p>{f.a}</p></div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

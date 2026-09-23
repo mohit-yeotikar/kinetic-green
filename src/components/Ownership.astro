@@ -6,12 +6,12 @@ const questions = [
   { title: 'Your next move, on your terms.', body: 'Explore the payment and finance options offered by your dealer. Eligibility, down payment and interest rates depend on the lender and your location.' },
 ];
 ---
-<section class="ownership-story section-space" id="ownership" data-section="ownership">
+<section class="ownership-story section-space" id="ownership" data-section="ownership" aria-labelledby="ownership-heading">
   <div class="kg-shell ownership-layout">
-    <figure class="ownership-photo"><img src="/media/riding.webp" alt="Two helmeted riders enjoying an E-Luna journey together" width="1400" height="901" loading="lazy"/><figcaption>MORE LIFE IN EVERY RIDE.</figcaption></figure>
-    <div class="ownership-copy"><p class="editorial-label">ELECTRIC. WITHOUT THE OVERTHINKING.</p><h2>Made for life.<br />Your kind of life.</h2><p>The morning rush. The long way home. The little detours. Going electric should feel like moving forward—not starting over.</p>
+    <figure class="ownership-photo"><img src="/media/riding.webp" alt="Two helmeted riders on a Kinetic Green E-Luna electric moped enjoying a ride together" width="1400" height="901" loading="lazy"/><figcaption>MORE LIFE IN EVERY RIDE.</figcaption></figure>
+    <div class="ownership-copy"><p class="editorial-label">ELECTRIC. WITHOUT THE OVERTHINKING.</p><h2 id="ownership-heading">Made for life.<br />Your kind of life.<span class="kg-subhead">Charging, service and finance for your Kinetic Green electric vehicle.</span></h2><p>The morning rush. The long way home. The little detours. Going electric should feel like moving forward—not starting over.</p>
       <div class="ownership-answers">{questions.map((q,i) => <details open={i === 0}><summary><span>{q.title}</span><Icon name="plus" size={17}/></summary><p>{q.body}</p></details>)}</div>
-      <a href="#dealers" class="text-link">Let’s talk electric <Icon name="arrow-right" size={17}/></a>
+      <a href="#dealers" class="text-link">Find a dealer near you <Icon name="arrow-right" size={17}/></a>
     </div>
   </div>
 </section>

@@ -6,9 +6,9 @@ const electric = monthlyKm * 1.1;
 const annualSaving = (fuel - electric) * 12;
 const fmt = (n: number) => Math.round(n).toLocaleString('en-IN');
 ---
-<section class="savings-section section-space" id="calculator" data-section="calculator" data-calculator>
+<section class="savings-section section-space" id="calculator" data-section="calculator" data-calculator aria-labelledby="calculator-heading">
   <div class="kg-shell savings-layout">
-    <div class="savings-copy"><p class="editorial-label">LESS ON FUEL. MORE ON LIFE.</p><h2>Small switch.<br />Big difference.</h2><p>Your everyday kilometres could go a little further for your wallet. See what switching to electric could save in running costs.</p>
+    <div class="savings-copy"><p class="editorial-label">LESS ON FUEL. MORE ON LIFE.</p><h2 id="calculator-heading">Small switch.<br />Big difference.<span class="kg-subhead">See your electric scooter running-cost savings versus petrol, per month and per year.</span></h2><p>Your everyday kilometres could go a little further for your wallet. See what switching to electric could save in running costs.</p>
       <form data-calc-form class="savings-form">
         <label for="calc-daily">How far do you ride each day?<output for="calc-daily"><span data-calc-readout="dailyKm">30</span> <span>km</span></output></label>
         <input class="kg-range" type="range" id="calc-daily" name="dailyKm" min="5" max="150" step="5" value="30" data-calc-input />

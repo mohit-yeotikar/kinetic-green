@@ -81,6 +81,19 @@ const paths: Record<string, string> = {
   compass: '<circle cx="12" cy="12" r="8.5"/><path d="m15 9-2 5-5 2 2-5Z"/>',
   info: '<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><path d="M12 8h.01"/>',
   lock: '<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8.5 10V7.5a3.5 3.5 0 0 1 7 0V10"/>',
+
+  // ------------------------------------------------------------------ social
+  // Brand marks render as fills (fill=currentColor, stroke=none) so they read
+  // as the real glyph rather than the 1.6px line style used for UI icons.
+  // Instagram stays an outline (its mark is line-based) but its lens dot fills.
+  linkedin:
+    '<path fill="currentColor" stroke="none" d="M6.94 8.72H4.34V20h2.6V8.72ZM5.64 4a1.55 1.55 0 1 0 0 3.1 1.55 1.55 0 0 0 0-3.1ZM20 20h-2.6v-5.6c0-1.4-.5-2.36-1.75-2.36-.95 0-1.52.64-1.77 1.27-.09.22-.11.53-.11.84V20H11.2s.03-9.4 0-10.28h2.57v1.46h-.02c.34-.53.96-1.28 2.35-1.28 1.72 0 3 1.12 3 3.54V20Z"/>',
+  instagram:
+    '<rect x="4.2" y="4.2" width="15.6" height="15.6" rx="4.6"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.65" cy="7.35" r="1.05" fill="currentColor" stroke="none"/>',
+  youtube:
+    '<path fill="currentColor" stroke="none" fill-rule="evenodd" d="M21.58 8.19a2.52 2.52 0 0 0-1.77-1.78C18.25 6 12 6 12 6s-6.25 0-7.81.41A2.52 2.52 0 0 0 2.42 8.2 26.4 26.4 0 0 0 2 12a26.4 26.4 0 0 0 .42 3.81 2.52 2.52 0 0 0 1.77 1.78C5.75 18 12 18 12 18s6.25 0 7.81-.41a2.52 2.52 0 0 0 1.77-1.78A26.4 26.4 0 0 0 22 12a26.4 26.4 0 0 0-.42-3.81ZM10 15.2V8.8l5.25 3.2L10 15.2Z"/>',
+  facebook:
+    '<path fill="currentColor" stroke="none" d="M14.02 20.94V13.5h2.32l.44-2.86h-2.76V8.79c0-.83.3-1.4 1.48-1.4h1.4V4.83A18.9 18.9 0 0 0 14.6 4.7c-2 0-3.36 1.22-3.36 3.45v1.49H8.86v2.86h2.38v7.44h2.78Z"/>',
 };
 
 const d = paths[name] ?? '<circle cx="12" cy="12" r="8"/>';

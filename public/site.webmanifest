@@ -7,7 +7,7 @@
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#12161A",
-  "theme_color": "#12161A",
+  "theme_color": "#FBFCF8",
   "lang": "en-IN",
   "categories": ["automotive", "shopping", "business"],
   "icons": [

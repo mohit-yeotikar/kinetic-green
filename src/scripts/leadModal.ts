@@ -447,10 +447,13 @@ function init(): void {
     requestAnimationFrame(() => (modal!.dataset.open = 'true'));
     document.body.dataset.locked = 'true';
 
-    // Reset to step 5 only if a previous submission happened; otherwise step 1
-    // (or step 2 for callback-style leads).
-    const wasComplete = cursor === 5;
-    showStep(wasComplete ? config.steps[0] : cursor === 1 ? config.steps[0] : cursor, 1);
+    // Resume mid-flow only if the retained cursor is a real step of the CURRENT
+    // lead type's flow and not the completed-confirmation step (5); otherwise
+    // start this lead type from its own first step. Guards against a stale
+    // cursor left by a different lead type showing an out-of-config step.
+    const start =
+      config.steps.includes(cursor) && cursor !== 5 ? cursor : config.steps[0];
+    showStep(start, 1);
 
     document.addEventListener('keydown', onKeydown);
 

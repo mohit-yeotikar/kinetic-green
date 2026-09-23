@@ -1,15 +1,11 @@
 ---
 import Icon from './Icon.astro';
-const range = [
-  { id: 'eluna-plus', name: 'E-Luna', category: 'two', label: 'THE EVERYDAY ICON', line: 'A little nostalgia. A whole new energy.', image: '/media/eluna-hero.webp', alt: 'Green Kinetic E-Luna electric moped', class: 'luna', description: 'The familiar step-through design, reimagined for electric everyday riding. An easy-going companion for the commute, the market and everything in between.', features: ['Practical step-through design', 'Electric everyday mobility', 'Explore variants with your dealer'] },
-  { id: 'zing', name: 'Zing', category: 'two', label: 'YOUR CITY. YOUR PACE.', line: 'Make the everyday a little more you.', image: '/media/scooter.webp', alt: 'Copper Kinetic Green Zing electric scooter', class: 'zing', description: 'A city-ready electric scooter with a modern silhouette. Find the variant that suits your daily distance, charging setup and riding needs.', features: ['Electric scooter', 'Designed for city journeys', 'Ask your dealer about current variants'] },
-  { id: 'safar-smart', name: 'Safar Smart', category: 'three', label: 'A SMARTER WORKDAY', line: 'For the journeys that move your business.', image: '/media/safar.webp', alt: 'White and blue Kinetic Green Safar Smart passenger three-wheeler', class: 'safar', description: 'An electric passenger three-wheeler for last-mile journeys. Discuss passenger capacity, battery options and your daily operating needs with a dealer.', features: ['Passenger three-wheeler', 'Built for last-mile journeys', 'Business and fleet enquiries welcome'] },
-];
+import { homeRange as range } from '../data/homeRange';
 ---
-<section class="vehicle-range section-space" id="vehicles" data-section="vehicles" data-explorer>
+<section class="vehicle-range section-space" id="vehicles" data-section="vehicles" data-explorer aria-labelledby="vehicles-heading">
   <div class="kg-shell">
     <header class="section-heading">
-      <div><p class="editorial-label">THE ELECTRIC LINE-UP</p><h2>Find your kind<br />of electric.</h2></div>
+      <div><p class="editorial-label">THE ELECTRIC LINE-UP</p><h2 id="vehicles-heading">Find your kind<br />of electric.<span class="kg-subhead">Electric scooters, e-mopeds and three-wheelers from Kinetic Green.</span></h2></div>
       <p>Different days. Different ambitions.<br />An electric ride that feels like you.</p>
     </header>
     <div class="range-filters" role="group" aria-label="Filter vehicle range">
@@ -21,7 +17,7 @@ const range = [
     <div class="range-grid">
       {range.map((v, i) => <article class={`range-card range-card--${v.class}`} data-range-category={v.category}>
         <div class="range-card__visual"><span class="range-card__number">0{i + 1}</span><img src={v.image} alt={v.alt} width="800" height="600" loading="lazy" /></div>
-        <div class="range-card__body"><p class="editorial-label">{v.label}</p><div class="range-card__title"><h3>{v.name}</h3><button type="button" class="circle-link" data-product-open={v.id} aria-label={`Discover ${v.name}`}><Icon name="diagonal-arrow" size={21} /></button></div><p>{v.line}</p>
+        <div class="range-card__body"><p class="editorial-label">{v.label}</p><div class="range-card__title"><h3>{v.name} <span class="range-card__cat">{v.segmentShort}</span></h3><button type="button" class="circle-link" data-product-open={v.id} aria-label={`Discover the ${v.name} ${v.segmentShort}`}><Icon name="diagonal-arrow" size={21} /></button></div><p>{v.line}</p>
           <details class="range-card__fallback"><summary>About {v.name}</summary><p>{v.description}</p></details>
         </div>
       </article>)}
@@ -31,6 +27,6 @@ const range = [
   {range.map(v => <dialog class="product-dialog" id={`product-${v.id}`} aria-labelledby={`product-title-${v.id}`}>
     <button type="button" class="dialog-close" data-product-close aria-label="Close vehicle details"><Icon name="close" size={22}/></button>
     <img src={v.image} alt={v.alt} width="800" height="600" loading="lazy" />
-    <div class="product-dialog__copy"><p class="editorial-label">KINETIC GREEN</p><h2 id={`product-title-${v.id}`}>{v.name}</h2><p>{v.description}</p><ul>{v.features.map(f => <li><Icon name="check" size={16}/>{f}</li>)}</ul><button type="button" class="action-button" data-product-book data-lead-open data-lead-type="test-ride" data-lead-vehicle={v.id} data-lead-source="range">Book a test ride <Icon name="arrow-right" size={18}/></button><p class="fine-print">Confirm current price, range and availability with your dealer.</p></div>
+    <div class="product-dialog__copy"><p class="editorial-label">KINETIC GREEN</p><h2 id={`product-title-${v.id}`}>{v.name} <span class="kg-dialog-seg">— {v.segment}</span></h2><p>{v.description}</p><ul>{v.features.map(f => <li><Icon name="check" size={16}/>{f}</li>)}</ul><button type="button" class="action-button" data-product-book data-lead-open data-lead-type="test-ride" data-lead-vehicle={v.id} data-lead-source="range">Book a test ride <Icon name="arrow-right" size={18}/></button><p class="fine-print">Confirm current price, range and availability with your dealer.</p></div>
   </dialog>)}
 </section>

@@ -6,11 +6,88 @@ import VehicleExplorer from '../components/VehicleExplorer.astro';
 import SavingsCalculator from '../components/SavingsCalculator.astro';
 import Ownership from '../components/Ownership.astro';
 import DealerFinder from '../components/DealerFinder.astro';
+import Faq from '../components/Faq.astro';
 import FinalCTA from '../components/FinalCTA.astro';
 import Footer from '../components/Footer.astro';
 import LeadModal from '../components/LeadModal.astro';
+import { brand, faqs } from '../data/content';
+import { homeRange } from '../data/homeRange';
+
+/* ---------------------------------------------------------------------------
+   STRUCTURED DATA (JSON-LD) — built here so every node mirrors the content the
+   page actually renders, then merged into BaseLayout's Organization+WebSite
+   @graph. Products/ItemList come from the same homeRange[] the grid renders;
+   FAQPage comes from the same faqs[] the FAQ section renders.
+   --------------------------------------------------------------------------- */
+const site = brand.website;
+const orgRef = { '@id': `${site}/#organization` };
+const canonical = `${site}/`;
+const abs = (p: string) => new URL(p, site).href;
+
+const productNodes = homeRange.map((v) => {
+  const node: Record<string, unknown> = {
+    '@type': 'Product',
+    '@id': `${site}/#product-${v.id}`,
+    name: `Kinetic Green ${v.name}`,
+    description: v.description,
+    category: v.segment,
+    image: abs(v.image),
+    url: `${canonical}#vehicles`,
+    brand: orgRef,
+    manufacturer: orgRef,
+  };
+  // Offer only where a real starting price exists (E-Luna); the FAQ block
+  // states these ex-showroom figures visibly, so the schema stays truthful.
+  if (v.priceFrom !== null) {
+    node.offers = {
+      '@type': 'AggregateOffer',
+      priceCurrency: 'INR',
+      lowPrice: String(v.priceFrom),
+      offerCount: 4,
+      availability: 'https://schema.org/InStock',
+      url: canonical,
+      seller: orgRef,
+    };
+  }
+  return node;
+});
+
+const itemListNode = {
+  '@type': 'ItemList',
+  '@id': `${site}/#vehicle-range`,
+  name: 'Kinetic Green electric vehicle range',
+  itemListElement: homeRange.map((v, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: { '@id': `${site}/#product-${v.id}` },
+  })),
+};
+
+const faqNode = {
+  '@type': 'FAQPage',
+  '@id': `${site}/#faq`,
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+
+const breadcrumbNode = {
+  '@type': 'BreadcrumbList',
+  '@id': `${site}/#breadcrumb`,
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: canonical },
+  ],
+};
+
+const schema = [itemListNode, ...productNodes, faqNode, breadcrumbNode];
+
+const title = 'Kinetic Green E-Luna Electric Scooter & Three-Wheelers | India';
+const description =
+  'Explore Kinetic Green electric two-wheelers and three-wheelers — the E-Luna electric moped, Zing electric scooter and Safar electric three-wheelers. Estimate your running-cost savings and book a test ride.';
 ---
-<BaseLayout title="Kinetic Green — Go your own way. Go electric." description="Meet the electric side of everyday life. Explore Kinetic Green vehicles, estimate your running-cost savings and plan a test ride." path="/" bodyClass="kg-premium">
+<BaseLayout title={title} description={description} path="/" schema={schema} bodyClass="kg-premium">
   <Header />
   <main id="main">
     <Hero />
@@ -18,6 +95,7 @@ import LeadModal from '../components/LeadModal.astro';
     <SavingsCalculator />
     <Ownership />
     <DealerFinder />
+    <Faq />
     <FinalCTA />
   </main>
   <Footer />

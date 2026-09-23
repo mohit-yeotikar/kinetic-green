@@ -89,9 +89,11 @@ const websiteNode = {
 };
 
 /**
- * LocalBusiness per dealer is emitted by DealerFinder on pages that render it,
- * so dealership schema always reflects actual rendered content (no orphaned
- * entities that describe dealers the page never shows).
+ * Dealer LocalBusiness/AutoDealer schema is intentionally NOT emitted yet: the
+ * dealer roster in content.ts is placeholder data (verified:false) for building
+ * and testing the Dealer Finder. Per-dealer LocalBusiness nodes must only be
+ * emitted once the live dealer feed lands, gated on `verified === true`, so the
+ * structured data never asserts a dealership the company hasn't confirmed.
  */
 const graph = {
   '@context': 'https://schema.org',
@@ -167,6 +169,12 @@ const baseSchema = JSON.stringify(graph).replace(/</g, '\\u003c');
         href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
       />
     </noscript>
+
+    <!-- ----------------------------------------------------------- LCP preload
+         The hero E-Luna is the Largest Contentful Paint element on the home
+         page. Preloading it at high priority pulls its download forward so the
+         hero paints sooner (Core Web Vitals / LCP is a ranking signal).      -->
+    <link rel="preload" as="image" href="/media/eluna-hero.webp" fetchpriority="high" />
 
     <!-- ------------------------------------------------------------------ icons -->
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
