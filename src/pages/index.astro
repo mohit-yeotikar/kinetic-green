@@ -38,16 +38,15 @@ const productNodes = homeRange.map((v) => {
     brand: orgRef,
     manufacturer: orgRef,
   };
-  // Offer only where a real starting price exists (E-Luna); the FAQ block
-  // states these ex-showroom figures visibly, so the schema stays truthful.
+  // Offer with the ex-showroom starting price, shown visibly on the card + in
+  // the product dialog so the schema mirrors on-page content.
   if (v.priceFrom !== null) {
     node.offers = {
-      '@type': 'AggregateOffer',
+      '@type': 'Offer',
       priceCurrency: 'INR',
-      lowPrice: String(v.priceFrom),
-      offerCount: 4,
+      price: String(v.priceFrom),
       availability: 'https://schema.org/InStock',
-      url: canonical,
+      url: `${canonical}#vehicles`,
       seller: orgRef,
     };
   }

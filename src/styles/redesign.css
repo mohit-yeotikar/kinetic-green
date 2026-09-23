@@ -311,3 +311,29 @@ html.lenis,html.lenis body{height:auto}
 @media(hover:hover){
   .range-card:hover{transform:translateY(-6px)}
 }
+
+/* ===================================================== RANGE CARD SPEC/PRICE
+   Real product figures surfaced on the card face. */
+.range-card__meta{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-top:15px;padding-top:14px;border-top:1px solid var(--campaign-line)}
+.range-card__specs{display:flex;gap:22px}
+.range-card__specs li{display:flex;flex-direction:column;gap:2px}
+.range-card__specs b{font-family:var(--font-display);font-size:16px;font-weight:600;letter-spacing:-.02em;color:var(--kg-ink)}
+.range-card__specs span{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#78826f}
+.range-card__price{display:flex;flex-direction:column;align-items:flex-end;font-family:var(--font-display);font-size:19px;font-weight:600;letter-spacing:-.02em;color:var(--kg-green-700);white-space:nowrap;line-height:1.1}
+.range-card__price span{font-family:var(--font-body);font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#78826f}
+
+/* ===================================================== DIALOG SPEC / COLOURS
+   Full spec grid + colour list + price inside the product dialog. */
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin:20px 0;background:var(--campaign-line);border:1px solid var(--campaign-line);border-radius:6px;overflow:hidden}
+.spec-grid__item{background:#fafbf7;padding:11px 14px}
+.spec-grid__item dt{font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#78826f;margin-bottom:3px}
+.spec-grid__item dd{font-family:var(--font-display);font-size:15px;font-weight:600;letter-spacing:-.02em;color:var(--kg-ink)}
+.product-dialog__features{margin:18px 0!important}
+.dialog-colours{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:16px 0}
+.dialog-colours__label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#78826f}
+.dialog-colours ul{display:flex!important;flex-wrap:wrap;gap:7px;margin:0!important}
+.dialog-colours li{display:inline-flex!important;align-items:center;margin:0!important;padding:5px 11px;font-size:11px;font-weight:500;color:#33463a;background:#eef2ea;border:1px solid var(--campaign-line);border-radius:999px}
+.dialog-price{font-size:13px!important;color:#5b6b53!important;margin:16px 0 6px}
+.dialog-price b{font-family:var(--font-display);font-size:22px;font-weight:600;letter-spacing:-.02em;color:var(--kg-ink)}
+.dialog-price span{font-size:11px;color:#78826f}
+@media(max-width:640px){.spec-grid{grid-template-columns:1fr 1fr}.range-card__specs{gap:16px}.range-card__specs b{font-size:15px}}

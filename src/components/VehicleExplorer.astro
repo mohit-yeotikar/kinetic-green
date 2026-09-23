@@ -18,15 +18,23 @@ import { homeRange as range } from '../data/homeRange';
       {range.map((v, i) => <article class={`range-card range-card--${v.class}`} data-range-category={v.category} data-reveal style={`--i:${i}`}>
         <div class="range-card__visual"><span class="range-card__number">0{i + 1}</span><img src={v.image} alt={v.alt} width="800" height="600" loading="lazy" /></div>
         <div class="range-card__body"><p class="editorial-label">{v.label}</p><div class="range-card__title"><h3>{v.name} <span class="range-card__cat">{v.segmentShort}</span></h3><button type="button" class="circle-link" data-product-open={v.id} aria-label={`Discover the ${v.name} ${v.segmentShort}`}><Icon name="diagonal-arrow" size={21} /></button></div><p>{v.line}</p>
+          <div class="range-card__meta">
+            <ul class="range-card__specs">{v.cardSpecs.map(s => <li><b>{s.value}</b><span>{s.label}</span></li>)}</ul>
+            {v.price && <p class="range-card__price"><span>from</span>{v.price}</p>}
+          </div>
           <details class="range-card__fallback"><summary>About {v.name}</summary><p>{v.description}</p></details>
         </div>
       </article>)}
     </div>
-    <p class="range-footnote">Model availability and specifications vary by variant. Your dealer can help you choose.</p>
   </div>
   {range.map(v => <dialog class="product-dialog" id={`product-${v.id}`} aria-labelledby={`product-title-${v.id}`}>
     <button type="button" class="dialog-close" data-product-close aria-label="Close vehicle details"><Icon name="close" size={22}/></button>
     <img src={v.image} alt={v.alt} width="800" height="600" loading="lazy" />
-    <div class="product-dialog__copy"><p class="editorial-label">KINETIC GREEN</p><h2 id={`product-title-${v.id}`}>{v.name} <span class="kg-dialog-seg">— {v.segment}</span></h2><p>{v.description}</p><ul>{v.features.map(f => <li><Icon name="check" size={16}/>{f}</li>)}</ul><button type="button" class="action-button" data-product-book data-lead-open data-lead-type="test-ride" data-lead-vehicle={v.id} data-lead-source="range">Book a test ride <Icon name="arrow-right" size={18}/></button><p class="fine-print">Confirm current price, range and availability with your dealer.</p></div>
+    <div class="product-dialog__copy"><p class="editorial-label">KINETIC GREEN</p><h2 id={`product-title-${v.id}`}>{v.name} <span class="kg-dialog-seg">— {v.segment}</span></h2><p>{v.description}</p>
+      <dl class="spec-grid">{v.specs.map(s => <div class="spec-grid__item"><dt>{s.label}</dt><dd>{s.value}</dd></div>)}</dl>
+      <ul class="product-dialog__features">{v.features.map(f => <li><Icon name="check" size={16}/>{f}</li>)}</ul>
+      {v.colours.length > 0 && <div class="dialog-colours"><span class="dialog-colours__label">Colours</span><ul>{v.colours.map(c => <li>{c}</li>)}</ul></div>}
+      {v.price && <p class="dialog-price">Starting at <b>{v.price}</b> <span>ex-showroom</span></p>}
+      <button type="button" class="action-button" data-product-book data-lead-open data-lead-type="test-ride" data-lead-vehicle={v.id} data-lead-source="range">Book a test ride <Icon name="arrow-right" size={18}/></button></div>
   </dialog>)}
 </section>
