@@ -1,0 +1,447 @@
+---
+/**
+ * concept.astro — LIGHT precision-tech direction (Ather × Apple) in Kinetic
+ * Green, with a kinetic hero + big motion, and Tonino Lamborghini as a trust
+ * badge + short highlight. Non-destructive: this is a separate route from the
+ * live homepage so both can be compared.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import Logo from '../components/Logo.astro';
+import { brand } from '../data/content';
+import { homeRange } from '../data/homeRange';
+
+const stats = [
+  { value: 110, suffix: ' km', label: 'Certified range' },
+  { value: 50, suffix: ' km/h', label: 'Top speed' },
+  { value: 1.1, suffix: '/km', prefix: '₹', decimals: 1, label: 'Running cost' },
+  { value: 25000, suffix: '+', label: 'E-Lunas on the road' },
+];
+---
+<BaseLayout
+  title="Kinetic Green E-Luna — The Icon, Electrified | Concept"
+  description="A premium concept homepage for Kinetic Green: the E-Luna electric moped, running-cost savings and a test-ride, with the Tonino Lamborghini luxury collaboration."
+  path="/concept"
+  bodyClass="kg-concept"
+>
+  <!-- Signature diagonal transition driver (motion.ts initKineticTransition) -->
+  <div class="ch-transition" data-transition-driver aria-hidden="true"><span></span></div>
+
+  <!-- ============================================================= HEADER -->
+  <header class="ch-nav" data-ch-nav>
+    <div class="ch-shell ch-nav__inner">
+      <a href="#top" class="ch-nav__brand" aria-label={`${brand.name} home`}><Logo variant="compact" height={28} /></a>
+      <nav class="ch-nav__links" aria-label="Primary">
+        <a href="#range">Vehicles</a>
+        <a href="#savings">Why electric</a>
+        <a href="#prestige">Lamborghini</a>
+        <a href="#dealers">Dealers</a>
+      </nav>
+      <button type="button" class="ch-btn ch-btn--sm" data-magnetic data-lead-open data-lead-type="test-ride" data-lead-source="concept-nav">
+        Book a test ride <Icon name="arrow-up-right" size={15} />
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- ============================================================ HERO -->
+    <section class="ch-hero">
+      <div class="ch-hero__bg" aria-hidden="true">
+        <span class="ch-hero__glow"></span>
+        <span class="ch-hero__grid"></span>
+      </div>
+      <div class="ch-shell ch-hero__inner">
+        <div class="ch-hero__copy">
+          <p class="ch-eyebrow"><span class="ch-dot"></span> The Luna legend, reborn electric</p>
+          <h1 class="ch-hero__title">
+            <span class="ch-line"><span>The icon,</span></span>
+            <span class="ch-line"><span class="ch-accent">electrified.</span></span>
+          </h1>
+          <p class="ch-hero__lede">Meet the Kinetic Green E-Luna — the electric moped built for how India actually moves. Removable battery, home-socket charging, a fraction of petrol's running cost.</p>
+          <div class="ch-hero__cta">
+            <button type="button" class="ch-btn ch-btn--lg" data-magnetic data-lead-open data-lead-type="test-ride" data-lead-intent="high" data-lead-source="concept-hero">
+              Book a test ride <Icon name="arrow-up-right" size={18} />
+            </button>
+            <a href="#range" class="ch-textlink">Explore the range <Icon name="arrow-down" size={16} /></a>
+          </div>
+          <ul class="ch-hero__chips">
+            <li><Icon name="battery" size={16} /> Removable battery</li>
+            <li><Icon name="plug" size={16} /> Home-socket charge</li>
+            <li><Icon name="leaf" size={16} /> Zero tailpipe emissions</li>
+          </ul>
+        </div>
+
+        <div class="ch-hero__stage">
+          <span class="ch-ghostword" data-parallax="0.05" aria-hidden="true">E-LUNA</span>
+          <span class="ch-ring ch-ring--1" aria-hidden="true"></span>
+          <span class="ch-ring ch-ring--2" aria-hidden="true"></span>
+          <span class="ch-spin" aria-hidden="true"></span>
+          <img class="ch-hero__product" data-ch-tilt src="/media/eluna-hero.webp" width="846" height="994" fetchpriority="high" alt="Kinetic Green E-Luna electric moped, front three-quarter view" />
+          <p class="ch-pricetag"><span>from</span> ₹69,990<em>ex-showroom</em></p>
+        </div>
+      </div>
+      <a href="#stats" class="ch-scrollcue" aria-label="Scroll down"><span></span></a>
+    </section>
+
+    <!-- kinetic marquee -->
+    <div class="ch-marquee" aria-hidden="true">
+      <div class="ch-marquee__track">
+        {Array.from({ length: 2 }).map(() => (
+          <span>Electric mobility <b>·</b> Engineered for India <b>·</b> The Luna legend <b>·</b> Go your own way <b>·</b> Zero emissions <b>·</b> </span>
+        ))}
+      </div>
+    </div>
+
+    <!-- =========================================================== STATS -->
+    <section class="ch-stats" id="stats" data-section-transition>
+      <div class="ch-shell ch-stats__grid">
+        {stats.map((s, i) => (
+          <div class="ch-stat" data-reveal style={`--i:${i}`}>
+            <p class="ch-stat__value">{s.prefix ?? ''}<span data-count={s.value} data-count-decimals={s.decimals ?? 0}>{s.value}</span>{s.suffix}</p>
+            <p class="ch-stat__label">{s.label}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- =================================================== TRUST + LAMBO -->
+    <section class="ch-trust" aria-label="Trusted credentials">
+      <div class="ch-shell ch-trust__row">
+        <span class="ch-trust__lockup" data-reveal>
+          <em>In partnership with</em>
+          <b>TONINO LAMBORGHINI</b>
+        </span>
+        <ul class="ch-trust__marks">
+          <li data-reveal style="--i:1"><Icon name="map-pin" size={16} /> 550+ dealers pan-India</li>
+          <li data-reveal style="--i:2"><Icon name="bolt" size={16} /> PM E-DRIVE eligible</li>
+          <li data-reveal style="--i:3"><Icon name="shield" size={16} /> Made in India</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ RANGE -->
+    <section class="ch-range" id="range">
+      <div class="ch-shell">
+        <header class="ch-head" data-reveal data-section-transition>
+          <p class="ch-eyebrow ch-eyebrow--dark"><span class="ch-dot"></span> The electric line-up</p>
+          <h2 class="ch-h2">Find your <span class="ch-accent">kind</span> of electric.</h2>
+        </header>
+        <div class="ch-range__grid">
+          {homeRange.map((v, i) => (
+            <article class="ch-card" data-reveal style={`--i:${i}`}>
+              <div class="ch-card__media"><img src={v.image} alt={v.alt} width="800" height="600" loading="lazy" /></div>
+              <div class="ch-card__body">
+                <div class="ch-card__top">
+                  <h3>{v.name}</h3>
+                  <span class="ch-card__seg">{v.segmentShort}</span>
+                </div>
+                <ul class="ch-card__specs">{v.cardSpecs.map((sp) => <li><b>{sp.value}</b><span>{sp.label}</span></li>)}</ul>
+                {v.price && <p class="ch-card__price"><span>from</span> {v.price}</p>}
+                <button type="button" class="ch-btn ch-btn--ghost" data-lead-open data-lead-type="test-ride" data-lead-vehicle={v.id} data-lead-source="concept-range">
+                  Book a test ride <Icon name="arrow-right" size={16} />
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================= LAMBO HIGHLIGHT -->
+    <section class="ch-prestige" id="prestige">
+      <div class="ch-shell">
+        <div class="ch-prestige__card" data-reveal="scale">
+          <div class="ch-prestige__copy">
+            <p class="ch-eyebrow ch-eyebrow--gold"><span class="ch-dot ch-dot--gold"></span> Prestige</p>
+            <h2 class="ch-prestige__title">Kinetic&nbsp;Green <span class="ch-x">×</span> Tonino&nbsp;Lamborghini</h2>
+            <p class="ch-prestige__lede">Luxury electric golf &amp; lifestyle carts — designed in Italy, crafted in India. A collaboration that puts Kinetic Green engineering under an iconic name of Italian luxury.</p>
+            <a href="#prestige" class="ch-textlink ch-textlink--gold">Discover the collection <Icon name="arrow-right" size={16} /></a>
+          </div>
+          <div class="ch-prestige__emblem" aria-hidden="true">
+            <span class="ch-emblem">KG<i>×</i>TL</span>
+            <span class="ch-emblem__ring"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= SAVINGS -->
+    <section class="ch-savings" id="savings" data-section-transition>
+      <div class="ch-shell ch-savings__inner">
+        <div class="ch-savings__copy" data-reveal="left">
+          <p class="ch-eyebrow ch-eyebrow--dark"><span class="ch-dot"></span> Less on fuel. More on life.</p>
+          <h2 class="ch-h2">Small switch.<br /><span class="ch-accent">Big difference.</span></h2>
+          <p class="ch-savings__lede">A typical E-Luna rider saves thousands every year versus a petrol two-wheeler — before you even count the servicing you no longer pay for.</p>
+          <a href="#dealers" class="ch-textlink">Find a dealer near you <Icon name="arrow-right" size={16} /></a>
+        </div>
+        <div class="ch-savings__panel" data-reveal="right">
+          <p class="ch-panel__eyebrow">Your potential yearly saving</p>
+          <p class="ch-panel__total">₹<span data-count={38400} data-count-decimals={0}>38400</span></p>
+          <p class="ch-panel__note">vs a 45 km/l petrol two-wheeler at 30 km/day. Indicative.</p>
+          <div class="ch-panel__bars">
+            <div class="ch-bar"><span>Petrol / yr</span><i style="width:100%"></i><b>₹21,000</b></div>
+            <div class="ch-bar ch-bar--ev"><span>Electric / yr</span><i style="width:47%"></i><b>₹9,900</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================= FINAL CTA -->
+    <section class="ch-final" id="dealers">
+      <div class="ch-shell ch-final__inner" data-reveal="scale">
+        <p class="ch-eyebrow ch-eyebrow--dark"><span class="ch-dot"></span> Less scrolling. More riding.</p>
+        <h2 class="ch-final__title">Your electric chapter <span class="ch-accent">starts here.</span></h2>
+        <div class="ch-hero__cta ch-final__cta">
+          <button type="button" class="ch-btn ch-btn--lg" data-magnetic data-lead-open data-lead-type="test-ride" data-lead-intent="high" data-lead-source="concept-final">
+            Book a test ride <Icon name="arrow-up-right" size={18} />
+          </button>
+          <a href={brand.phoneHref} class="ch-textlink"><Icon name="phone" size={16} /> {brand.phone}</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ch-foot">
+    <div class="ch-shell ch-foot__inner">
+      <Logo variant="compact" height={24} />
+      <p>Concept build · {new Date().getFullYear()} Kinetic Green</p>
+    </div>
+  </footer>
+</BaseLayout>
+
+<style is:global>
+  /* Tokens live on the body so every .ch-* element inherits them (custom
+     properties cascade regardless of which stylesheet declared them). */
+  body.kg-concept {
+    background: #ffffff;
+    color: #0e1a12;
+    --green: #00c853;
+    --green-deep: #067a36;
+    --green-050: #eafbf0;
+    --ink: #0e1a12;
+    --muted: #5a6b5d;
+    --line: #e6ebe2;
+    --gold: #c8a96a;
+    --shell: 1360px;
+    --gutter: clamp(20px, 5vw, 76px);
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+</style>
+
+<style>
+  /* ========================================================= BASE */
+  .ch-shell { width: 100%; max-width: var(--shell); margin-inline: auto; padding-inline: var(--gutter); }
+  .ch-eyebrow { display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green-deep); }
+  .ch-eyebrow--dark { color: #4a6b52; }
+  .ch-eyebrow--gold { color: #9c7f42; }
+  .ch-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgb(0 200 83 / 0.16); animation: ch-pulse 2.4s var(--ease) infinite; }
+  .ch-dot--gold { background: var(--gold); box-shadow: 0 0 0 4px rgb(200 169 106 / 0.18); }
+  @keyframes ch-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .ch-accent { color: var(--green-deep); }
+  .ch-h2 { font-family: var(--font-display); font-size: clamp(2.3rem, 5.4vw, 4.4rem); font-weight: 700; line-height: 0.98; letter-spacing: -0.03em; color: var(--ink); }
+
+  /* buttons */
+  .ch-btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; font-family: var(--font-body); font-weight: 600; font-size: 14px; letter-spacing: 0.01em; color: #fff; background: var(--green-deep); border: 1px solid var(--green-deep); border-radius: 999px; padding: 14px 24px; transition: background 0.25s var(--ease), box-shadow 0.35s var(--ease), color 0.25s; will-change: transform; transform: translate(var(--mag-x, 0), var(--mag-y, 0)); }
+  .ch-btn:hover { background: #05602d; box-shadow: 0 16px 40px -14px rgb(6 122 54 / 0.5); }
+  .ch-btn--lg { padding: 18px 30px; font-size: 15px; }
+  .ch-btn--sm { padding: 11px 18px; font-size: 13px; }
+  .ch-btn--ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+  .ch-btn--ghost:hover { border-color: var(--green-deep); color: var(--green-deep); background: var(--green-050); box-shadow: none; }
+  .ch-textlink { display: inline-flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; color: var(--ink); }
+  .ch-textlink svg { transition: transform 0.3s var(--ease); }
+  .ch-textlink:hover svg { transform: translateX(4px); }
+  .ch-textlink--gold { color: #9c7f42; }
+
+  /* ============================================================== HEADER */
+  .ch-nav { position: sticky; top: 0; z-index: 50; background: rgb(255 255 255 / 0.8); backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%); border-bottom: 1px solid transparent; transition: border-color 0.3s, background 0.3s; }
+  .ch-nav[data-state='scrolled'] { border-color: var(--line); }
+  .ch-nav__inner { display: flex; align-items: center; gap: 24px; height: 76px; }
+  .ch-nav__brand { flex: none; }
+  .ch-nav__links { display: none; gap: 30px; margin-inline: auto; }
+  .ch-nav__links a { font-size: 13px; font-weight: 500; color: #33453a; position: relative; }
+  .ch-nav__links a::after { content: ''; position: absolute; left: 0; bottom: -5px; width: 100%; height: 2px; background: var(--green); transform: scaleX(0); transform-origin: left; transition: transform 0.35s var(--ease); }
+  .ch-nav__links a:hover::after { transform: scaleX(1); }
+  @media (min-width: 940px) { .ch-nav__links { display: flex; } .ch-nav__brand { margin-right: 0; } }
+
+  /* ================================================================ HERO */
+  .ch-hero { position: relative; overflow: hidden; background: linear-gradient(180deg, #ffffff 0%, #f4f8f1 100%); }
+  .ch-hero__bg { position: absolute; inset: 0; pointer-events: none; }
+  .ch-hero__glow { position: absolute; top: -10%; right: -5%; width: 60vw; height: 60vw; max-width: 760px; max-height: 760px; border-radius: 50%; background: radial-gradient(circle, rgb(0 200 83 / 0.16), rgb(0 200 83 / 0) 62%); }
+  .ch-hero__grid { position: absolute; inset: 0; background-image: linear-gradient(rgb(14 26 18 / 0.045) 1px, transparent 1px), linear-gradient(90deg, rgb(14 26 18 / 0.045) 1px, transparent 1px); background-size: 62px 62px; mask-image: radial-gradient(ellipse 80% 70% at 60% 35%, #000 30%, transparent 78%); -webkit-mask-image: radial-gradient(ellipse 80% 70% at 60% 35%, #000 30%, transparent 78%); }
+  .ch-hero__inner { position: relative; display: grid; grid-template-columns: 1.02fr 0.98fr; align-items: center; gap: 40px; min-height: min(88vh, 820px); padding: 40px 0 56px; }
+  .ch-hero__copy { position: relative; z-index: 2; }
+  .ch-hero__title { margin: 26px 0 22px; font-family: var(--font-display); font-weight: 800; font-size: clamp(3rem, 8.4vw, 7.6rem); line-height: 0.9; letter-spacing: -0.045em; text-transform: none; color: var(--ink); }
+  .ch-line { display: block; overflow: hidden; padding-bottom: 0.06em; }
+  .js .ch-line > span { display: block; animation: ch-rise 1s var(--ease) both; }
+  .js .ch-line:nth-child(1) > span { animation-delay: 0.12s; }
+  .js .ch-line:nth-child(2) > span { animation-delay: 0.24s; }
+  .ch-hero__title .ch-accent { color: var(--green); position: relative; }
+  .ch-hero__lede { max-width: 30rem; font-size: clamp(0.98rem, 1.3vw, 1.12rem); line-height: 1.7; color: var(--muted); }
+  .js .ch-hero__lede { animation: ch-fade 0.9s var(--ease) 0.5s both; }
+  .ch-hero__cta { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; margin-top: 32px; }
+  .js .ch-hero__cta { animation: ch-fade 0.9s var(--ease) 0.62s both; }
+  .ch-hero__chips { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 34px; }
+  .ch-hero__chips li { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 500; color: #47584b; }
+  .ch-hero__chips svg { color: var(--green-deep); }
+  .js .ch-hero__chips { animation: ch-fade 0.9s var(--ease) 0.74s both; }
+
+  /* product stage */
+  .ch-hero__stage { position: relative; align-self: stretch; display: grid; place-items: center; min-height: 420px; }
+  .ch-ghostword { position: absolute; z-index: 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(6rem, 15vw, 15rem); letter-spacing: -0.05em; color: transparent; -webkit-text-stroke: 1.5px rgb(0 200 83 / 0.18); white-space: nowrap; user-select: none; }
+  .ch-ring { position: absolute; border-radius: 50%; border: 1px solid rgb(0 200 83 / 0.18); }
+  .ch-ring--1 { width: 78%; padding-bottom: 78%; }
+  .ch-ring--2 { width: 96%; padding-bottom: 96%; border-color: rgb(0 200 83 / 0.1); }
+  .ch-spin { position: absolute; width: 62%; padding-bottom: 62%; border-radius: 50%; background: conic-gradient(from 0deg, rgb(0 200 83 / 0) 0%, rgb(0 200 83 / 0.35) 12%, rgb(0 200 83 / 0) 26%); mask: radial-gradient(circle, transparent 61%, #000 62%); -webkit-mask: radial-gradient(circle, transparent 61%, #000 62%); animation: ch-rotate 9s linear infinite; }
+  .ch-hero__product { position: relative; z-index: 2; width: 100%; max-width: 460px; height: auto; filter: drop-shadow(0 30px 40px rgb(10 40 20 / 0.22)); transform: translate3d(var(--tilt-x, 0), var(--tilt-y, 0), 0) rotate(-4deg); transition: transform 0.4s var(--ease); }
+  .js .ch-hero__stage { animation: ch-fade 1s var(--ease) 0.3s both; }
+  .ch-pricetag { position: absolute; z-index: 3; right: 4%; bottom: 6%; display: flex; flex-direction: column; align-items: flex-end; font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: -0.02em; color: var(--ink); background: rgb(255 255 255 / 0.86); backdrop-filter: blur(6px); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+  .ch-pricetag span { font-family: var(--font-mono); font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .ch-pricetag em { font-family: var(--font-mono); font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-style: normal; margin-top: 2px; }
+
+  .ch-scrollcue { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); width: 26px; height: 42px; border: 1.5px solid rgb(14 26 18 / 0.25); border-radius: 14px; display: grid; justify-items: center; padding-top: 7px; z-index: 3; }
+  .ch-scrollcue span { width: 3px; height: 8px; border-radius: 2px; background: var(--green-deep); animation: ch-cue 1.6s var(--ease) infinite; }
+
+  /* ============================================================ MARQUEE */
+  .ch-marquee { overflow: hidden; background: var(--green-deep); color: #eafff2; padding: 13px 0; }
+  .ch-marquee__track { display: inline-flex; white-space: nowrap; font-family: var(--font-display); font-weight: 700; font-size: 14px; letter-spacing: 0.02em; text-transform: uppercase; animation: ch-marquee 26s linear infinite; }
+  .ch-marquee__track span { padding-right: 8px; }
+  .ch-marquee__track b { color: rgb(234 255 242 / 0.5); padding: 0 12px; }
+
+  /* ============================================================== STATS */
+  .ch-stats { background: #fff; padding: clamp(48px, 7vw, 88px) 0; border-bottom: 1px solid var(--line); }
+  .ch-stats__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .ch-stat { text-align: left; padding-left: 22px; border-left: 2px solid var(--green); }
+  .ch-stat__value { font-family: var(--font-display); font-weight: 700; font-size: clamp(2rem, 4vw, 3.3rem); letter-spacing: -0.04em; line-height: 1; color: var(--ink); }
+  .ch-stat__value span { color: var(--green-deep); }
+  .ch-stat__label { margin-top: 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+  /* ============================================================== TRUST */
+  .ch-trust { background: #f4f8f1; padding: 26px 0; }
+  .ch-trust__row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 30px; }
+  .ch-trust__lockup { display: inline-flex; flex-direction: column; line-height: 1.1; padding: 10px 18px 10px 0; border-right: 1px solid var(--line); }
+  .ch-trust__lockup em { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: #9c7f42; font-style: normal; }
+  .ch-trust__lockup b { font-family: var(--font-display); font-weight: 700; font-size: 18px; letter-spacing: 0.14em; color: #7a6534; }
+  .ch-trust__marks { display: flex; flex-wrap: wrap; gap: 14px 28px; }
+  .ch-trust__marks li { display: inline-flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 500; color: #3f5245; }
+  .ch-trust__marks svg { color: var(--green-deep); }
+
+  /* ============================================================== RANGE */
+  .ch-range { padding: clamp(64px, 9vw, 120px) 0; }
+  .ch-head { margin-bottom: 44px; }
+  .ch-head .ch-h2 { margin-top: 18px; }
+  .ch-range__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .ch-card { border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: #fff; transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease); }
+  .ch-card:hover { transform: translateY(-8px); box-shadow: 0 30px 60px -30px rgb(10 40 20 / 0.25); }
+  .ch-card__media { height: 260px; background: linear-gradient(160deg, #f4f8f1, #eef3ea); display: grid; place-items: center; overflow: hidden; }
+  .ch-card__media img { width: 100%; height: 100%; object-fit: contain; padding: 26px; transition: transform 0.6s var(--ease); }
+  .ch-card:hover .ch-card__media img { transform: scale(1.06); }
+  .ch-card__body { padding: 22px 22px 24px; }
+  .ch-card__top { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .ch-card__top h3 { font-family: var(--font-display); font-weight: 700; font-size: 26px; letter-spacing: -0.03em; }
+  .ch-card__seg { font-size: 12px; font-weight: 500; color: var(--green-deep); }
+  .ch-card__specs { display: flex; gap: 22px; margin: 16px 0 14px; padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .ch-card__specs li { display: flex; flex-direction: column; gap: 2px; }
+  .ch-card__specs b { font-family: var(--font-display); font-weight: 700; font-size: 17px; letter-spacing: -0.02em; }
+  .ch-card__specs span { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .ch-card__price { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--green-deep); margin-bottom: 16px; }
+  .ch-card__price span { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+
+  /* ========================================================== PRESTIGE */
+  .ch-prestige { padding: 0 0 clamp(64px, 9vw, 120px); }
+  .ch-prestige__card { display: grid; grid-template-columns: 1.4fr 1fr; align-items: center; gap: 30px; padding: clamp(30px, 5vw, 60px); border-radius: 24px; background: linear-gradient(135deg, #fbfaf5, #f6f8f1); border: 1px solid #ece3cf; position: relative; overflow: hidden; }
+  .ch-prestige__card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent 60%, rgb(200 169 106 / 0.08)); pointer-events: none; }
+  .ch-prestige__title { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.7rem, 3.4vw, 2.9rem); line-height: 1.02; letter-spacing: -0.03em; color: var(--ink); margin: 16px 0 14px; }
+  .ch-prestige__title .ch-x { color: var(--gold); font-weight: 500; margin: 0 4px; }
+  .ch-prestige__lede { max-width: 34rem; font-size: 15px; line-height: 1.7; color: #57604f; margin-bottom: 22px; }
+  .ch-prestige__emblem { position: relative; display: grid; place-items: center; min-height: 180px; }
+  .ch-emblem { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.4rem, 6vw, 4rem); letter-spacing: -0.02em; color: #7a6534; z-index: 1; }
+  .ch-emblem i { color: var(--gold); font-style: normal; margin: 0 4px; }
+  .ch-emblem__ring { position: absolute; width: 200px; height: 200px; border-radius: 50%; border: 1px solid rgb(200 169 106 / 0.4); }
+  .ch-emblem__ring::after { content: ''; position: absolute; inset: 14px; border-radius: 50%; border: 1px dashed rgb(200 169 106 / 0.3); }
+
+  /* ============================================================ SAVINGS */
+  .ch-savings { padding: clamp(64px, 9vw, 120px) 0; background: #f4f8f1; }
+  .ch-savings__inner { display: grid; grid-template-columns: 1fr 1fr; gap: 46px; align-items: center; }
+  .ch-savings__copy .ch-h2 { margin: 18px 0 20px; }
+  .ch-savings__lede { max-width: 28rem; font-size: 15px; line-height: 1.7; color: var(--muted); margin-bottom: 22px; }
+  .ch-savings__panel { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: clamp(28px, 4vw, 44px); }
+  .ch-panel__eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green-deep); }
+  .ch-panel__total { font-family: var(--font-display); font-weight: 700; font-size: clamp(3rem, 7vw, 5rem); letter-spacing: -0.05em; line-height: 1.1; color: var(--ink); margin: 8px 0 4px; }
+  .ch-panel__note { font-size: 12px; color: var(--muted); margin-bottom: 26px; }
+  .ch-panel__bars { display: grid; gap: 16px; }
+  .ch-bar { display: grid; grid-template-columns: 90px 1fr auto; align-items: center; gap: 14px; font-size: 12px; color: #47584b; }
+  .ch-bar i { display: block; height: 10px; border-radius: 6px; background: #d6ddd0; }
+  .ch-bar b { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--ink); }
+  .ch-bar--ev i { background: linear-gradient(90deg, var(--green), var(--green-deep)); }
+
+  /* ============================================================== FINAL */
+  .ch-final { padding: clamp(72px, 11vw, 150px) 0; text-align: center; background: radial-gradient(ellipse 70% 90% at 50% 0%, var(--green-050), #fff 70%); }
+  .ch-final__inner { display: grid; justify-items: center; gap: 8px; }
+  .ch-final__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.4rem, 6.5vw, 5.4rem); line-height: 0.98; letter-spacing: -0.04em; color: var(--ink); margin: 16px 0 8px; max-width: 16ch; }
+  .ch-final__cta { justify-content: center; margin-top: 20px; }
+
+  /* =============================================================== FOOT */
+  .ch-foot { border-top: 1px solid var(--line); padding: 30px 0; }
+  .ch-foot__inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .ch-foot__inner p { font-size: 12px; color: var(--muted); }
+
+  /* ===================================================== KINETIC WIPE */
+  .ch-transition { position: fixed; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; }
+  .ch-transition span { position: absolute; top: -20%; left: -60%; width: 60%; height: 140%; background: linear-gradient(90deg, transparent, rgb(0 200 83 / 0.9), var(--green-deep)); transform: skewX(-12deg) translateX(-160%); opacity: 0; }
+  .ch-transition--run span { animation: ch-wipe 0.95s var(--ease) forwards; }
+
+  /* ============================================================ MOTION */
+  @keyframes ch-rise { from { transform: translateY(112%); } to { transform: translateY(0); } }
+  @keyframes ch-fade { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @keyframes ch-rotate { to { transform: rotate(360deg); } }
+  @keyframes ch-cue { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(12px); opacity: 0; } 100% { opacity: 0; } }
+  @keyframes ch-marquee { to { transform: translateX(-50%); } }
+  @keyframes ch-wipe { 0% { transform: skewX(-12deg) translateX(-160%); opacity: 1; } 100% { transform: skewX(-12deg) translateX(320%); opacity: 1; } }
+
+  /* stagger via shared reveal engine */
+  .ch-stats__grid [data-reveal], .ch-range__grid [data-reveal], .ch-trust__marks [data-reveal] { --reveal-delay: calc(var(--i, 0) * 80ms); }
+
+  /* ========================================================= RESPONSIVE */
+  @media (max-width: 940px) {
+    .ch-hero__inner { grid-template-columns: 1fr; gap: 12px; min-height: 0; padding: 24px 0 40px; }
+    .ch-hero__stage { min-height: 340px; order: -1; }
+    .ch-hero__product { max-width: 340px; }
+    .ch-stats__grid { grid-template-columns: 1fr 1fr; gap: 28px 20px; }
+    .ch-range__grid { grid-template-columns: 1fr; gap: 18px; }
+    .ch-prestige__card { grid-template-columns: 1fr; }
+    .ch-prestige__emblem { min-height: 150px; order: -1; }
+    .ch-savings__inner { grid-template-columns: 1fr; gap: 30px; }
+    .ch-pricetag { font-size: 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ch-dot, .ch-spin, .ch-marquee__track, .ch-scrollcue span { animation: none !important; }
+    .ch-hero__product { transform: rotate(-4deg) !important; }
+  }
+</style>
+
+<script>
+  // Hero product tilt (pointer) + light nav state. Reveals/counters/kinetic
+  // transition/magnetic all come from the shared motion system in main.ts.
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const product = document.querySelector<HTMLElement>('[data-ch-tilt]');
+  const stage = product?.closest<HTMLElement>('.ch-hero__stage');
+  if (product && stage && !reduce && matchMedia('(hover: hover)').matches) {
+    stage.addEventListener('pointermove', (e) => {
+      const r = stage.getBoundingClientRect();
+      const dx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+      const dy = ((e.clientY - r.top) / r.height - 0.5) * 2;
+      product.style.setProperty('--tilt-x', `${(dx * 10).toFixed(1)}px`);
+      product.style.setProperty('--tilt-y', `${(dy * 10).toFixed(1)}px`);
+    });
+    stage.addEventListener('pointerleave', () => {
+      product.style.setProperty('--tilt-x', '0px');
+      product.style.setProperty('--tilt-y', '0px');
+    });
+  }
+  const nav = document.querySelector<HTMLElement>('[data-ch-nav]');
+  if (nav) {
+    const onScroll = () => nav.dataset.state = window.scrollY > 20 ? 'scrolled' : 'top';
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+</script>

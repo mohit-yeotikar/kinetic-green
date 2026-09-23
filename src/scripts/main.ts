@@ -1,7 +1,7 @@
 import { initNav } from './nav';
 import { initExplorer } from './explorer';
 import { initDealer } from './dealer';
-import { initReveal, initCounters } from './motion';
+import { initReveal, initCounters, initKineticTransition, initMagnetic, initParallax } from './motion';
 import { initSmooth } from './smooth';
 import { track, initScrollDepth, initSectionViews } from '../lib/analytics';
 import './calculator';
@@ -21,6 +21,12 @@ function boot(): void {
   // fully skipped under prefers-reduced-motion (content left visible).
   guard('reveal', initReveal);
   guard('counters', initCounters);
+  // Signature diagonal transition, magnetic CTAs, parallax. Each no-ops unless
+  // its markup ([data-transition-driver]/[data-magnetic]/[data-parallax]) is on
+  // the page — so these only activate on the concept page, not the homepage.
+  guard('kinetic', initKineticTransition);
+  guard('magnetic', initMagnetic);
+  guard('parallax', initParallax);
   guard('analytics', () => {
     initScrollDepth();
     initSectionViews();
