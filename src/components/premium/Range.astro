@@ -31,15 +31,18 @@ const cards = [
 ---
 <section class="p-curtain p-range" id="range" data-section="range">
   <div class="kg-shell">
-    <header class="p-section-head" data-reveal>
-      <p class="p-eyebrow"><span class="dot"></span>The range</p>
-      <h2 class="p-h2">Three ways to<br />go electric<span class="p-hero__stop">.</span></h2>
+    <header class="p-section-head p-section-head--split" data-reveal>
+      <div>
+        <p class="p-eyebrow"><span class="dot"></span>The range</p>
+        <h2 class="p-h2">Three ways to<br />go electric<span class="p-hero__stop">.</span></h2>
+      </div>
       <p class="p-section-head__sub">Two-wheelers for the everyday, a three-wheeler for the everyday business. Real figures, ex-showroom prices.</p>
     </header>
 
     <ul class="p-cards" data-rail>
       {cards.map((c, i) => (
-        <li class={`p-card p-card--${c.tone}`} data-reveal style={`--d:${i * 90}ms`}>
+        <li class={`p-card p-card--${c.tone}`} data-reveal data-tilt style={`--d:${i * 90}ms`}>
+          <span class="p-card__sheen" aria-hidden="true"></span>
           <div class="p-card__visual">
             <img src={c.img} alt={c.v.media.alt} loading="lazy" decoding="async" width="800" height="600" />
           </div>

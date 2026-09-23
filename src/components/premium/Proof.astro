@@ -18,7 +18,7 @@ const rows = [
     <ul class="p-proof__grid">
       {rows.map((r, i) => (
         <li data-reveal style={`--d:${160 + i * 90}ms`}>
-          <p class="p-proof__num"><span data-count-to={r.m.value}>0</span>{r.m.suffix.replace(' km', '')}</p>
+          <p class="p-proof__num"><span data-odometer={String(r.m.value)}>{r.m.value}</span>{r.m.suffix.replace(' km', '')}</p>
           <p class="p-proof__label">{r.label}</p>
           <span class="kg-visually-hidden">{r.m.sentence}</span>
         </li>

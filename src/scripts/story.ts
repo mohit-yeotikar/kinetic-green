@@ -16,18 +16,69 @@ export function initStory(): void {
   const root = document.querySelector<HTMLElement>('[data-story]');
   if (!root) return;
 
-  // Colour preview works everywhere, including reduced motion.
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Colour preview: the bike re-tints at once; the stage wash ripples out from the swatch.
   const picker = root.querySelector<HTMLElement>('[data-paint-picker]');
   const nameOut = root.querySelector<HTMLElement>('[data-paint-name]');
+  const ripple = root.querySelector<HTMLElement>('[data-story-ripple]');
+  const WASH: Record<string, string> = { green: '#d6f5e2', blue: '#d9e9fb', red: '#f9dde4', yellow: '#fbf0cc', black: '#eceeee' };
+  let rippling = false;
   picker?.addEventListener('change', (e) => {
     const input = e.target as HTMLInputElement;
     if (!input.matches('[data-paint-input]')) return;
-    root.dataset.paint = input.value;
+    const next = input.value;
+    root.dataset.paint = next;
     const label = input.closest('label')?.getAttribute('title');
     if (nameOut && label) nameOut.textContent = label;
+    if (!ripple || reduced) { root.dataset.wash = next; return; }
+    const r = input.getBoundingClientRect();
+    const b = root.getBoundingClientRect();
+    ripple.style.setProperty('--rx', `${r.left - b.left + r.width / 2}px`);
+    ripple.style.setProperty('--ry', `${r.top - b.top + r.height / 2}px`);
+    ripple.style.setProperty('--wash-next', WASH[next] || '#eef2f0');
+    // restart cleanly even mid-ripple
+    ripple.classList.remove('is-on');
+    void ripple.offsetWidth;
+    ripple.classList.add('is-on');
+    rippling = true;
+    const done = () => {
+      if (!rippling) return;
+      rippling = false;
+      root.dataset.wash = next;
+      ripple.classList.add('is-still');
+      ripple.classList.remove('is-on');
+      requestAnimationFrame(() => ripple.classList.remove('is-still'));
+    };
+    ripple.addEventListener('transitionend', done, { once: true });
+    setTimeout(done, 1000);
   });
 
-  const motionOK = !matchMedia('(prefers-reduced-motion: reduce)').matches && matchMedia('(min-width: 1024px)').matches;
+  // Kinetic type: letter weight follows the pointer while the hero is on screen.
+  const title = root.querySelector<HTMLElement>('[data-kinetic]');
+  const letters = title ? Array.from(title.querySelectorAll<HTMLElement>('.k:not(.k--sp)')) : [];
+  let centres: { x: number; y: number }[] = [];
+  const measureLetters = () => { centres = letters.map((l) => { const r = l.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }); };
+  if (letters.length && !reduced && matchMedia('(pointer: fine)').matches) {
+    let raf = 0, px = -1e4, py = -1e4;
+    const paint = () => {
+      raf = 0;
+      letters.forEach((l, i) => {
+        const c = centres[i]; if (!c) return;
+        const d = Math.hypot(px - c.x, py - c.y);
+        const w = 560 + 300 * Math.exp(-(d * d) / (2 * 150 * 150));
+        l.style.setProperty('--w', w.toFixed(0));
+      });
+    };
+    root.addEventListener('pointermove', (e) => { px = e.clientX; py = e.clientY; if (!raf) raf = requestAnimationFrame(paint); }, { passive: true });
+    root.addEventListener('pointerleave', () => { px = -1e4; py = -1e4; if (!raf) raf = requestAnimationFrame(paint); }, { passive: true });
+    window.addEventListener('scroll', () => { measureLetters(); }, { passive: true });
+    window.addEventListener('resize', measureLetters, { passive: true });
+    (document as any).fonts?.ready.then(measureLetters);
+    setTimeout(measureLetters, 1400);
+  }
+
+  const motionOK = !reduced && matchMedia('(min-width: 1024px)').matches;
   if (!motionOK) return;
 
   const stage = root.querySelector<HTMLElement>('[data-story-stage]')!;
@@ -58,6 +109,8 @@ export function initStory(): void {
   let tScale = 1, tX = 0, tY = 0;
   let cScale = 1, cX = 0, cY = 0;
   let tGhost = 0, cGhost = 0;
+  let lag = 0, cLag = 0, lastScroll = window.scrollY;  // scroll-velocity mass
+  let pX = 0, pY = 0, cPX = 0, cPY = 0;                 // pointer drift (hero only)
   let running = false;
 
   function setTargets(): void {
@@ -72,7 +125,7 @@ export function initStory(): void {
     tX = focalX - (rect.x + (px - rect.x) * z);
     tY = focalY - (rect.y + (py - rect.y) * z);
   }
-  const current = () => `translate3d(${cX.toFixed(2)}px, ${cY.toFixed(2)}px, 0) scale(${cScale.toFixed(4)})`;
+  const current = () => `translate3d(${(cX + cPX).toFixed(2)}px, ${(cY + cLag + cPY).toFixed(2)}px, 0) scale(${cScale.toFixed(4)})`;
 
   function applyStep(next: number): void {
     if (next === step) return;
@@ -92,6 +145,8 @@ export function initStory(): void {
     const travel = Math.max(1, root.offsetHeight - pin * 2); // last 100svh is the curtain
     const p = Math.min(1, Math.max(0, window.scrollY / travel));
     tGhost = p;
+    const v = window.scrollY - lastScroll; lastScroll = window.scrollY;
+    lag = Math.max(-48, Math.min(48, lag + v * 0.18));
     // Hero holds for the first 12% so the entrance lands; then even steps.
     const s = p < 0.12 ? 0 : Math.min(steps - 1, 1 + Math.floor(((p - 0.12) / 0.88) * (steps - 1)));
     applyStep(s);
@@ -101,9 +156,12 @@ export function initStory(): void {
   function frame(): void {
     const k = 0.085;
     cScale = lerp(cScale, tScale, k); cX = lerp(cX, tX, k); cY = lerp(cY, tY, k); cGhost = lerp(cGhost, tGhost, 0.12);
+    lag = lerp(lag, 0, 0.12); cLag = lerp(cLag, lag, 0.2);
+    cPX = lerp(cPX, step === 0 ? pX : 0, 0.08); cPY = lerp(cPY, step === 0 ? pY : 0, 0.08);
     product.style.transform = current();
     if (ghost) ghost.style.transform = `translate3d(${(-cGhost * 30).toFixed(2)}vw, 0, 0)`;
-    const settled = Math.abs(cScale - tScale) < 0.0005 && Math.abs(cX - tX) < 0.05 && Math.abs(cY - tY) < 0.05 && Math.abs(cGhost - tGhost) < 0.001;
+    const settled = Math.abs(cScale - tScale) < 0.0005 && Math.abs(cX - tX) < 0.05 && Math.abs(cY - tY) < 0.05 && Math.abs(cGhost - tGhost) < 0.001
+      && Math.abs(cLag) < 0.05 && Math.abs(lag) < 0.05 && Math.abs(cPX - (step === 0 ? pX : 0)) < 0.05 && Math.abs(cPY - (step === 0 ? pY : 0)) < 0.05;
     if (settled) { running = false; return; }
     requestAnimationFrame(frame);
   }
@@ -117,6 +175,15 @@ export function initStory(): void {
     const p = i === 0 ? 0 : 0.12 + ((i - 0.5) / (steps - 1)) * 0.88;
     window.scrollTo({ top: Math.round(p * travel), behavior: 'smooth' });
   }));
+
+  if (matchMedia('(pointer: fine)').matches) {
+    root.addEventListener('pointermove', (e) => {
+      pX = ((e.clientX / window.innerWidth) - 0.5) * -22;
+      pY = ((e.clientY / window.innerHeight) - 0.5) * -12;
+      wake();
+    }, { passive: true });
+    root.addEventListener('pointerleave', () => { pX = 0; pY = 0; wake(); }, { passive: true });
+  }
 
   const onResize = () => { measure(); setTargets(); wake(); };
   if (img.complete) measure(); else img.addEventListener('load', measure, { once: true });

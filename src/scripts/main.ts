@@ -1,5 +1,5 @@
 import { initStory, initParallax } from './story';
-import { initPremiumNav, initReveal } from './premium';
+import { initPremiumNav, initReveal, initTilt, initOdometers } from './premium';
 import { initExplorer } from './explorer';
 import { initDealer } from './dealer';
 import { track, initScrollDepth, initSectionViews } from '../lib/analytics';
@@ -13,7 +13,9 @@ function boot(): void {
   guard('nav', initPremiumNav);
   guard('story', initStory);
   guard('parallax', initParallax);
+  guard('odometers', initOdometers);
   guard('reveal', initReveal);
+  guard('tilt', initTilt);
   guard('range', initExplorer);
   guard('dealer', initDealer);
   guard('analytics', () => {

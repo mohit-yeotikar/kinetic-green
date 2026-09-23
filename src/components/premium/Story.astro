@@ -28,6 +28,14 @@ const paints = [
 ];
 
 /* Focus points are % of the product image (x, y) and a zoom for each chapter. */
+const line1 = 'Chal meri';
+const line2 = 'Luna';
+const letters = (t: string, offset = 0) => [...t].map((ch, i) => ({ ch, i: i + offset, space: ch === ' ' }));
+
+/* Frame geometry traced on the studio photo (869 × 1000 image space). */
+const FRAME_LOOP = 'M392 402 C410 470 436 545 458 612 C468 640 488 646 514 646 L630 646 C652 646 662 636 663 616 L664 480 C600 474 520 470 470 468 C450 466 435 460 425 452';
+const FRAME_RACK = 'M664 478 C700 480 760 486 800 492';
+
 const chapters = [
   { id: 'battery', n: '01', title: 'Take the battery with you.', body: 'A 2.0–2.3 kWh lithium pack that lifts out and charges from any 10A socket in about four hours. No wall box, no parking-spot politics.', x: 63, y: 50, zoom: 1.35, stat: '4 h', statLabel: 'home charge' },
   { id: 'frame', n: '02', title: 'The frame you remember.', body: 'Same upright, step-through stance that carried a generation. Now a steel frame with a 130 kg payload and a rear seat that unbolts for cargo.', x: 49, y: 60, zoom: 1.15, stat: '130 kg', statLabel: 'payload' },
@@ -35,10 +43,11 @@ const chapters = [
   { id: 'range', n: '04', title: '110 km. Every single day.', body: 'Claimed range under standard test conditions. Enough for the office, the market and the school run, then back on the socket overnight.', x: 50, y: 50, zoom: 0.8, stat: '110 km', statLabel: 'claimed range' },
 ];
 ---
-<section class="p-story" id="top" data-story data-paint="green" style={`--steps:${chapters.length + 1}`}>
+<section class="p-story" id="top" data-story data-paint="green" data-wash="green" style={`--steps:${chapters.length + 1}`}>
   <div class="p-story__pin">
     <div class="p-story__wash" aria-hidden="true"></div>
-    <span class="p-story__ghost" aria-hidden="true" data-story-ghost>LUNA</span>
+    <div class="p-story__ripple" aria-hidden="true" data-story-ripple></div>
+    <span class="p-story__ghost" aria-hidden="true" data-story-ghost><span class="p-story__ghost-track">Chal meri Luna · Chal meri Luna · Chal meri Luna · Chal meri Luna · </span></span>
 
     <!-- ------------------------------------------------------------ product -->
     <div class="p-story__stage" data-story-stage>
@@ -50,6 +59,11 @@ const chapters = [
           alt="Kinetic Green E-Luna electric moped, front three-quarter view"
           data-story-img
         />
+        <span class="p-lamp" aria-hidden="true"></span>
+        <svg class="p-frame" viewBox="0 0 869 1000" aria-hidden="true">
+          <path class="p-frame__pulse" d={FRAME_LOOP} />
+          <path class="p-frame__pulse p-frame__pulse--rack" d={FRAME_RACK} />
+        </svg>
         {chapters.slice(0, -1).map((c, i) => (
           <span class="p-marker" style={`left:${c.x}%;top:${c.y}%`} data-marker={i + 1} aria-hidden="true"><i></i></span>
         ))}
@@ -59,9 +73,9 @@ const chapters = [
     <!-- --------------------------------------------------------------- hero -->
     <div class="p-story__hero kg-shell" data-story-hero>
       <p class="p-eyebrow"><span class="dot"></span>Kinetic Green · E-Luna</p>
-      <h1 class="p-story__title">
-        <span class="p-story__line"><span class="p-story__word" style="--i:0">Chal meri</span></span>
-        <span class="p-story__line"><span class="p-story__word" style="--i:1">Luna<span class="p-hero__stop">.</span></span></span>
+      <h1 class="p-story__title" data-kinetic>
+        <span class="p-story__line"><span class="p-story__word" style="--i:0">{letters(line1).map((l) => l.space ? <span class="k k--sp">{' '}</span> : <span class="k" style={`--i:${l.i}`}>{l.ch}</span>)}</span></span>
+        <span class="p-story__line"><span class="p-story__word" style="--i:1">{letters(line2, 10).map((l) => <span class="k" style={`--i:${l.i}`}>{l.ch}</span>)}<span class="p-hero__stop">.</span></span></span>
       </h1>
       <p class="p-story__sub">The moped India grew up on is back, and it's electric. From <b>{price}</b> ex-showroom*.</p>
       <div class="p-story__actions">
@@ -80,6 +94,7 @@ const chapters = [
           ))}
         </div>
       </fieldset>
+      <p class="p-partner"><span class="p-partner__mark" aria-hidden="true">TL</span><b>Tonino Lamborghini</b><span>Official partner</span></p>
     </div>
 
     <!-- ----------------------------------------------------------- chapters -->
@@ -101,7 +116,6 @@ const chapters = [
           <li><button type="button" data-dot={i} aria-label={`Go to ${d.label}`}><i></i><span>{d.label}</span></button></li>
         ))}
       </ol>
-      <p class="p-partner"><span class="p-partner__mark" aria-hidden="true">TL</span><b>Tonino Lamborghini</b><span>Official partner</span></p>
     </div>
   </div>
 </section>
