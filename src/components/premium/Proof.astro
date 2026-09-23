@@ -1,0 +1,28 @@
+---
+/**
+ * Proof — the one bold green moment on the page. Three brand figures from
+ * content.ts (kineticgreen.com brand history), counted up on reveal.
+ */
+import { metrics } from '../../data/content';
+const pick = (id: string) => metrics.find((m) => m.id === id)!;
+const rows = [
+  { m: pick('dealers'), label: 'dealers, pan India' },
+  { m: pick('years'), label: 'years in Indian mobility' },
+  { m: pick('distance'), label: 'kilometres ridden electric' },
+];
+---
+<section class="p-proof" id="proof" data-section="proof">
+  <div class="kg-shell">
+    <p class="p-eyebrow p-eyebrow--on-green" data-reveal><span class="dot"></span>Why Kinetic Green</p>
+    <h2 class="p-h2 p-proof__title" data-reveal style="--d:80ms">Built by the people who put India on two wheels.</h2>
+    <ul class="p-proof__grid">
+      {rows.map((r, i) => (
+        <li data-reveal style={`--d:${160 + i * 90}ms`}>
+          <p class="p-proof__num"><span data-count-to={r.m.value}>0</span>{r.m.suffix.replace(' km', '')}</p>
+          <p class="p-proof__label">{r.label}</p>
+          <span class="kg-visually-hidden">{r.m.sentence}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

@@ -2,13 +2,26 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/premium/Nav.astro';
 import Hero from '../components/premium/Hero.astro';
+import Range from '../components/premium/Range.astro';
+import Proof from '../components/premium/Proof.astro';
+import Savings from '../components/premium/Savings.astro';
+import Ownership from '../components/premium/Ownership.astro';
+import Dealers from '../components/premium/Dealers.astro';
+import Closing from '../components/premium/Closing.astro';
+import Footer from '../components/premium/Footer.astro';
 import LeadModal from '../components/LeadModal.astro';
 ---
 <BaseLayout title="Kinetic Green — The icon. Recharged." description="Meet the electric E-Luna. Kinetic Green electric two- and three-wheelers with real range, real prices and running costs that make petrol feel expensive." path="/" bodyClass="kg-premium">
   <Nav />
   <main id="main">
     <Hero />
-    <section class="p-curtain" id="range" style="min-height:100svh;background:#fff;border-radius:32px 32px 0 0;box-shadow:0 -24px 60px -30px rgb(11 15 13/.2);position:relative;z-index:2;margin-top:-100svh"></section>
+    <Range />
+    <Proof />
+    <Savings />
+    <Ownership />
+    <Dealers />
+    <Closing />
   </main>
+  <Footer />
   <LeadModal />
 </BaseLayout>

@@ -22,6 +22,8 @@ if (root && form) {
     });
     const readout = root!.querySelector('[data-calc-readout="dailyKm"]');
     if (readout) readout.textContent = String(dailyKm);
+    const slider = form!.querySelector<HTMLInputElement>('[name="dailyKm"]');
+    if (slider) slider.style.setProperty('--fill', `${((dailyKm - Number(slider.min)) / (Number(slider.max) - Number(slider.min))) * 100}%`);
     const bar = root!.querySelector<HTMLElement>('[data-electric-bar]');
     if (bar) bar.style.width = `${Math.min(100, electric / fuel * 100)}%`;
   }

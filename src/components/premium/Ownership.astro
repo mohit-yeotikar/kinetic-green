@@ -1,0 +1,25 @@
+---
+import { pillars } from '../../data/content';
+const items = pillars.filter((p) => ['charging', 'service', 'finance'].includes(p.id));
+---
+<section class="p-own" id="ownership" data-section="ownership">
+  <div class="kg-shell p-own__grid">
+    <figure class="p-own__photo" data-reveal>
+      <img src="/media/riding.webp" alt="Two people riding a Kinetic Green E-Luna on an open road, city skyline behind" loading="lazy" decoding="async" width="1400" height="900" />
+      <figcaption>E-Luna · everyday, electric</figcaption>
+    </figure>
+    <div class="p-own__copy" data-reveal style="--d:120ms">
+      <p class="p-eyebrow"><span class="dot"></span>Ownership</p>
+      <h2 class="p-h2">Simple to own<span class="p-hero__stop">.</span><br />Simple to keep.</h2>
+      <div class="p-acc">
+        {items.map((p, i) => (
+          <details class="p-acc__item" open={i === 0}>
+            <summary><span>{p.headline}</span><i aria-hidden="true"></i></summary>
+            <p>{p.body}</p>
+          </details>
+        ))}
+      </div>
+      <button type="button" class="p-link" data-lead-open data-lead-type="callback" data-lead-intent="medium" data-lead-source="ownership" data-track="vehicle_cta_click"><span>Talk to an advisor</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></button>
+    </div>
+  </div>
+</section>

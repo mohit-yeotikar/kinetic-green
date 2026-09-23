@@ -1,0 +1,49 @@
+---
+/**
+ * Savings — the one useful tool. Markup contract is shared with
+ * scripts/calculator.ts (data-calc-* attributes); defaults are server-rendered.
+ */
+const monthlyKm = 30 * 25;
+const fuel = (monthlyKm / 45) * 105;
+const electric = monthlyKm * 1.1;
+const annualSaving = (fuel - electric) * 12;
+const fmt = (n: number) => Math.round(n).toLocaleString('en-IN');
+---
+<section class="p-savings" id="savings" data-section="calculator" data-calculator>
+  <div class="kg-shell p-savings__grid">
+    <div class="p-savings__copy" data-reveal>
+      <p class="p-eyebrow"><span class="dot"></span>Running cost</p>
+      <h2 class="p-h2">Petrol money,<br />back in your pocket<span class="p-hero__stop">.</span></h2>
+      <p class="p-section-head__sub">Slide to your daily distance. We compare a petrol two-wheeler with an electric one at ₹1.10 per km.</p>
+      <form data-calc-form class="p-calc">
+        <label class="p-calc__label" for="calc-daily">
+          <span>How far do you ride each day?</span>
+          <output for="calc-daily"><b data-calc-readout="dailyKm">30</b> km</output>
+        </label>
+        <input class="p-range-input" type="range" id="calc-daily" name="dailyKm" min="5" max="150" step="5" value="30" data-calc-input aria-describedby="calc-note" />
+        <div class="p-calc__scale"><span>5 km</span><span>150 km</span></div>
+        <details class="p-calc__settings">
+          <summary>Adjust the assumptions</summary>
+          <div class="p-calc__fields">
+            <label>Petrol price (₹/litre)<input type="number" name="fuelPrice" value="105" min="50" max="200" step="1" data-calc-input required /></label>
+            <label>Petrol mileage (km/l)<input type="number" name="mileage" value="45" min="10" max="100" step="1" data-calc-input required /></label>
+            <label>Riding days / month<input type="number" name="workingDays" value="25" min="1" max="31" step="1" data-calc-input required /></label>
+          </div>
+        </details>
+        <p class="p-fine" id="calc-note">Illustrative running-cost comparison only. Excludes purchase price, finance, insurance, servicing and battery replacement.</p>
+      </form>
+    </div>
+    <div class="p-savings__card" data-reveal style="--d:120ms" aria-live="polite" aria-atomic="true">
+      <p class="p-eyebrow">Estimated yearly saving</p>
+      <p class="p-savings__total">₹<span data-calc-out="annualSaving">{fmt(annualSaving)}</span><sup>*</sup></p>
+      <div class="p-compare">
+        <div class="p-compare__row"><span>Petrol / month</span><b>₹<span data-calc-out="monthlyFuel">{fmt(fuel)}</span></b></div>
+        <div class="p-compare__track"><span class="p-compare__petrol"></span></div>
+        <div class="p-compare__row"><span>Electric / month</span><b>₹<span data-calc-out="monthlyEv">{fmt(electric)}</span></b></div>
+        <div class="p-compare__track"><span class="p-compare__ev" data-electric-bar style={`width:${(electric / fuel) * 100}%`}></span></div>
+      </div>
+      <p class="p-fine">*Estimate based on your inputs. Not a guarantee of cost or performance.</p>
+      <noscript><p class="p-fine">Default estimate: 30 km/day, 25 days/month, 45 km/l, petrol at ₹105/litre. Enable JavaScript to adjust.</p></noscript>
+    </div>
+  </div>
+</section>

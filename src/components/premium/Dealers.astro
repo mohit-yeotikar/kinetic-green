@@ -1,0 +1,24 @@
+---
+import { brand } from '../../data/content';
+---
+<section class="p-dealers" id="dealers" data-section="dealers" data-dealer>
+  <div class="kg-shell p-dealers__grid">
+    <div data-reveal>
+      <p class="p-eyebrow"><span class="dot"></span>550+ dealers</p>
+      <h2 class="p-h2">See it. Sit on it.<br />Ride it home<span class="p-hero__stop">.</span></h2>
+      <p class="p-section-head__sub">Find a Kinetic Green dealer near you. The search opens Google Maps, so what you see is what is really there.</p>
+    </div>
+    <div class="p-dealers__search" data-reveal style="--d:120ms">
+      <form data-dealer-form action="https://www.google.com/maps/search/" method="get" target="_blank" rel="noopener noreferrer">
+        <label for="dealer-city">Your city or PIN code</label>
+        <div class="p-field">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          <input id="dealer-city" name="query" type="text" placeholder="Pune, Bengaluru, 411001…" required minlength="2" maxlength="80" autocomplete="address-level2" data-dealer-query />
+          <button type="submit" class="p-btn p-btn--green" aria-label="Find Kinetic Green dealers on Google Maps">Find<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></svg></button>
+        </div>
+      </form>
+      <div class="p-dealers__quick"><span>Try</span>{['Pune', 'Bengaluru', 'Delhi', 'Hyderabad'].map((c) => <button type="button" data-dealer-city={c}>{c}</button>)}</div>
+      <a class="p-dealers__phone" href={brand.phoneHref}>Prefer a call? <b>{brand.phone}</b></a>
+    </div>
+  </div>
+</section>

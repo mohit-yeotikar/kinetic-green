@@ -52,13 +52,34 @@ export function initReveal(): void {
   const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
   if (!items.length) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
-    items.forEach((el) => el.classList.add('is-in'));
+    items.forEach((el) => {
+      el.classList.add('is-in');
+      el.querySelectorAll<HTMLElement>('[data-count-to]').forEach((n) => { n.textContent = Number(n.dataset.countTo).toLocaleString('en-IN'); });
+    });
     return;
   }
   const io = new IntersectionObserver((entries) => {
     entries.forEach((en) => {
-      if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); }
+      if (!en.isIntersecting) return;
+      en.target.classList.add('is-in');
+      io.unobserve(en.target);
+      en.target.querySelectorAll<HTMLElement>('[data-count-to]').forEach(countUp);
     });
   }, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
   items.forEach((el) => io.observe(el));
+}
+
+/** Rolls a number from 0 to its target over ~1.1s with an ease-out curve. */
+function countUp(el: HTMLElement): void {
+  const target = Number(el.dataset.countTo);
+  if (!Number.isFinite(target)) return;
+  const t0 = performance.now();
+  const dur = 1100;
+  const tick = (now: number) => {
+    const t = Math.min(1, (now - t0) / dur);
+    const v = Math.round((1 - Math.pow(1 - t, 3)) * target);
+    el.textContent = v.toLocaleString('en-IN');
+    if (t < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
 }

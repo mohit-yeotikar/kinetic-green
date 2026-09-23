@@ -1,0 +1,63 @@
+---
+/**
+ * Range — three products, real figures, one action each.
+ * This is the "curtain" section: it slides over the pinned hero.
+ */
+import { vehicles, formatINR, PRICE_DISCLAIMER, RANGE_DISCLAIMER } from '../../data/vehicles';
+
+const byId = (id: string) => vehicles.find((v) => v.id === id)!;
+const lakh = (n: number) => `₹${(n / 100000).toFixed(2).replace(/\.?0+$/, '')} lakh`;
+
+const cards = [
+  {
+    v: byId('eluna-go'), title: 'E-Luna', kicker: 'Electric moped · Go, Plus, Pro, Prime', img: '/media/eluna-hero.webp', wide: false, tone: 'white',
+    price: formatINR(69990), stats: [['110', 'km range'], ['50', 'km/h'], ['2.0–2.3', 'kWh removable']],
+    blurb: 'The moped India grew up on, with a removable battery you charge from any household socket.',
+    lead: 'eluna-plus',
+  },
+  {
+    v: byId('zing'), title: 'Zing', kicker: 'Low-speed e-scooter · no licence needed', img: '/media/scooter.webp', wide: false, tone: 'canvas',
+    price: formatINR(71990), stats: [['100', 'km range'], ['25', 'km/h'], ['1.7', 'kWh']],
+    blurb: 'City-speed, licence-free, and light enough for anyone in the family to ride.',
+    lead: 'zing',
+  },
+  {
+    v: byId('safar-smart'), title: 'Safar Smart', kicker: 'Passenger three-wheeler · D+4', img: '/media/safar.webp', wide: false, tone: 'canvas',
+    price: lakh(145000), stats: [['100', 'km range'], ['4', 'kWh Li-ion'], ['D+4', 'seating']],
+    blurb: 'A working three-wheeler built to earn every day, with a lithium pack that charges in about three hours.',
+    lead: 'safar-smart',
+  },
+];
+---
+<section class="p-curtain p-range" id="range" data-section="range">
+  <div class="kg-shell">
+    <header class="p-section-head" data-reveal>
+      <p class="p-eyebrow"><span class="dot"></span>The range</p>
+      <h2 class="p-h2">Three ways to<br />go electric<span class="p-hero__stop">.</span></h2>
+      <p class="p-section-head__sub">Two-wheelers for the everyday, three-wheelers for the everyday business. Real figures, ex-showroom prices.</p>
+    </header>
+
+    <ul class="p-cards">
+      {cards.map((c, i) => (
+        <li class={`p-card p-card--${c.tone}`} data-reveal style={`--d:${i * 90}ms`}>
+          <div class="p-card__visual">
+            <img src={c.img} alt={c.v.media.alt} loading="lazy" decoding="async" width="800" height="600" />
+          </div>
+          <div class="p-card__body">
+            <p class="p-card__kicker">{c.kicker}</p>
+            <h3 class="p-card__title">{c.title}</h3>
+            <p class="p-card__blurb">{c.blurb}</p>
+            <ul class="p-card__stats">
+              {c.stats.map(([n, l]) => <li><b>{n}</b><span>{l}</span></li>)}
+            </ul>
+            <div class="p-card__foot">
+              <p class="p-card__price"><span>From</span><b>{c.price}</b><small>ex-showroom*</small></p>
+              <button type="button" class="p-btn p-btn--ink" data-lead-open data-lead-type="test-ride" data-lead-intent="high" data-lead-source={`range-${c.v.id}`} data-lead-vehicle={c.lead} data-track="vehicle_cta_click">Book a test ride</button>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+    <p class="p-fine" data-reveal>*{PRICE_DISCLAIMER} {RANGE_DISCLAIMER}</p>
+  </div>
+</section>
