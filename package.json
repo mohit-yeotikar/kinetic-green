@@ -16,10 +16,11 @@
     "test": "curl -s -o /dev/null -w \"%{http_code}\\n\" http://localhost:3000"
   },
   "dependencies": {
-    "astro": "^7.3.3",
-    "@astrojs/sitemap": "^3.6.0"
+    "@astrojs/sitemap": "^3.6.0",
+    "astro": "^7.3.3"
   },
   "devDependencies": {
+    "playwright-core": "^1.63.0",
     "wrangler": "^4.110.0"
   }
 }

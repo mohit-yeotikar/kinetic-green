@@ -1,25 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
-import Hero from '../components/Hero.astro';
-import VehicleExplorer from '../components/VehicleExplorer.astro';
-import SavingsCalculator from '../components/SavingsCalculator.astro';
-import Ownership from '../components/Ownership.astro';
-import DealerFinder from '../components/DealerFinder.astro';
-import FinalCTA from '../components/FinalCTA.astro';
-import Footer from '../components/Footer.astro';
+import Nav from '../components/premium/Nav.astro';
+import Hero from '../components/premium/Hero.astro';
 import LeadModal from '../components/LeadModal.astro';
 ---
-<BaseLayout title="Kinetic Green — Go your own way. Go electric." description="Meet the electric side of everyday life. Explore Kinetic Green vehicles, estimate your running-cost savings and plan a test ride." path="/" bodyClass="kg-premium">
-  <Header />
+<BaseLayout title="Kinetic Green — The icon. Recharged." description="Meet the electric E-Luna. Kinetic Green electric two- and three-wheelers with real range, real prices and running costs that make petrol feel expensive." path="/" bodyClass="kg-premium">
+  <Nav />
   <main id="main">
     <Hero />
-    <VehicleExplorer />
-    <SavingsCalculator />
-    <Ownership />
-    <DealerFinder />
-    <FinalCTA />
+    <section class="p-curtain" id="range" style="min-height:100svh;background:#fff;border-radius:32px 32px 0 0;box-shadow:0 -24px 60px -30px rgb(11 15 13/.2);position:relative;z-index:2;margin-top:-100svh"></section>
   </main>
-  <Footer />
   <LeadModal />
 </BaseLayout>

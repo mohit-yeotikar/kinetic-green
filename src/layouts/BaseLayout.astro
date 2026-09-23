@@ -12,7 +12,7 @@
  */
 import '../styles/tokens.css';
 import '../styles/global.css';
-import redesignCss from '../styles/redesign.css?raw';
+import premiumCss from '../styles/premium.css?raw';
 import { brand } from '../data/content';
 
 interface Props {
@@ -120,7 +120,7 @@ const baseSchema = JSON.stringify(graph).replace(/</g, '\\u003c');
     <!-- ------------------------------------------------------------- geo/locale -->
     <meta name="language" content="English" />
     <meta name="geo.region" content="IN" />
-    <meta name="theme-color" content="#FBFCF8" />
+    <meta name="theme-color" content="#FFFFFF" />
     <meta name="format-detection" content="telephone=no" />
 
     <!-- ------------------------------------------------------------------- OG -->
@@ -145,28 +145,13 @@ const baseSchema = JSON.stringify(graph).replace(/</g, '\\u003c');
     <script type="application/ld+json" set:html={baseSchema} />
 
     <!-- ----------------------------------------------------------------- fonts
-         Self-hosted variable fonts. Preconnected + preloaded so the display
-         face resolves before first paint and CLS stays at zero (size-adjust
-         fallback metrics are declared in tokens.css font stack ordering).   -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
-      />
-    </noscript>
+         Self-hosted latin subsets (declared in premium.css). The two faces
+         that paint above the fold are preloaded so the first paint already
+         uses them; the fallback faces are metric-adjusted for zero CLS.   -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/InterTight-var.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Inter-var.woff2" crossorigin />
+
+    <link rel="preload" as="image" href="/media/eluna-hero.webp" fetchpriority="high" />
 
     <!-- ------------------------------------------------------------------ icons -->
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -219,7 +204,7 @@ const baseSchema = JSON.stringify(graph).replace(/</g, '\\u003c');
     <!-- Astro hoists component CSS into the head. This in-body style element is
          intentionally parsed after that link and before visible content, giving
          the cross-component art-direction layer final cascade precedence. -->
-    <style is:inline set:html={redesignCss}></style>
+    <style is:inline set:html={premiumCss}></style>
 
     <!-- GTM noscript fallback -->
     <noscript>

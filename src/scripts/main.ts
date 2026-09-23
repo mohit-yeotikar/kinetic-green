@@ -1,16 +1,18 @@
-import { initNav } from './nav';
+import { initHero } from './hero';
+import { initPremiumNav, initReveal } from './premium';
 import { initExplorer } from './explorer';
 import { initDealer } from './dealer';
 import { track, initScrollDepth, initSectionViews } from '../lib/analytics';
 import './calculator';
 import './leadModal';
 
-// Only ship controllers used by the six-section homepage.
 function guard(name: string, fn: () => void): void {
   try { fn(); } catch (error) { console.error(`[kg] ${name}`, error); }
 }
 function boot(): void {
-  guard('nav', initNav);
+  guard('nav', initPremiumNav);
+  guard('hero', initHero);
+  guard('reveal', initReveal);
   guard('range', initExplorer);
   guard('dealer', initDealer);
   guard('analytics', () => {

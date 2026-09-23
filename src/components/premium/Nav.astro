@@ -1,0 +1,35 @@
+---
+/**
+ * Nav — light, minimal, one CTA. Mobile menu is a simple sheet under the bar.
+ * Behaviour (scroll state, sheet toggle) lives in scripts/premium.ts.
+ */
+import Logo from '../Logo.astro';
+import { brand } from '../../data/content';
+
+const links = [
+  { label: 'Range', href: '#range' },
+  { label: 'Savings', href: '#savings' },
+  { label: 'Ownership', href: '#ownership' },
+  { label: 'Dealers', href: '#dealers' },
+];
+---
+<header class="p-nav" data-p-nav>
+  <div class="kg-shell p-nav__inner">
+    <a href="#top" class="p-nav__brand" aria-label={`${brand.name} — home`}>
+      <Logo variant="compact" height={26} />
+    </a>
+    <nav class="p-nav__links" aria-label="Primary">
+      {links.map((l) => <a href={l.href} data-nav-link>{l.label}</a>)}
+    </nav>
+    <div class="p-nav__actions">
+      <button type="button" class="p-btn p-btn--green p-nav__cta" data-lead-open data-lead-type="test-ride" data-lead-intent="high" data-lead-source="nav" data-lead-vehicle="eluna-plus" data-track="nav_test_ride_click">Book a test ride</button>
+      <button type="button" class="p-nav__burger" aria-label="Open menu" aria-expanded="false" aria-controls="p-nav-sheet" data-p-nav-toggle><span></span></button>
+    </div>
+  </div>
+  <div class="p-nav__sheet" id="p-nav-sheet" data-p-nav-sheet>
+    <nav aria-label="Mobile">
+      {links.map((l) => <a href={l.href} data-p-nav-close>{l.label}</a>)}
+    </nav>
+    <button type="button" class="p-btn p-btn--green" data-lead-open data-lead-type="test-ride" data-lead-intent="high" data-lead-source="mobile-nav" data-lead-vehicle="eluna-plus" data-p-nav-close data-track="nav_test_ride_click">Book a test ride</button>
+  </div>
+</header>
