@@ -26,6 +26,7 @@ const links = [
       <button type="button" class="p-nav__burger" aria-label="Open menu" aria-expanded="false" aria-controls="p-nav-sheet" data-p-nav-toggle><span></span></button>
     </div>
   </div>
+  <span class="p-nav__progress" aria-hidden="true" data-p-nav-progress></span>
   <div class="p-nav__sheet" id="p-nav-sheet" data-p-nav-sheet>
     <nav aria-label="Mobile">
       {links.map((l) => <a href={l.href} data-p-nav-close>{l.label}</a>)}

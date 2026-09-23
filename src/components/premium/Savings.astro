@@ -7,6 +7,7 @@ const monthlyKm = 30 * 25;
 const fuel = (monthlyKm / 45) * 105;
 const electric = monthlyKm * 1.1;
 const annualSaving = (fuel - electric) * 12;
+const litres = monthlyKm / 45;
 const fmt = (n: number) => Math.round(n).toLocaleString('en-IN');
 ---
 <section class="p-savings" id="savings" data-section="calculator" data-calculator>
@@ -36,6 +37,7 @@ const fmt = (n: number) => Math.round(n).toLocaleString('en-IN');
     <div class="p-savings__card" data-reveal style="--d:120ms" aria-live="polite" aria-atomic="true">
       <p class="p-eyebrow">Estimated yearly saving</p>
       <p class="p-savings__total">₹<span data-calc-out="annualSaving">{fmt(annualSaving)}</span><sup>*</sup></p>
+      <p class="p-savings__litres">That is about <b><span data-calc-out="litres">{fmt(litres)}</span> litres</b> of petrol you do not buy each month.</p>
       <div class="p-compare">
         <div class="p-compare__row"><span>Petrol / month</span><b>₹<span data-calc-out="monthlyFuel">{fmt(fuel)}</span></b></div>
         <div class="p-compare__track"><span class="p-compare__petrol"></span></div>

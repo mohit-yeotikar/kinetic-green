@@ -10,10 +10,15 @@ export function initPremiumNav(): void {
   const toggle = nav.querySelector<HTMLButtonElement>('[data-p-nav-toggle]');
   const sheet = nav.querySelector<HTMLElement>('[data-p-nav-sheet]');
 
+  const progress = nav.querySelector<HTMLElement>('[data-p-nav-progress]');
   let lastY = window.scrollY;
   let ticking = false;
   const update = () => {
     const y = window.scrollY;
+    if (progress) {
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      progress.style.transform = `scaleX(${Math.min(1, y / max).toFixed(4)})`;
+    }
     nav.classList.toggle('is-scrolled', y > 8);
     // Hide only when scrolling down past the first screen; reveal on any scroll up.
     const hide = y > window.innerHeight * 0.9 && y > lastY + 4 && !sheet?.classList.contains('is-open');

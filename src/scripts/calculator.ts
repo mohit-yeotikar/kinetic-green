@@ -16,7 +16,7 @@ if (root && form) {
     const km = dailyKm * read('workingDays');
     const fuel = km / read('mileage') * read('fuelPrice');
     const electric = km * 1.1;
-    const values: Record<string, number> = { annualSaving: Math.max(0, fuel - electric) * 12, monthlyFuel: fuel, monthlyEv: electric };
+    const values: Record<string, number> = { annualSaving: Math.max(0, fuel - electric) * 12, monthlyFuel: fuel, monthlyEv: electric, litres: km / read('mileage') };
     root!.querySelectorAll<HTMLElement>('[data-calc-out]').forEach(el => {
       el.textContent = fmt(values[el.dataset.calcOut!] ?? 0);
     });

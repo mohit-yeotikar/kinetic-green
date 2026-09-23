@@ -10,19 +10,19 @@ const lakh = (n: number) => `₹${(n / 100000).toFixed(2).replace(/\.?0+$/, '')}
 
 const cards = [
   {
-    v: byId('eluna-go'), title: 'E-Luna', kicker: 'Electric moped · Go, Plus, Pro, Prime', img: '/media/eluna-hero.webp', wide: false, tone: 'white',
+    v: byId('eluna-go'), title: 'E-Luna', kicker: 'Electric moped · Go, Plus, Pro, Prime', img: '/media/eluna-hero.webp', wide: false, tone: 'luna',
     price: formatINR(69990), stats: [['110', 'km range'], ['50', 'km/h'], ['2.0–2.3', 'kWh removable']],
     blurb: 'The moped India grew up on, with a removable battery you charge from any household socket.',
     lead: 'eluna-plus',
   },
   {
-    v: byId('zing'), title: 'Zing', kicker: 'Low-speed e-scooter · no licence needed', img: '/media/scooter.webp', wide: false, tone: 'canvas',
+    v: byId('zing'), title: 'Zing', kicker: 'Low-speed e-scooter · no licence needed', img: '/media/scooter.webp', wide: false, tone: 'zing',
     price: formatINR(71990), stats: [['100', 'km range'], ['25', 'km/h'], ['1.7', 'kWh']],
     blurb: 'City-speed, licence-free, and light enough for anyone in the family to ride.',
     lead: 'zing',
   },
   {
-    v: byId('safar-smart'), title: 'Safar Smart', kicker: 'Passenger three-wheeler · D+4', img: '/media/safar.webp', wide: false, tone: 'canvas',
+    v: byId('safar-smart'), title: 'Safar Smart', kicker: 'Passenger three-wheeler · D+4', img: '/media/safar.webp', wide: false, tone: 'safar',
     price: lakh(145000), stats: [['100', 'km range'], ['4', 'kWh Li-ion'], ['D+4', 'seating']],
     blurb: 'A working three-wheeler built to earn every day, with a lithium pack that charges in about three hours.',
     lead: 'safar-smart',
@@ -34,10 +34,10 @@ const cards = [
     <header class="p-section-head" data-reveal>
       <p class="p-eyebrow"><span class="dot"></span>The range</p>
       <h2 class="p-h2">Three ways to<br />go electric<span class="p-hero__stop">.</span></h2>
-      <p class="p-section-head__sub">Two-wheelers for the everyday, three-wheelers for the everyday business. Real figures, ex-showroom prices.</p>
+      <p class="p-section-head__sub">Two-wheelers for the everyday, a three-wheeler for the everyday business. Real figures, ex-showroom prices.</p>
     </header>
 
-    <ul class="p-cards">
+    <ul class="p-cards" data-rail>
       {cards.map((c, i) => (
         <li class={`p-card p-card--${c.tone}`} data-reveal style={`--d:${i * 90}ms`}>
           <div class="p-card__visual">

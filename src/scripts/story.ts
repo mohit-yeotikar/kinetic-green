@@ -109,6 +109,15 @@ export function initStory(): void {
   }
   function wake(): void { if (!running) { running = true; requestAnimationFrame(frame); } }
 
+  // Chapter index: jump to a step's scroll position.
+  dots.forEach((d) => d.addEventListener('click', () => {
+    const i = Number(d.dataset.dot);
+    const pin = window.innerHeight;
+    const travel = Math.max(1, root.offsetHeight - pin * 2);
+    const p = i === 0 ? 0 : 0.12 + ((i - 0.5) / (steps - 1)) * 0.88;
+    window.scrollTo({ top: Math.round(p * travel), behavior: 'smooth' });
+  }));
+
   const onResize = () => { measure(); setTargets(); wake(); };
   if (img.complete) measure(); else img.addEventListener('load', measure, { once: true });
   window.addEventListener('resize', onResize, { passive: true });

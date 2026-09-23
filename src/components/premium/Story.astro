@@ -50,7 +50,7 @@ const chapters = [
           alt="Kinetic Green E-Luna electric moped, front three-quarter view"
           data-story-img
         />
-        {chapters.map((c, i) => (
+        {chapters.slice(0, -1).map((c, i) => (
           <span class="p-marker" style={`left:${c.x}%;top:${c.y}%`} data-marker={i + 1} aria-hidden="true"><i></i></span>
         ))}
       </div>
@@ -68,6 +68,7 @@ const chapters = [
         <button type="button" class="p-btn p-btn--green" data-lead-open data-lead-type="test-ride" data-lead-intent="high" data-lead-source="hero" data-lead-vehicle="eluna-plus" data-track="hero_test_ride_click">Book a test ride<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></button>
         <a class="p-link" href="#range"><span>See the range</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15"/><path d="m6 13 6 6 6-6"/></svg></a>
       </div>
+      <p class="p-story__meta"><span>4 variants</span><span>5 colours</span><span>110 km claimed</span><span>Removable battery</span></p>
       <fieldset class="p-paint" data-paint-picker>
         <legend class="p-paint__legend">Colour <span data-paint-name>Sparkling Green</span> <small>· preview</small></legend>
         <div class="p-paint__swatches">
@@ -95,7 +96,11 @@ const chapters = [
 
     <div class="p-story__foot kg-shell">
       <a class="p-scroll" href="#range" aria-label="Scroll"><i aria-hidden="true"></i><span data-story-cue>Scroll the story</span></a>
-      <ol class="p-story__dots" aria-hidden="true">{[0, ...chapters.map((_, i) => i + 1)].map((s) => <li data-dot={s}></li>)}</ol>
+      <ol class="p-story__dots" aria-label="Story chapters">
+        {[{ label: 'Luna' }, ...chapters.map((c) => ({ label: c.id.charAt(0).toUpperCase() + c.id.slice(1) }))].map((d, i) => (
+          <li><button type="button" data-dot={i} aria-label={`Go to ${d.label}`}><i></i><span>{d.label}</span></button></li>
+        ))}
+      </ol>
       <p class="p-partner"><span class="p-partner__mark" aria-hidden="true">TL</span><b>Tonino Lamborghini</b><span>Official partner</span></p>
     </div>
   </div>
