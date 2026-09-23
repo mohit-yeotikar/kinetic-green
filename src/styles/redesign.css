@@ -245,3 +245,29 @@ html:not(.js) .circle-link,html:not(.js) .range-filters{display:none}
 .trust-stat__label{font-family:var(--font-body);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--campaign-muted);line-height:1.4}
 @media(max-width:899px){.trust-band__grid{grid-template-columns:repeat(2,1fr);gap:22px 20px;padding-block:32px}.trust-stat:nth-child(n+2){padding-inline-start:0;border-inline-start:0}.trust-stat:nth-child(2n){padding-inline-start:20px;border-inline-start:1px solid var(--campaign-line)}.trust-stat__label{font-size:10px}}
 @media(max-width:420px){.trust-band__grid{padding-block:26px}.trust-stat__value{font-size:29px}}
+
+/* ============================================================ SAVINGS TCO
+   5-year + CO2 strip under the running-cost comparison. Matches the light
+   savings-result card. */
+.savings-tco{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:22px 0 16px;padding-top:20px;border-top:1px solid #d6dfcb}
+.savings-tco__item{display:flex;flex-direction:column;gap:5px}
+.savings-tco__label{font-family:var(--font-body);font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:#68765d;line-height:1.4}
+.savings-tco__item b{font-family:var(--font-display);font-size:clamp(21px,2.4vw,27px);font-weight:600;letter-spacing:-.03em;color:var(--kg-ink)}
+.savings-tco__item b span{color:var(--kg-green-700)}
+@media(max-width:420px){.savings-tco{gap:14px}.savings-tco__item b{font-size:20px}}
+
+/* ========================================================= MOBILE CTA BAR
+   Persistent bottom conversion bar, phones/tablets only. Sits below the drawer
+   (z 400) and modal (z 500); hides while either is open. */
+.kg-mobilecta{position:fixed;inset-inline:0;inset-block-end:0;z-index:var(--z-conversion);display:none;gap:10px;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgb(249 251 244 / 0.92);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);border-block-start:1px solid var(--campaign-line);transition:transform .4s var(--ease-expo,cubic-bezier(.16,1,.3,1)),opacity .3s}
+.kg-mobilecta__btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:4px;font-family:var(--font-body);font-size:13px;font-weight:600;letter-spacing:.01em;border:1px solid #cdd8bf;background:#fff;color:#1c3324}
+.kg-mobilecta__btn svg{color:var(--kg-green-700)}
+.kg-mobilecta__btn--primary{flex:1.6;background:#183b28;color:#fff;border-color:#183b28}
+.kg-mobilecta__btn--primary svg{color:#a8f5c4}
+/* When JS is available the bar hides until the hero has scrolled away
+   (data-visible added by the component script); no-JS leaves it visible. */
+.js .kg-mobilecta{transform:translateY(120%)}
+.js .kg-mobilecta[data-visible]{transform:none}
+body[data-locked='true'] .kg-mobilecta{opacity:0;pointer-events:none;transform:translateY(120%)}
+@media(max-width:1023px){.kg-mobilecta{display:flex}body.kg-premium{padding-block-end:72px}}
+@media(prefers-reduced-motion:reduce){.kg-mobilecta{transition:none}}

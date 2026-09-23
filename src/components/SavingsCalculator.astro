@@ -4,6 +4,8 @@ const monthlyKm = 30 * 25;
 const fuel = monthlyKm / 45 * 105;
 const electric = monthlyKm * 1.1;
 const annualSaving = (fuel - electric) * 12;
+const fiveYearSaving = annualSaving * 5;
+const co2Annual = (monthlyKm / 45) * 12 * 2.31;
 const fmt = (n: number) => Math.round(n).toLocaleString('en-IN');
 ---
 <section class="savings-section section-space" id="calculator" data-section="calculator" data-calculator aria-labelledby="calculator-heading">
@@ -31,7 +33,17 @@ const fmt = (n: number) => Math.round(n).toLocaleString('en-IN');
         <div class="cost-comparison__row"><span>Petrol / month</span><b>₹<span data-calc-out="monthlyFuel">{fmt(fuel)}</span></b></div><div class="comparison-track"><span class="comparison-track__petrol"></span></div>
         <div class="cost-comparison__row"><span>Electric / month</span><b>₹<span data-calc-out="monthlyEv">{fmt(electric)}</span></b></div><div class="comparison-track"><span data-electric-bar style={`width:${electric/fuel*100}%`}></span></div>
       </div>
-      <p class="fine-print">*Estimated running-cost savings only, based on your inputs. Not a guarantee. Open the assumptions to see the comparison.</p>
+      <div class="savings-tco">
+        <div class="savings-tco__item">
+          <span class="savings-tco__label">Over 5 years</span>
+          <b>₹<span data-calc-out="fiveYearSaving">{fmt(fiveYearSaving)}</span></b>
+        </div>
+        <div class="savings-tco__item">
+          <span class="savings-tco__label">Petrol CO₂ avoided / year</span>
+          <b><span data-calc-out="co2Annual">{fmt(co2Annual)}</span> kg</b>
+        </div>
+      </div>
+      <p class="fine-print">*Estimated running-cost savings only, based on your inputs. Not a guarantee. Open the assumptions to see the comparison. CO₂ figure is indicative tailpipe petrol CO₂ avoided (2.31 kg/litre); net impact depends on how your electricity is generated.</p>
       <noscript><p class="fine-print">Default estimate: 30 km/day, 25 days/month, 45 km/l, petrol at ₹105/litre. Enable JavaScript to adjust.</p></noscript>
     </div>
   </div>

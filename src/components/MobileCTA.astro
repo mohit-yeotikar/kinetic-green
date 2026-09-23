@@ -1,0 +1,48 @@
+---
+/**
+ * MobileCTA — persistent bottom conversion bar, mobile only.
+ *
+ * Every scroll depth stays one tap from the two primary actions (test ride,
+ * dealer). Pure markup + CSS: it works with no JS, reuses the existing
+ * [data-lead-open] trigger and the conversion_bar_click analytics convention,
+ * and hides itself while the drawer/modal is open (body[data-locked]).
+ * Hidden entirely at >=1024px where the sticky header CTA is always visible.
+ */
+import Icon from './Icon.astro';
+---
+<div class="kg-mobilecta" data-mobile-cta>
+  <button
+    type="button"
+    class="kg-mobilecta__btn kg-mobilecta__btn--primary"
+    data-lead-open
+    data-lead-type="test-ride"
+    data-lead-intent="high"
+    data-lead-source="mobile-cta"
+    data-track="conversion_bar_click"
+    data-track-source="mobile-cta-testride"
+  >
+    <Icon name="calendar" size={17} /> Book test ride
+  </button>
+  <a
+    class="kg-mobilecta__btn"
+    href="#dealers"
+    data-track="conversion_bar_click"
+    data-track-source="mobile-cta-dealer"
+  >
+    <Icon name="map-pin" size={17} /> Dealers
+  </a>
+</div>
+
+<script>
+  // Reveal the bar only once the hero has scrolled out of view, so it never
+  // covers the hero (which has its own CTA). No-JS keeps it visible via CSS.
+  const bar = document.querySelector<HTMLElement>('[data-mobile-cta]');
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  if (bar && hero && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      ([entry]) => bar.toggleAttribute('data-visible', !entry.isIntersecting),
+      { rootMargin: '-40% 0px 0px 0px' },
+    );
+    io.observe(hero);
+  }
+</script>
