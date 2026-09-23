@@ -1,0 +1,55 @@
+---
+/**
+ * Pink — the Pink E-Rickshaw programme (Maharashtra, launched April 2025 with
+ * Kinetic Green): 10,000 pink e-rickshaws for women drivers across eight
+ * cities, with driving training, licence support and 1,500 charging points.
+ * The only section on the page that leaves the brand green, deliberately.
+ *
+ * Motion: the rickshaw drives in on reveal and idles with a soft bob over a
+ * moving dashed road; a day-route of four stops lights up in sequence; the
+ * headline words rise one by one. All transform/opacity; off under reduced
+ * motion.
+ */
+const stops = [
+  { t: '6:40', l: 'Home' },
+  { t: '7:10', l: 'School run' },
+  { t: '9:00', l: 'Market' },
+  { t: '18:30', l: 'Station' },
+];
+const words = ['Her rickshaw.', 'Her route.', 'Her income.'];
+---
+<section class="p-pink" id="pink" data-section="pink">
+  <div class="p-pink__wash" aria-hidden="true"></div>
+  <div class="kg-shell p-pink__grid">
+    <div class="p-pink__copy">
+      <p class="p-eyebrow p-eyebrow--pink" data-reveal><span class="dot"></span>Pink E-Rickshaw · Maharashtra</p>
+      <h2 class="p-pink__title" data-reveal style="--d:80ms">
+        {words.map((w, i) => <span class="p-pink__w" style={`--i:${i}`}>{w}</span>)}
+      </h2>
+      <p class="p-section-head__sub" data-reveal style="--d:200ms">Under Maharashtra’s Pink E-Rickshaw scheme, Kinetic Green is putting 10,000 pink e-rickshaws in the hands of women across eight cities, with driving training, licence support and 1,500 charging points. A business that starts at the front door.</p>
+      <ul class="p-pink__stats" data-reveal style="--d:300ms">
+        <li><b><span data-odometer="10,000">10,000</span></b><span>rickshaws for women drivers</span></li>
+        <li><b><span data-odometer="8">8</span></b><span>cities, Pune to Nagpur</span></li>
+        <li><b><span data-odometer="120">120</span><small>km</small></b><span>a charge</span></li>
+      </ul>
+      <div class="p-pink__actions" data-reveal style="--d:380ms">
+        <button type="button" class="p-btn p-btn--pink" data-lead-open data-lead-type="commercial" data-lead-intent="business" data-lead-source="pink" data-lead-vehicle="safar-smart" data-track="vehicle_cta_click">Ask about the programme<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></button>
+        <p class="p-pink__note">Kinetic Green is founded and led by Sulajja Firodia Motwani.</p>
+      </div>
+    </div>
+
+    <div class="p-pink__stage" data-reveal style="--d:120ms">
+      <div class="p-pink__vehicle">
+        <img src="/media/safar.webp" alt="Kinetic Green Safar e-rickshaw shown with a pink canopy" loading="lazy" decoding="async" width="800" height="600" />
+        <span class="p-pink__streak p-pink__streak--1" aria-hidden="true"></span>
+        <span class="p-pink__streak p-pink__streak--2" aria-hidden="true"></span>
+      </div>
+      <div class="p-pink__road" aria-hidden="true"><i></i></div>
+      <ol class="p-route" aria-label="A day on the route">
+        {stops.map((s, i) => (
+          <li class="p-route__stop" style={`--i:${i}`}><i></i><b>{s.t}</b><span>{s.l}</span></li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>

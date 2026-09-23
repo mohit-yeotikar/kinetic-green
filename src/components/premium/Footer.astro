@@ -5,6 +5,7 @@ import { PRICE_DISCLAIMER } from '../../data/vehicles';
 const year = new Date().getFullYear();
 ---
 <footer class="p-footer">
+  <p class="p-tricolour p-tricolour--edge" aria-hidden="true"><i></i><i></i><i></i></p>
   <div class="kg-shell">
     <div class="p-footer__top">
       <a href="#top" class="p-footer__brand" aria-label={`${brand.name} — back to top`}><Logo variant="compact" height={24} /></a>
@@ -16,7 +17,7 @@ const year = new Date().getFullYear();
       </ul>
     </div>
     <div class="p-footer__bottom">
-      <p>© {year} {brand.legalName} · {brand.tagline}</p>
+      <p>© {year} {brand.legalName} · {brand.tagline} · Made in India</p>
       <p class="p-footer__legal">{PRICE_DISCLAIMER} Product figures are manufacturer-claimed or aggregated from public listings and marked indicative until confirmed by Kinetic Green.</p>
       <a href={brand.phoneHref}>{brand.phone}</a>
     </div>

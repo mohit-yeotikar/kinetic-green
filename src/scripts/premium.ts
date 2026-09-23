@@ -136,3 +136,31 @@ export function initOdometers(): void {
   if (!els.length || matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
   els.forEach(buildOdometer);
 }
+
+
+/** Kinetic type: letters in [data-kinetic] thicken toward the pointer. Fine pointers only. */
+export function initKinetic(): void {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !matchMedia('(pointer: fine)').matches) return;
+  const blocks = Array.from(document.querySelectorAll<HTMLElement>('[data-kinetic]'));
+  if (!blocks.length) return;
+  const letters = blocks.flatMap((b) => Array.from(b.querySelectorAll<HTMLElement>('.k:not(.k--sp)')));
+  let centres: { x: number; y: number }[] = [];
+  let dirty = true;
+  const measure = () => { centres = letters.map((l) => { const r = l.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }); dirty = false; };
+  let raf = 0, px = -1e4, py = -1e4;
+  const paint = () => {
+    raf = 0;
+    if (dirty) measure();
+    letters.forEach((l, i) => {
+      const c = centres[i]; if (!c) return;
+      const d = Math.hypot(px - c.x, py - c.y);
+      if (d > 700) { if (l.style.getPropertyValue('--w')) l.style.removeProperty('--w'); return; }
+      const w = 560 + 300 * Math.exp(-(d * d) / (2 * 150 * 150));
+      l.style.setProperty('--w', w.toFixed(0));
+    });
+  };
+  window.addEventListener('pointermove', (e) => { px = e.clientX; py = e.clientY; if (!raf) raf = requestAnimationFrame(paint); }, { passive: true });
+  window.addEventListener('scroll', () => { dirty = true; }, { passive: true });
+  window.addEventListener('resize', () => { dirty = true; }, { passive: true });
+  (document as any).fonts?.ready.then(() => { dirty = true; });
+}

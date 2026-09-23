@@ -19,7 +19,8 @@ if (process.env.CHROME_PATH) launch.executablePath = process.env.CHROME_PATH;
   await page.evaluate(() => document.fonts.ready);
 
   // Structure
-  assert.equal(await page.locator('main > section').count(), 8);
+  assert.equal(await page.locator('main > section').count(), 9);
+  assert.match(await page.locator('#pink').innerText(), /10,000/);
   assert.match(await page.locator('h1').innerText(), /Chal meri\s*Luna\./);
   assert.equal(await page.locator('.p-chapter').count(), 4);
   assert.match(await page.locator('.p-story__sub').innerText(), /₹69,990/);

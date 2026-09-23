@@ -13,8 +13,9 @@ const rows = [
 ---
 <section class="p-proof" id="proof" data-section="proof">
   <div class="kg-shell">
-    <p class="p-eyebrow p-eyebrow--on-green" data-reveal><span class="dot"></span>Why Kinetic Green</p>
-    <h2 class="p-h2 p-proof__title" data-reveal style="--d:80ms">Built by the people who put India on two wheels.</h2>
+    <p class="p-tricolour" aria-hidden="true" data-reveal><i></i><i></i><i></i></p>
+    <p class="p-eyebrow p-eyebrow--on-green" data-reveal><span class="dot"></span>Designed in Pune · Built in Maharashtra · Ridden across India</p>
+    <div data-reveal style="--d:80ms"><h2 class="p-h2 p-proof__title">Built by the people who put India on two wheels.</h2></div>
     <ul class="p-proof__grid">
       {rows.map((r, i) => (
         <li data-reveal style={`--d:${160 + i * 90}ms`}>
@@ -24,5 +25,6 @@ const rows = [
         </li>
       ))}
     </ul>
+    <p class="p-proof__foot" data-reveal style="--d:420ms">Headquartered in Pune, with a plant at Supa, Ahmednagar. Part of the Firodia group, building for Indian roads since the original Luna.</p>
   </div>
 </section>

@@ -54,30 +54,6 @@ export function initStory(): void {
     setTimeout(done, 1000);
   });
 
-  // Kinetic type: letter weight follows the pointer while the hero is on screen.
-  const title = root.querySelector<HTMLElement>('[data-kinetic]');
-  const letters = title ? Array.from(title.querySelectorAll<HTMLElement>('.k:not(.k--sp)')) : [];
-  let centres: { x: number; y: number }[] = [];
-  const measureLetters = () => { centres = letters.map((l) => { const r = l.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }); };
-  if (letters.length && !reduced && matchMedia('(pointer: fine)').matches) {
-    let raf = 0, px = -1e4, py = -1e4;
-    const paint = () => {
-      raf = 0;
-      letters.forEach((l, i) => {
-        const c = centres[i]; if (!c) return;
-        const d = Math.hypot(px - c.x, py - c.y);
-        const w = 560 + 300 * Math.exp(-(d * d) / (2 * 150 * 150));
-        l.style.setProperty('--w', w.toFixed(0));
-      });
-    };
-    root.addEventListener('pointermove', (e) => { px = e.clientX; py = e.clientY; if (!raf) raf = requestAnimationFrame(paint); }, { passive: true });
-    root.addEventListener('pointerleave', () => { px = -1e4; py = -1e4; if (!raf) raf = requestAnimationFrame(paint); }, { passive: true });
-    window.addEventListener('scroll', () => { measureLetters(); }, { passive: true });
-    window.addEventListener('resize', measureLetters, { passive: true });
-    (document as any).fonts?.ready.then(measureLetters);
-    setTimeout(measureLetters, 1400);
-  }
-
   const motionOK = !reduced && matchMedia('(min-width: 1024px)').matches;
   if (!motionOK) return;
 

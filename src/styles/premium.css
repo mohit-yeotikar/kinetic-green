@@ -174,8 +174,8 @@ body.kg-premium {
 
 .p-story__ghost {
   position: absolute; z-index: 0; left: 0; top: 66%; transform: translate3d(0, 0, 0); width: 100%; overflow: hidden;
-  font-family: var(--p-display); font-weight: 700; font-size: 16vw; line-height: 1; letter-spacing: -0.06em;
-  color: transparent; -webkit-text-stroke: 1px rgb(11 15 13 / 0.055); white-space: nowrap; pointer-events: none; user-select: none; will-change: transform;
+  font-family: var(--p-display), 'Noto Sans Devanagari', 'Kohinoor Devanagari', 'Nirmala UI', 'Mangal', sans-serif; font-weight: 700; font-size: 14vw; line-height: 1.15; letter-spacing: -0.04em;
+  color: transparent; -webkit-text-stroke: 1px rgb(11 15 13 / 0.06); white-space: nowrap; pointer-events: none; user-select: none; will-change: transform;
 }
 .p-story__ghost-track { display: inline-block; padding-right: 0; animation: p-marquee 60s linear infinite; will-change: transform; }
 @keyframes p-marquee { to { transform: translate3d(-50%, 0, 0); } }
@@ -512,6 +512,7 @@ body.kg-premium {
 .p-close { padding: clamp(5rem, 12vw, 10rem) 0; text-align: center; }
 .p-close__inner { display: grid; justify-items: center; }
 .p-close__title { font-size: clamp(3.2rem, 9vw, 8.5rem); letter-spacing: -0.055em; line-height: 0.95; margin-top: 1rem; }
+.p-close__line { display: inline-block; }
 .p-close__actions { display: grid; justify-items: center; gap: 1rem; margin-top: 2.25rem; }
 .p-close__note { font-size: 0.85rem; color: var(--p-muted); }
 .p-close__note b { color: var(--p-ink); font-weight: 600; user-select: all; }
@@ -583,3 +584,83 @@ body.kg-premium {
 .kg-premium .booking-preview-note { font-size: 0.8rem; line-height: 1.5; background: var(--p-canvas); border: 0; color: var(--p-muted); padding: 0.8rem 1rem; margin: 0 1.5rem 1rem; border-radius: 12px; }
 .kg-premium .kg-done__ring, .kg-premium .kg-done__mark { border-color: var(--p-green); }
 .kg-premium .kg-done__title { font-family: var(--p-display); text-transform: none; letter-spacing: -0.03em; }
+
+/* ==================================================================== INDIA
+   Tricolour hairline: saffron, white, India green. A line, never a flag. */
+.p-tricolour { display: flex; gap: 0; width: 72px; height: 3px; margin: 0 0 1.25rem; border-radius: 2px; overflow: hidden; }
+.p-tricolour i { flex: 1; display: block; }
+.p-tricolour i:nth-child(1) { background: #ff9933; }
+.p-tricolour i:nth-child(2) { background: #ffffff; }
+.p-tricolour i:nth-child(3) { background: #138808; }
+.p-tricolour--edge { width: 100%; height: 3px; margin: 0 0 2.5rem; border-radius: 0; }
+.p-proof__foot { margin-top: 2.5rem; max-width: 40rem; font-size: 0.9rem; color: rgb(11 15 13 / 0.7); line-height: 1.55; }
+
+/* heading mask reveal inside revealed blocks */
+.js [data-reveal] .p-h2, .js [data-reveal] .p-life__title { clip-path: inset(0 0 100% 0); transition: clip-path 1100ms var(--p-ease); transition-delay: calc(var(--d, 0ms) + 60ms); }
+.js [data-reveal].is-in .p-h2, .js [data-reveal].is-in .p-life__title { clip-path: inset(-0.2em 0 -0.25em 0); }
+
+/* ---------------------------------------------------------------- lifestyle (mobile) */
+@media (max-width: 767px) {
+  .p-life { min-height: 0; display: block; color: var(--p-ink); background: var(--p-canvas); }
+  .p-life__media { position: relative; inset: auto; aspect-ratio: 4 / 4.6; transform: none !important; }
+  .p-life__media img { object-position: 38% 50%; }
+  .p-life__media::after { display: none; }
+  .p-life__copy { padding-block: 2rem 2.5rem; }
+  .p-eyebrow--on-photo { color: var(--p-muted); }
+  .p-life__sub { color: var(--p-muted); }
+  .p-life__pill { background: #fff; box-shadow: 0 10px 30px -18px rgb(11 15 13 / 0.4); }
+}
+
+/* ====================================================================== PINK */
+.p-pink { position: relative; overflow: hidden; padding: clamp(4.5rem, 10vw, 8rem) 0; --pink: #ff4f9a; --pink-ink: #b8236a; --pink-wash: #ffe1ee; }
+.p-pink__wash { position: absolute; inset: 0; z-index: 0; background: radial-gradient(80% 70% at 78% 50%, var(--pink-wash), #fff 70%); }
+.p-pink__grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1.15fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; }
+.p-eyebrow--pink { color: var(--pink-ink); }
+.p-eyebrow--pink .dot { background: var(--pink); box-shadow: 0 0 0 4px rgb(255 79 154 / 0.16); }
+.p-pink__title { font-size: clamp(2.6rem, 5.6vw, 5.2rem); letter-spacing: -0.05em; line-height: 0.98; margin-top: 1rem; }
+.p-pink__w { display: block; }
+.p-pink__w:nth-child(3) { color: var(--pink-ink); }
+.js [data-reveal] .p-pink__w { opacity: 0; transform: translateY(0.5em); transition: opacity 700ms var(--p-ease), transform 900ms var(--p-ease); transition-delay: calc(120ms + var(--i, 0) * 140ms); }
+.js [data-reveal].is-in .p-pink__w { opacity: 1; transform: none; }
+.p-pink__stats { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 2rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgb(184 35 106 / 0.18); }
+.p-pink__stats b { display: block; font-family: var(--p-display); font-size: clamp(1.8rem, 2.6vw, 2.6rem); font-weight: 600; letter-spacing: -0.045em; line-height: 1; font-variant-numeric: tabular-nums; }
+.p-pink__stats b small { font-size: 0.5em; color: var(--pink-ink); margin-left: 0.15em; }
+.p-pink__stats > li > span { display: block; margin-top: 0.4rem; font-size: 0.8rem; color: var(--p-muted); max-width: 9rem; }
+.p-pink__actions { display: flex; align-items: center; gap: 1.25rem 1.75rem; flex-wrap: wrap; margin-top: 2rem; }
+.p-btn--pink { background: var(--pink); color: #fff; box-shadow: 0 12px 30px -12px rgb(255 79 154 / 0.7); }
+.p-btn--pink:hover { background: #ff3a8f; transform: translateY(-2px); }
+.p-pink__note { font-size: 0.8rem; color: var(--p-muted); max-width: 18rem; }
+
+.p-pink__stage { position: relative; min-height: 26rem; }
+.p-pink__vehicle { position: relative; width: 92%; margin: 0 auto; }
+.p-pink__vehicle img { width: 100%; height: auto; filter: hue-rotate(112deg) saturate(1.05) brightness(1.12) drop-shadow(0 34px 34px rgb(184 35 106 / 0.22)); }
+.js [data-reveal] .p-pink__vehicle { transform: translateX(-28%); opacity: 0; transition: transform 1400ms var(--p-ease), opacity 500ms; }
+.js [data-reveal].is-in .p-pink__vehicle { transform: none; opacity: 1; animation: p-bob 3.2s ease-in-out 1400ms infinite; }
+@keyframes p-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
+.p-pink__streak { position: absolute; left: -14%; height: 3px; border-radius: 3px; background: linear-gradient(90deg, transparent, var(--pink)); opacity: 0; }
+.p-pink__streak--1 { top: 46%; width: 30%; }
+.p-pink__streak--2 { top: 62%; width: 20%; left: -10%; }
+.js [data-reveal].is-in .p-pink__streak { animation: p-streak 1400ms var(--p-ease) 1; }
+@keyframes p-streak { 0% { opacity: 0; transform: translateX(-40%); } 30% { opacity: 0.9; } 100% { opacity: 0; transform: translateX(80%); } }
+.p-pink__road { position: relative; height: 2px; margin: -0.5rem 6% 0; background: rgb(184 35 106 / 0.18); overflow: hidden; }
+.p-pink__road i { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, var(--pink) 0 34px, transparent 34px 68px); animation: p-road 1.6s linear infinite; opacity: 0.55; }
+@keyframes p-road { to { transform: translateX(-68px); } }
+
+.p-route { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin: 2rem 6% 0; position: relative; }
+.p-route::before { content: ''; position: absolute; left: 6px; right: 6px; top: 6px; height: 1px; background: rgb(184 35 106 / 0.22); }
+.p-route__stop { position: relative; padding-top: 1.1rem; font-size: 0.78rem; color: var(--p-muted); }
+.p-route__stop i { position: absolute; left: 0; top: 0; width: 13px; height: 13px; border-radius: 50%; background: #fff; border: 2px solid rgb(184 35 106 / 0.35); transition: background-color 300ms, border-color 300ms, transform 300ms var(--p-ease); }
+.p-route__stop b { display: block; font-family: var(--p-display); font-size: 1rem; font-weight: 600; letter-spacing: -0.02em; color: var(--p-ink); font-variant-numeric: tabular-nums; }
+.js [data-reveal].is-in .p-route__stop i { animation: p-stop 8s ease-in-out infinite; animation-delay: calc(1600ms + var(--i, 0) * 2s); }
+@keyframes p-stop { 0%, 6%, 100% { background: #fff; border-color: rgb(184 35 106 / 0.35); transform: none; } 2%, 4% { background: var(--pink); border-color: var(--pink); transform: scale(1.35); box-shadow: 0 0 0 8px rgb(255 79 154 / 0.18); } }
+
+@media (max-width: 1023px) {
+  .p-pink__grid { grid-template-columns: 1fr; }
+  .p-pink__stage { min-height: 0; }
+  .p-pink__stats { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] .p-pink__w, .js [data-reveal] .p-pink__vehicle { opacity: 1; transform: none; animation: none !important; }
+  .p-pink__road i, .p-route__stop i, .p-pink__streak { animation: none !important; }
+  .js [data-reveal] .p-h2, .js [data-reveal] .p-life__title { clip-path: none; }
+}

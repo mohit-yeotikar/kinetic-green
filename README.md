@@ -18,12 +18,23 @@ theme. Updated 23 September 2026.
 | Story (hero) | One pinned stage. Step 0 is the hero: “Chal meri Luna.” at display size, the E-Luna oversized and cropped on a tinted colour wash, a five-paint colour preview (real E-Luna paint names; hue-shifts the single studio photo and is labelled as a preview). Steps 1–4 keep the same bike on screen and zoom it to the battery, frame and console, then pull back for range, each with a glass chapter card and a marker on the part. |
 | Signature transition | After the last chapter the Range section slides over the pinned stage as a rounded curtain. |
 | Range | E-Luna, Zing and Safar Smart cards with real ex-showroom prices and specs, hover lift, one “Book a test ride” each (prefills the modal). |
-| Lifestyle | Full-bleed riding photograph with a slow parallax and “Not a statement. A Tuesday.” |
-| Proof | The one full-green band: 550+ dealers, 50+ years, 44 cr+ km, counted up on reveal. Figures from `src/data/content.ts`. |
+| Lifestyle | Full-bleed riding photograph with a slow parallax: “Roz ki sawaari.” On phones the photo shows whole above the copy. |
+| Pink E-Rickshaw | Maharashtra’s Pink E-Rickshaw programme with Kinetic Green (10,000 rickshaws for women drivers, 8 cities, 120 km): pink stage, the Safar re-tinted pink, drive-in with speed streaks, moving road, a day-route that lights up stop by stop, odometer stats. The one section that leaves the brand green on purpose. |
+| Proof | The full-green band with a diagonal top edge: 550+ dealers, 50+ years, 44 cr+ km rolled like an odometer, a tricolour hairline and “Designed in Pune · Built in Maharashtra · Ridden across India”. |
 | Savings | Daily-distance slider with adjustable assumptions; logic in `src/scripts/calculator.ts`. |
 | Ownership | Lifestyle photo plus charging / service / finance answers. |
 | Dealers | City or PIN search that opens Google Maps (no invented dealer records). |
 | Closing + footer | One final test-ride CTA, compact footer with price/spec disclaimer. |
+
+## Signature effects
+- Headlamp ignition and a light pulse that rides the traced frame loop (SVG paths in `Story.astro`, image space 869×1000).
+- Kinetic type: every `[data-kinetic]` heading's letters sit on the Inter Tight weight axis and thicken toward the pointer.
+- Colour ripple from the clicked swatch; the bike re-tints via `hue-rotate` (preview until per-colour photography arrives).
+- Scroll-velocity mass and pointer drift on the pinned product; card 3D tilt with sheen; odometer digits; heading mask reveals; calculator values tween.
+- India undertone: Devanagari “चल मेरी लूना” in the ghost marquee, tricolour hairlines (never a flag), Pune/Maharashtra provenance in the proof band and footer.
+
+## Video and image assets
+`docs/video-brief.md` is the shot list, generation prompts, delivery spec and integration notes for the hero loop, colour renders or turntable, chapter macros, lifestyle rides, the pink programme and the India band.
 
 ## Motion contract
 - One `requestAnimationFrame` loop (`src/scripts/story.ts`) turns scroll into a
